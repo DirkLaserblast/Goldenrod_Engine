@@ -526,6 +526,20 @@ void setupGLUT() {
     glutIdleFunc(idle);
 }
 
+void addVertex(vector<float> *vertexVector, vector<float> *colorVector, vector<float> *normalVector, float x, float y, float z, float red, float green, float blue, float alpha)
+{
+	vertexVector->push_back(x);
+	vertexVector->push_back(y);
+	vertexVector->push_back(z);
+	colorVector->push_back(red);
+	colorVector->push_back(green);
+	colorVector->push_back(blue);
+	colorVector->push_back(alpha);
+	normalVector->push_back(1);
+	normalVector->push_back(1);
+	normalVector->push_back(1);
+}
+
 //initialize OpenGL background color and vertex/normal arrays
 void setupGL() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -533,11 +547,14 @@ void setupGL() {
 
     //initialize vertex and normal arrays
     //this is where you might want to read in your model
-    axes.push_back(0);
-    axes.push_back(0);
-    axes.push_back(0);
-    aColor.push_back(1);aColor.push_back(0);aColor.push_back(0);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
+
+	addVertex(&axes, &aColor, &aNorms, 0, 0, 0, 1, 0, 0, 1);
+
+    //axes.push_back(0);
+    //axes.push_back(0);
+    //axes.push_back(0);
+    //aColor.push_back(1);aColor.push_back(0);aColor.push_back(0);aColor.push_back(1);
+    //aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
 
     axes.push_back(5);
     axes.push_back(0);
@@ -569,181 +586,9 @@ void setupGL() {
     aColor.push_back(0);aColor.push_back(0);aColor.push_back(1);aColor.push_back(1);
     aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
 
-    axes.push_back(minpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(minpt.x);texs.push_back(minpt.y);
-
-    axes.push_back(minpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(minpt.x);texs.push_back(maxpt.y);
-
-    axes.push_back(minpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(minpt.x);texs.push_back(maxpt.y);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(maxpt.x);texs.push_back(maxpt.y);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(maxpt.x);texs.push_back(maxpt.y);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(maxpt.x);texs.push_back(minpt.y);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(maxpt.x);texs.push_back(minpt.y);
-
-    axes.push_back(minpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(minpt.x);texs.push_back(minpt.y);
-
-    axes.push_back(minpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-	//texs.push_back(minpt.x);texs.push_back(minpt.y);
-
-    axes.push_back(minpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-    //texs.push_back(maxpt.x);texs.push_back(minpt.y);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(minpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(minpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(minpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-    //texs.push_back(maxpt.x);texs.push_back(maxpt.y);
-    //texs.push_back(1.0);texs.push_back(1.0);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(minpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(maxpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(minpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(minpt.x);
-    axes.push_back(maxpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(minpt.x);
-    axes.push_back(minpt.y);
-    axes.push_back(maxpt.z);
-    aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
     numAxes = axes.size() / 3;
 
-	//load texture from file
-//    texture.loadFromFile("warning.jpg");
-//    texture.init();
-
-    float x_range = (maxpt.x + abs(minpt.x));
-    float z_range = (maxpt.x + abs(minpt.x));
-
-    //cout << z_range << "\n";
-
-/*    for (int i = 0; i < verts.size(); i += 3)
-    {
-    	//cout << x << ", " << z << "\n";
-    	//cout << ((verts[x] + abs(minpt.x))) << ", " << verts[z] << " + " << abs(minpt.z) << " = " << ((verts[z] + abs(minpt.z))) <<"\n";
-    	texs.push_back((verts[i] + abs(minpt.x)) / x_range);
-    	texs.push_back((verts[i+2] + abs(minpt.z)) / x_range);
-    }
-	*/
+	
 
     camera = glm::lookAt(glm::vec3(10,10,10), glm::vec3(0,0,0), glm::vec3(0,0,1));
 
@@ -770,7 +615,6 @@ void setupShaders() {
     shader->lightPosLoc = glGetUniformLocation(shader->program, "L_p");
     shader->viewPosLoc = glGetUniformLocation(shader->program, "E");
     shader->lBlockLoc = glGetUniformLocation(shader->program, "lBlock");
-//	shader->textureLoc = glGetUniformLocation(shader->program, "tex0");
 
     //notice that, since the vertex attribute norm is not used in the shader
     //program, shader->normalLoc = -1. If we access norm in the shader program,
@@ -870,161 +714,6 @@ void setupShaders() {
  //           );
 }
 
-
-void readCoords(const char *filename )
-{
-    int     i, j;
-    float   x, y, z;
-    FILE    *f;
-
-    minpt = glm::vec3(MAXFLOAT,MAXFLOAT,MAXFLOAT);
-    maxpt = glm::vec3(MINFLOAT,MINFLOAT,MINFLOAT);
-
-    f = fopen(filename, "r");
-    if (!f)
-    {
-        cout << "Can not open the file " <<  filename << endl;
-        exit(-1);
-    }
-
-    if (fscanf(f, "%d", &(numCoords)) != 1)
-    {
-        cout << "Can not read the first line of  " <<  filename << endl;
-        exit(-1);
-    }
-
-    printf("NUMCOORDS %d\n", numCoords);
-
-    for(i = 0; i < numCoords; i++)
-    {
-
-        if (fscanf(f, "%d,%f,%f,%f", &j, &x, &y, &z) != 4)
-        {
-        	cout << "Can't read from " << endl;
-            exit(-1);
-        }
-        if ((j < 0) || (j > numCoords))
-        {
-        	cout << "Illegal index" << endl;
-            exit(-1);
-        }
-
-        if (x > maxpt[0]) maxpt[0] = x;
-        if (x < minpt[0]) minpt[0] = x;
-        if (y > maxpt[1]) maxpt[1] = y;
-        if (y < minpt[1]) minpt[1] = y;
-        if (z > maxpt[2]) maxpt[2] = z;
-        if (z < minpt[2]) minpt[2] = z;
-
-        raw.push_back(x);
-        raw.push_back(y);
-        raw.push_back(z);
-    }
-
-    fclose(f);
-
-    centerpt[0] =(maxpt[0] + minpt[0])/2;
-    centerpt[1] =(maxpt[1] + minpt[1])/2;
-    centerpt[2] =(maxpt[2] + minpt[2])/2;
-
-    cout << "verts size = " << raw.size()/3 << endl;
-
-}
-
-// read .poly files
-void  readPolygons(const char *filename)
-{
-    int     i;
-    int pnt;
-    int res;
-    int ind;
-    char    c;
-    FILE    *f;
-    int temp;
-    int prev;
-
-
-    cout << "inside read poly " << endl;
-
-    f = fopen(filename, "r");
-    if (!f)
-    {
-    	cout << "Can't read the file " <<  filename << endl;
-    	exit(-1);
-    }
-    if ( fscanf(f, "%d", &(numPolygons)) != 1)
-    {
-    	cout << "Can't read first line of " <<  filename << endl;
-    	exit(-1);
-    }
-
-    cout << raw.size()/3 << " = num coords" << endl;
-    cout << numPolygons << " num poly" << endl;
-
-    for(i = 0; i < numPolygons; i++)
-    {
-        do
-            c = fgetc(f);
-        while(!feof(f) && (c != ' '));
-        ind = 0;
-
-        do
-        {
-            res = fscanf(f, "%d", &pnt);
-        	if (res && ind >= 3)
-        	{
-        	    indices.push_back(temp - 1);
-        	    indices.push_back(prev - 1);
-        	    verts.push_back(raw[(temp - 1) * 3]);
-        	    verts.push_back(raw[((temp - 1) * 3) + 1]);
-        	    verts.push_back(raw[((temp - 1) * 3) + 2]);
-        	    verts.push_back(raw[(prev - 1) * 3]);
-        	    verts.push_back(raw[((prev - 1) * 3) + 1]);
-        	    verts.push_back(raw[((prev - 1) * 3) + 2]);
-                color.push_back(1);color.push_back(1);color.push_back(1);color.push_back(1);
-                color.push_back(1);color.push_back(1);color.push_back(1);color.push_back(1);
-        	}
-            if (res)
-            {
-            	indices.push_back(pnt - 1);
-        	    verts.push_back(raw[(pnt - 1) * 3]);
-        	    verts.push_back(raw[((pnt - 1) * 3) + 1]);
-        	    verts.push_back(raw[((pnt - 1) * 3) + 2]);
-                color.push_back(1);color.push_back(1);color.push_back(1);color.push_back(1);
-
-                if (ind == 0)
-                	{
-                		temp = pnt;
-                	}
-                prev = pnt;
-                ind++;
-            }
-            if (ind >= MAX_PTS)
-			{
-				cout << "Too many indices\n";
-				cout << "polygon "<<  i << endl;
-				exit(-1);
-			}
-        }
-        while(!feof(f) && res);
-    }
-
-    fclose(f);
-    cout <<" Number of polygons " << numPolygons << endl;
-}
-
-
-void load()
-{
-    readCoords("surfboard.coor");
-    cout << "read coords file successfully" << endl;
-    readPolygons("surfboard.poly");
-    cout << "read surfboard file successfully" << endl;
-
-    numIndex = indices.size();
-    numVerts = verts.size()/3;
-}
-
 void findNorms()
 {
 	glm::vec3 nVec1;
@@ -1059,7 +748,6 @@ void initializeGraphics(int argc, char** argv)
 	upMouseXPos = WIN_WIDTH / 2;
 	downMouseXPos = WIN_WIDTH / 2;
 
-	load();
 	findNorms();
     glutInit(&argc, argv);
     setupGLUT();
