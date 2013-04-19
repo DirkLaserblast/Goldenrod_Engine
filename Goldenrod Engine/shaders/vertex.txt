@@ -4,18 +4,39 @@
 uniform mat4 M; //modelview matrix
 uniform mat4 P; //projection matrix
 uniform mat3 M_n; //normal matrix
+uniform vec3 L_p; //light position
+uniform vec3 E; //view position
 uniform float time; //time variable
-
 
 //input variables from host
 in vec3 pos; //vertex position
 in vec3 norm; //vertex normal
+in vec4 color; //vertex color
+in vec2 tex;
 
 //variables to be passed to the fragment shader
+out vec3 L;
+out vec3 N;
+out vec3 V;
+out vec3 H;
 out vec4 frag_color;
+out vec2 texCoord;
 
 void main() {
-    gl_Position = P * (M * vec4(pos, 1.0));
-    vec4 color = vec4(norm.x, norm.y, norm.z, 1.0);
-    frag_color = clamp(color, 0.0, 1.0);
+	texCoord = tex;
+
+    vec4 posT = M * vec4(pos,1.0);
+    
+    L = normalize(M * vec4(L_p, 1.0)).xyz;
+    V = (M * vec4(E,1.0)).xyz;
+    
+    N = normalize(M_n * norm);
+    L = normalize(L - posT.xyz);
+    V = normalize(V - posT.xyz);
+    H = normalize(L + V);
+    
+    //determine vertex color based on position and time
+    frag_color = color;
+    
+    gl_Position = P * posT;
 }
