@@ -77,4 +77,12 @@
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\vertex.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\fragment.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

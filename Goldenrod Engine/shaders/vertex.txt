@@ -12,7 +12,7 @@ uniform float time; //time variable
 in vec3 pos; //vertex position
 in vec3 norm; //vertex normal
 in vec4 color; //vertex color
-in vec2 tex;
+//in vec2 tex;
 
 //variables to be passed to the fragment shader
 out vec3 L;
@@ -20,10 +20,10 @@ out vec3 N;
 out vec3 V;
 out vec3 H;
 out vec4 frag_color;
-out vec2 texCoord;
+//out vec2 texCoord;
 
 void main() {
-	texCoord = tex;
+	//texCoord = tex;
 
     vec4 posT = M * vec4(pos,1.0);
     
