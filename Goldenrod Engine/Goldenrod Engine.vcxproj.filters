@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\IO Controllers">
+      <UniqueIdentifier>{28d415cd-6449-44a6-8b08-d80ba1942c9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\IO Controllers">
+      <UniqueIdentifier>{83597b7a-2e0f-45d7-b435-93967ece3d24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,10 +30,51 @@
     <ClCompile Include="tiles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fileiocontroller.cpp">
+      <Filter>Source Files\IO Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="gameiocontroller.cpp">
+      <Filter>Source Files\IO Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="iocontroller.cpp">
+      <Filter>Source Files\IO Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gamecontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="graphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fileiocontroller.h">
+      <Filter>Header Files\IO Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="gameiocontroller.h">
+      <Filter>Header Files\IO Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="iocontroller.h">
+      <Filter>Header Files\IO Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gamecontroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="hole.00.db">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="hole.01.db">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="hole.02.db">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

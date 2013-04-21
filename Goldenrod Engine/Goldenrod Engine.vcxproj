@@ -61,12 +61,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="fileiocontroller.cpp" />
+    <ClCompile Include="gamecontroller.cpp" />
+    <ClCompile Include="gameiocontroller.cpp" />
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="iocontroller.cpp" />
+    <ClCompile Include="level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tiles.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fileiocontroller.h" />
+    <ClInclude Include="gamecontroller.h" />
+    <ClInclude Include="gameiocontroller.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="iocontroller.h" />
+    <ClInclude Include="level.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="hole.00.db" />
+    <None Include="hole.01.db" />
+    <None Include="hole.02.db" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
