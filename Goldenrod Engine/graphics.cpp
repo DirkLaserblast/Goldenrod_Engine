@@ -24,6 +24,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+
 using namespace std;
 
 #define MAX_PTS 40
@@ -54,11 +55,11 @@ public:
 
         //Compile the source code for each shader and attach it to the program.
         glCompileShader(vSource);
-        //printLog("vertex compile log: ", vSource);
+        printLog("vertex compile log: ", vSource);
         glAttachShader(program, vSource);
 
         glCompileShader(fSource);
-        //printLog("fragment compile log: ", fSource);
+        printLog("fragment compile log: ", fSource);
         glAttachShader(program, fSource);
 
         //we could attach more shaders, such as a geometry or tessellation
@@ -101,7 +102,28 @@ public:
         return s;
     }
 
+	void printLog(string label, GLint obj) {
+		int infologLength = 0;
+		int maxLength;
 
+		if(glIsShader(obj)) {
+			glGetShaderiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
+		} else {
+			glGetProgramiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
+		}
+
+		char infoLog[255];
+
+		if (glIsShader(obj)) {
+			glGetShaderInfoLog(obj, maxLength, &infologLength, infoLog);
+		} else {
+			glGetProgramInfoLog(obj, maxLength, &infologLength, infoLog);
+		}
+
+		if (infologLength > 0) {
+			cerr << label << infoLog << endl;
+		}
+	};
 
     GLint program; //shader program
     GLint modelViewLoc; //location of the modelview matrix in the program (M)
