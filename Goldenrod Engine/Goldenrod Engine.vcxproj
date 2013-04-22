@@ -69,6 +69,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="tile.cpp" />
+    <ClCompile Include="Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fileiocontroller.h" />
@@ -78,6 +79,7 @@
     <ClInclude Include="level.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="tile.h" />
+    <ClInclude Include="Tokenizer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db" />
