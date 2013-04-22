@@ -24,103 +24,15 @@
 #include <vector>
 #include <string>
 #include <fstream>
+
+#include "shader.h"
+
 using namespace std;
 
 #define MAX_PTS 40
 #define MAXFLOAT ((float)3.40282346638528860e+38) // taken from math.h
 #define MINFLOAT (-MAXFLOAT)
 
-/**
- * Simple class for keeping track of shader program and vertex attribute
- * locations.
- */
-class Shader {
-public:
-    Shader(string vertFile, string fragFile) { fromFiles(vertFile, fragFile); }
-
-    /**
-     * Creates a shader program based on vertex and fragment source.
-     *
-     * @param vertFile Path to vertex source
-     * @param fragFile Path to fragment source
-     */
-    void fromFiles(string vertFile, string fragFile) {
-        //These are shader objects containing the shader source code
-        GLint vSource = setShaderSource(vertFile, GL_VERTEX_SHADER);
-        GLint fSource = setShaderSource(fragFile, GL_FRAGMENT_SHADER);
-
-        //Create a new shader program
-        program = glCreateProgram();
-
-        //Compile the source code for each shader and attach it to the program.
-        glCompileShader(vSource);
-        //printLog("vertex compile log: ", vSource);
-        glAttachShader(program, vSource);
-
-        glCompileShader(fSource);
-        //printLog("fragment compile log: ", fSource);
-        glAttachShader(program, fSource);
-
-        //we could attach more shaders, such as a geometry or tessellation
-        //shader here.
-
-        //link all of the attached shader objects
-        glLinkProgram(program);
-    }
-
-    /**
-     * Helper method for reading in the source for a shader and creating a
-     * shader object.
-     *
-     * @param file Filename of shader source
-     * @param type Type of shader-> Only GL_VERTEX_SHADER and GL_FRAGMENT_SHADER
-     *   are supported here.
-     */
-    GLint setShaderSource(string file, GLenum type) {
-        //read source code
-        ifstream fin(file.c_str());
-        if (fin.fail()) {
-            cerr << "Could not open " << file << " for reading" << endl;
-            return -1;
-        }
-        fin.seekg(0, ios::end);
-        int count  = fin.tellg();
-        char *data = NULL;
-        if (count > 0) {
-            fin.seekg(ios::beg);
-            data = new char[count+1];
-            fin.read(data,count);
-            data[count] = '\0';
-        }
-        fin.close();
-
-        //create the shader
-        GLint s = glCreateShader(type);
-        glShaderSource(s, 1, const_cast<const char **>(&data), NULL);
-        delete [] data;
-        return s;
-    }
-
-
-
-    GLint program; //shader program
-    GLint modelViewLoc; //location of the modelview matrix in the program (M)
-    GLint projectionLoc; //location of the projection matrix in the program (P)
-    GLint normalMatrixLoc; //location of the normal matrix in the program (M_n)
-    GLint lBlockLoc; //uniform for blocking lighting for axes
-    GLint vertexLoc, normalLoc; //vertex attribute locations (pos and norm)
-      //respectively
-    GLint texCoordLoc; //location of texture coordinate vertex attribute
-    GLint textureLoc; //location of handle to texture data
-    GLint colorLoc; //Model color
-    GLint indexLoc;
-    GLint timeLoc; //location of time variable
-    GLint lightPosLoc;
-    GLint viewPosLoc;
-    GLuint vertexBuffer, normalBuffer, colorBuffer; //used to keep track of GL buffer objects
-	GLuint texBuffer; //Texture buffer
-    GLuint indexBuffer, axesBuffer, aNormalBuffer, aColorBuffer; //index, axes, and axes colors
-};
 Shader *shader = NULL;
 
 //UBTextureGL texture;

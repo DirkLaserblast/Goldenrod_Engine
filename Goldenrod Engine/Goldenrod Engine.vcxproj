@@ -68,6 +68,7 @@
     <ClCompile Include="iocontroller.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="tiles.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +78,7 @@
     <ClInclude Include="graphics.h" />
     <ClInclude Include="iocontroller.h" />
     <ClInclude Include="level.h" />
+    <ClInclude Include="shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db" />
