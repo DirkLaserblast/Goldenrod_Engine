@@ -1,21 +1,24 @@
 #ifndef FILEIOCONTROLLER_H
-
 #define FILEIOCONTROLLER_H
 
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+
+#include "gamecontroller.h"
 
 using namespace std;
-
-class IOController; // forward declare
 
 /* fileIOController: handles file IO; creates tiles for level from file */
 class FileIOController{
 
-private:
+public:
 	FileIOController();
 	~FileIOController();
-	friend class IOController;
+
+	bool createLevelFromFile(GameController* game, string levelFile);
+
+private:
 
 };
 

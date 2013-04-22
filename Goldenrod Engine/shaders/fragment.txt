@@ -19,11 +19,11 @@ const vec4 K_s = vec4(1.0);
 
 void main() {
     //vec4 c = vec4(texture(tex0, texCoord));
-	vec4 c = frag_color;
-	
-	float phi = acos(dot(N,H));
+    vec4 c = frag_color;
+    
+    float phi = acos(dot(N,H));
     float LdotN = dot(L,N);
-	
+    
     
     if (lBlock == false)
     {

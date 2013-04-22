@@ -27,22 +27,22 @@
     <ClCompile Include="graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tiles.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="fileiocontroller.cpp">
       <Filter>Source Files\IO Controllers</Filter>
     </ClCompile>
     <ClCompile Include="gameiocontroller.cpp">
       <Filter>Source Files\IO Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="iocontroller.cpp">
-      <Filter>Source Files\IO Controllers</Filter>
-    </ClCompile>
     <ClCompile Include="level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="gamecontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,13 +56,16 @@
     <ClInclude Include="gameiocontroller.h">
       <Filter>Header Files\IO Controllers</Filter>
     </ClInclude>
-    <ClInclude Include="iocontroller.h">
-      <Filter>Header Files\IO Controllers</Filter>
-    </ClInclude>
     <ClInclude Include="level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gamecontroller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
