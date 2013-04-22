@@ -1,12 +1,19 @@
 #include "level.h"
 
+int Level::totalLevels = 0; // initialize static member
+
 Level::Level(){
+	this->ID = Level::totalLevels++;
     this->validate();
 };
 
 Level::~Level(){
 
 }
+
+int Level::getTotalLevels(){ return Level::totalLevels; };
+
+int Level::getID(){ return this->ID; };
 
 void Level::validate(){
 

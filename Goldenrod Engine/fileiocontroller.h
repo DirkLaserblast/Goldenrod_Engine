@@ -1,9 +1,10 @@
 #ifndef FILEIOCONTROLLER_H
 #define FILEIOCONTROLLER_H
 
-#include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>
 
 #include "gamecontroller.h"
 

@@ -10,17 +10,22 @@ GameController::~GameController(){
 
 };
 
-bool GameController::addLevel(){
+void GameController::addLevel(){
 
 	Level* newLevel = new Level();
+    this->currentLevel = newLevel;
 
-	if(newLevel->isValid()){
-		this->levels.push_back(*newLevel);
-		return true;
-	}
-	else{
-		delete newLevel;
-		return false;
-	}
+};
+
+void GameController::addTileCurrentLevel(int ID, int numEdges, int numVerts, int posIndex, int colIndex,
+                             int normIndex, int numNeighbors, int neighborIndex){
+
+    this->currentLevel->addTile(ID, numEdges, numVerts, posIndex, colIndex, normIndex, numNeighbors, neighborIndex);
+
+};
+
+bool GameController::checkValidCurrentLevel(){
+
+    return this->currentLevel->isValid();
 
 };

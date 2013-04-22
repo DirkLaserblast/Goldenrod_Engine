@@ -18,12 +18,19 @@ public:
 
 	/*
      * addLevel(): Creates a new level object and adds a pointer to the levels vector.
-	 * return: returns true if sucessful, and false if failed
+	 *			   Changes current level so that it points to the newly added level.
      */
-	bool addLevel();
+	void addLevel();
+
+    void addTileCurrentLevel(int ID, int numEdges, int numVerts, int posIndex, int colIndex,
+                             int normIndex, int numNeighbors, int neighborIndex);
+
+    bool checkValidCurrentLevel();
+
+    // Need to add a function to cycle through levels.
 
 private:
-	Level currentLevel;
+	Level* currentLevel;
 	vector<Level> levels;
 
 };

@@ -13,6 +13,9 @@ int main(int argc, char **argv)
 	FileIOController* fileIO = new FileIOController();
 	GameIOController* gameIO = new GameIOController();
 	GameController* game = new GameController();
+
+    fileIO->createLevelFromFile(game, "hole.00.db"); // test code
+
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
 	// Clean-up
