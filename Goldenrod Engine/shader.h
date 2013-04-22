@@ -31,7 +31,6 @@ public:
 
 	/**
      * Creates a shader program based on vertex and fragment source.
-     *
      * @param vertFile Path to vertex source
      * @param fragFile Path to fragment source
      */
@@ -40,7 +39,6 @@ public:
 	/**
      * Helper method for setting the shader source and creating a
      * shader object.
-     *
      * @param type Type of shader-> Only GL_VERTEX_SHADER and GL_FRAGMENT_SHADER
      *   are supported here.
      */

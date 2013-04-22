@@ -65,20 +65,19 @@
     <ClCompile Include="gamecontroller.cpp" />
     <ClCompile Include="gameiocontroller.cpp" />
     <ClCompile Include="graphics.cpp" />
-    <ClCompile Include="iocontroller.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
-    <ClCompile Include="tiles.cpp" />
+    <ClCompile Include="tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fileiocontroller.h" />
     <ClInclude Include="gamecontroller.h" />
     <ClInclude Include="gameiocontroller.h" />
     <ClInclude Include="graphics.h" />
-    <ClInclude Include="iocontroller.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="tile.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db" />
