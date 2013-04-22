@@ -6,6 +6,8 @@
  *  Further modified by Casey Scheide
  */
 
+#include "graphics.h"
+
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 #include "GL/glui.h"
@@ -25,6 +27,7 @@
 #include <string>
 #include <fstream>
 using namespace std;
+using namespace glm;
 
 #define MAX_PTS 40
 #define MAXFLOAT ((float)3.40282346638528860e+38) // taken from math.h
@@ -34,9 +37,11 @@ using namespace std;
  * Simple class for keeping track of shader program and vertex attribute
  * locations.
  */
-class Shader {
+class Shader
+{
 public:
-    Shader(string vertFile, string fragFile) { fromFiles(vertFile, fragFile); }
+    Shader(string vertFile, string fragFile)
+	{ fromFiles(vertFile, fragFile); }
 
     /**
      * Creates a shader program based on vertex and fragment source.
@@ -44,7 +49,8 @@ public:
      * @param vertFile Path to vertex source
      * @param fragFile Path to fragment source
      */
-    void fromFiles(string vertFile, string fragFile) {
+    void fromFiles(string vertFile, string fragFile)
+	{
         //These are shader objects containing the shader source code
         GLint vSource = setShaderSource(vertFile, GL_VERTEX_SHADER);
         GLint fSource = setShaderSource(fragFile, GL_FRAGMENT_SHADER);
@@ -76,17 +82,20 @@ public:
      * @param type Type of shader-> Only GL_VERTEX_SHADER and GL_FRAGMENT_SHADER
      *   are supported here.
      */
-    GLint setShaderSource(string file, GLenum type) {
+    GLint setShaderSource(string file, GLenum type)
+	{
         //read source code
         ifstream fin(file.c_str());
-        if (fin.fail()) {
+        if (fin.fail())
+		{
             cerr << "Could not open " << file << " for reading" << endl;
             return -1;
         }
         fin.seekg(0, ios::end);
-        int count  = fin.tellg();
+        int count  = (int) fin.tellg();
         char *data = NULL;
-        if (count > 0) {
+        if (count > 0)
+		{
             fin.seekg(ios::beg);
             data = new char[count+1];
             fin.read(data,count);
@@ -101,8 +110,6 @@ public:
         return s;
     }
 
-
-
     GLint program; //shader program
     GLint modelViewLoc; //location of the modelview matrix in the program (M)
     GLint projectionLoc; //location of the projection matrix in the program (P)
@@ -110,18 +117,85 @@ public:
     GLint lBlockLoc; //uniform for blocking lighting for axes
     GLint vertexLoc, normalLoc; //vertex attribute locations (pos and norm)
       //respectively
-    GLint texCoordLoc; //location of texture coordinate vertex attribute
-    GLint textureLoc; //location of handle to texture data
+//    GLint texCoordLoc; //location of texture coordinate vertex attribute
+//    GLint textureLoc; //location of handle to texture data
     GLint colorLoc; //Model color
     GLint indexLoc;
     GLint timeLoc; //location of time variable
     GLint lightPosLoc;
     GLint viewPosLoc;
     GLuint vertexBuffer, normalBuffer, colorBuffer; //used to keep track of GL buffer objects
-	GLuint texBuffer; //Texture buffer
+//	GLuint texBuffer; //Texture buffer
     GLuint indexBuffer, axesBuffer, aNormalBuffer, aColorBuffer; //index, axes, and axes colors
 };
 Shader *shader = NULL;
+
+//Adds a colored vertex (consisting of three points) to the vertex, color, and normal vectors
+void addVertex(vector<float> *vertexVector, vector<float> *colorVector, vector<float> *normalVector, vec3 coords, vec4 rgba)
+{
+	vertexVector->push_back(coords.x);
+	vertexVector->push_back(coords.y);
+	vertexVector->push_back(coords.z);
+	colorVector->push_back(rgba.x);
+	colorVector->push_back(rgba.y);
+	colorVector->push_back(rgba.z);
+	colorVector->push_back(rgba.w);
+	normalVector->push_back(1);
+	normalVector->push_back(1);
+	normalVector->push_back(1);
+}
+
+//Creates a shape made from vertexes, to be drawn with TRIANGLE_FAN
+//Assumes vertexes are given in counterclockwise order
+class Shape
+{
+public:
+	Shape(vector<float> *vertexVector, vector<float> *colorVector, vector<float> *normalVector, vector<vec3> vertices, vec4 color);
+//	~Shape();
+	vec4 shapeColor;
+	int startIndex, endIndex, numVertices;
+private:
+	vector<float> * vertexPointer;
+	vector<float> * colorPointer;
+	vector<float> * normalPointer;
+};
+
+Shape::Shape(vector<float> *vertexVector, vector<float> *colorVector, vector<float> *normalVector, vector<vec3> vertices, vec4 color)
+{
+	numVertices = vertices.size();
+	vertexPointer = vertexVector;
+	colorPointer = colorVector;
+	normalPointer = normalVector;
+
+	shapeColor = color;
+
+	startIndex = vertexVector->size();
+//	if (startIndex != 0) startIndex--;
+
+	for (int i = 0; i < (int) vertices.size(); i++)
+	{
+		addVertex(vertexVector, colorVector, normalVector, vertices[i], color);
+	}
+
+	endIndex = vertexVector->size();
+	if (endIndex != 0) endIndex--;
+}
+
+//Shape::~Shape()
+//{
+//	printf("dtor %p\n", this);
+//
+//	if (vertexPointer->size() > 0)
+//	{
+//		//cout << "Erasing from " << startIndex << " to " << endIndex << ". Size is " << vertexPointer->size() << ".\n";
+//		vertexPointer->erase(vertexPointer->begin(), vertexPointer->begin() + endIndex + 1);
+//		for (int i = 0; i < (int) vertexPointer->size(); i++)
+//		{
+//			cout << vertexPointer->at(i) << " ";
+//		}
+//		cout << "\n";
+//	}
+//}
 
 //UBTextureGL texture;
 
@@ -129,7 +203,9 @@ int WIN_WIDTH = 1280, WIN_HEIGHT = 720; //window width/height
 glm::mat4 modelView, projection, camera; //matrices for shaders
 glm::vec3 lightPos(0,0,1), viewPos(10,10,10);
 glm::mat4 modelTrans, mTrans, crTrans, csTrans, ctTrans; //Transformation matrices.
-float animTime = 0.0f, deltaT = 0.0001; //variables for animation
+float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
+
+vector<Shape> shapes; //Stores all the currently rendered shapes
 
 vector<float> raw;
 vector<float> verts; //vertex array
@@ -139,7 +215,7 @@ vector<float> axes;
 vector<float> color; //Model color array
 vector<float> aColor; //Axis and Bounding Box color array
 vector<unsigned short> indices;
-vector<float> texs; //texture coordinates
+//vector<float> texs; //texture coordinates
 size_t numVerts; //number of total vertices
 size_t numIndex;
 size_t numAxes;
@@ -168,15 +244,22 @@ bool o_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
+void addShape(vector<vec3> vertices, vec4 inColor)
+{
+	shapes.push_back(Shape(&verts, &color, &norms, vertices, inColor));
+}
+
 //updates values based on some change in time
-void update(float dt) {
+void update(float dt)
+{
     animTime += dt;
 
     modelView = glm::rotate(modelView, glm::float_t(0.01), glm::vec3(1,1,0));
 }
 
 //reshape function for GLUT
-void reshape(int w, int h) {
+void reshape(int w, int h)
+{
     WIN_WIDTH = w;
     WIN_HEIGHT = h;
     projection = glm::perspective(
@@ -188,7 +271,8 @@ void reshape(int w, int h) {
 }
 
 //display function for GLUT
-void display() {
+void display()
+{
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -268,9 +352,9 @@ void display() {
               //also fine in general
             );
 
-	glBindBuffer(GL_ARRAY_BUFFER, shader->texBuffer);
-    glEnableVertexAttribArray(shader->texCoordLoc);
-    glVertexAttribPointer(shader->texCoordLoc, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+//	glBindBuffer(GL_ARRAY_BUFFER, shader->texBuffer);
+//    glEnableVertexAttribArray(shader->texCoordLoc);
+//    glVertexAttribPointer(shader->texCoordLoc, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
     glBindBuffer(GL_ARRAY_BUFFER, shader->aColorBuffer);
     glBufferData(
@@ -308,6 +392,8 @@ void display() {
             );
     block = false;
     glUniform1i(shader->lBlockLoc, block);
+
+
 
     glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer); //which buffer we want
       //to use
@@ -363,12 +449,17 @@ void display() {
 
     //draw the vertices/normals we just specified.
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shader->indexBuffer);
-    glDrawArrays(GL_TRIANGLES, 0, numVerts);
+
+	for (int i = 0; i < (int) shapes.size(); i++)
+	{
+		glDrawArrays(GL_TRIANGLE_FAN, shapes[i].startIndex / 3, shapes[i].numVertices);
+	}
 
     //update animation variables.
     //have time oscillate between 0.0 and 1.0.
     if ((animTime >= 1.0 && deltaT > 0.0) ||
-            (animTime <= 0.0 && deltaT < 0.0)) {
+            (animTime <= 0.0 && deltaT < 0.0))
+	{
         deltaT = -deltaT;
     }
 
@@ -376,13 +467,15 @@ void display() {
 }
 
 //idle function for GLUT
-void idle() {
+void idle()
+{
     glutPostRedisplay();
 }
 
 //captures keyboard input for GLUT
 //Sets variables for doing transforms
-void keyboard(unsigned char key, int x, int y) {
+void keyboard(unsigned char key, int x, int y)
+{
 
 	if (key == 27)
 		exit(0);
@@ -507,11 +600,12 @@ void mouseMove(int x, int y)
 }
 
 //do some GLUT initialization
-void setupGLUT() {
+void setupGLUT(char* programName)
+{
     glutInitDisplayMode(GLUT_DEPTH | GLUT_RGBA | GLUT_DOUBLE);
     glutInitWindowPosition(100,100);
     glutInitWindowSize(WIN_WIDTH, WIN_HEIGHT);
-    glutCreateWindow("Program 4");
+	glutCreateWindow(programName);
 
     glutReshapeFunc(reshape);
 
@@ -526,41 +620,18 @@ void setupGLUT() {
     glutIdleFunc(idle);
 }
 
-void addVertex(vector<float> *vertexVector, vector<float> *colorVector, vector<float> *normalVector, float x, float y, float z, float red, float green, float blue, float alpha)
-{
-	vertexVector->push_back(x);
-	vertexVector->push_back(y);
-	vertexVector->push_back(z);
-	colorVector->push_back(red);
-	colorVector->push_back(green);
-	colorVector->push_back(blue);
-	colorVector->push_back(alpha);
-	normalVector->push_back(1);
-	normalVector->push_back(1);
-	normalVector->push_back(1);
-}
-
 //initialize OpenGL background color and vertex/normal arrays
-void setupGL() {
+void setupGL()
+{
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
     //initialize vertex and normal arrays
-    //this is where you might want to read in your model
 
-	addVertex(&axes, &aColor, &aNorms, 0, 0, 0, 1, 0, 0, 1);
+	addVertex(&axes, &aColor, &aNorms, vec3(0,0,0), vec4(1,0,0,1));
+	addVertex(&axes, &aColor, &aNorms, vec3(5,0,0), vec4(1,0,0,1));
 
-    //axes.push_back(0);
-    //axes.push_back(0);
-    //axes.push_back(0);
-    //aColor.push_back(1);aColor.push_back(0);aColor.push_back(0);aColor.push_back(1);
-    //aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
-
-    axes.push_back(5);
-    axes.push_back(0);
-    axes.push_back(0);
-    aColor.push_back(1);aColor.push_back(0);aColor.push_back(0);aColor.push_back(1);
-    aNorms.push_back(1);aNorms.push_back(1);aNorms.push_back(1);
+	//addVertex(&axes, &aColor, &aNorms, vec3(0,0,0), vec4(1,0,0,1));
 
     axes.push_back(0);
     axes.push_back(0);
@@ -588,7 +659,45 @@ void setupGL() {
 
     numAxes = axes.size() / 3;
 
-	
+
+
+	//vector<vec3> testShapeVerts;
+
+	//testShapeVerts.push_back(vec3(0,0,0));
+	//testShapeVerts.push_back(vec3(1,0,0));
+	//testShapeVerts.push_back(vec3(1,1,0));
+	//testShapeVerts.push_back(vec3(0,1,0));
+	//testShapeVerts.push_back(vec3(0,0,0));
+
+	//Shape testShape = Shape(&verts, &color, &norms, testShapeVerts, vec4(1,1,1,1));
+	//shapes.push_back(testShape);
+
+	//for (int i = 0; i < (int) verts.size(); i++)
+	//{
+	//	cout << verts[i] << " ";
+	//}
+	//cout << "\n";
+
+	//testShapeVerts.clear();
+
+	//testShapeVerts.push_back(vec3(0,0,4));
+	//testShapeVerts.push_back(vec3(1,0,4));
+	//testShapeVerts.push_back(vec3(1,1,4));
+	//testShapeVerts.push_back(vec3(0,1,4));
+	//testShapeVerts.push_back(vec3(0,0,4));
+
+
+	//testShape = Shape(&verts, &color, &norms, testShapeVerts, vec4(1,1,1,1));
+	//shapes.push_back(testShape);
+
+	//for (int i = 0; i < (int) verts.size(); i++)
+	//{
+	//	cout << verts[i] << " ";
+	//}
+	//cout << "\n";
+
+
+	numVerts = verts.size() / 3;
 
     camera = glm::lookAt(glm::vec3(10,10,10), glm::vec3(0,0,0), glm::vec3(0,0,1));
 
@@ -601,7 +710,8 @@ void setupGL() {
 }
 
 //setup the shader program
-void setupShaders() {
+void setupShaders()
+{
     //create the shader program from a vertex and fragment shader
     shader = new Shader("shaders/vertex.txt", "shaders/fragment.txt");
 
@@ -719,7 +829,7 @@ void findNorms()
 	glm::vec3 nVec1;
 	glm::vec3 nVec2;
 	glm::vec3 rVec;
-	for (int niter = 0; niter < verts.size(); niter+=9)
+	for (int niter = 0; niter < (int) verts.size(); niter+=9)
 	{
 		nVec1.x = verts[niter] - verts[niter + 3];
 		nVec1.y = verts[niter + 1] - verts[niter + 4];
@@ -742,15 +852,18 @@ void findNorms()
 	}
 }
 
-void initializeGraphics(int argc, char** argv)
+void initializeGraphics(int argc, char** argv, char* programName, int windowWidth, int windowHeight)
 {
+	WIN_WIDTH = windowWidth;
+	WIN_HEIGHT = windowHeight;
+
 	//A safeguard against Null errors.
 	upMouseXPos = WIN_WIDTH / 2;
 	downMouseXPos = WIN_WIDTH / 2;
 
 	findNorms();
     glutInit(&argc, argv);
-    setupGLUT();
+    setupGLUT(programName);
     setupGL();
 
     glewInit();

@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 	// Initialize game engine
 	IOController* IO = new IOController();
 	GameController* game = new GameController();
-	initializeGraphics(argc, argv);
+	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
 	// Clean-up
 	delete IO;
