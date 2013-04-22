@@ -19,7 +19,7 @@ public:
 	bool createLevelFromFile(GameController* game, string levelFile);
 
 private:
-
+    void parseFileContent(ifstream inFile);
 };
 
 #endif

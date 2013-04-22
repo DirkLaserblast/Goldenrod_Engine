@@ -24,3 +24,9 @@ bool FileIOController::createLevelFromFile(GameController* game, string levelFil
 	}
 
 };
+
+void FileIOController::parseFileContent(ifstream inFile){
+
+
+
+};

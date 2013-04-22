@@ -9,15 +9,17 @@ class Tile{
 
 public:
     // Functions
-	Tile(int ID, int numVerts, int posIndex, int colIndex, int normIndex,
-         int numNeighbors, int neighborIndex);
+	Tile(int ID, int numEdges, int numVerts, int posIndex, int colIndex,
+         int normIndex, int numNeighbors, int neighborIndex);
 	~Tile();
 
+    void validate();
 	bool isValid();
 
     int getID();
 
-    int getNumVerts();   
+    int getNumEdges();
+    int getNumVerts();
     int getPosIndex();
     int getColIndex();
     int getNormIndex();
@@ -31,7 +33,8 @@ private:
 
 	int ID;
 
-    int numVerts,
+    int numEdges,
+        numVerts,
         posIndex,
         colIndex,
         normIndex;
@@ -39,8 +42,7 @@ private:
     int numNeighbors,
         neighborIndex;
 	
-    // Functions
-    bool validate();
+    // Functions    
 
 };
 

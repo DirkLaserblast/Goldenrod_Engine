@@ -14,8 +14,9 @@ public:
 	Level();
 	~Level();
 
+    void validate();
 	bool isValid();
-    bool addTile(int ID, int numVerts, int posIndex, int colIndex, int normIndex,
+    bool addTile(int ID, int numEdges, int numVerts, int posIndex, int colIndex, int normIndex,
                  int numNeighbors, int neighborIndex);
 
 private:
