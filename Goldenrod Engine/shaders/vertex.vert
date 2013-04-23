@@ -22,7 +22,8 @@ out vec3 H;
 out vec4 frag_color;
 //out vec2 texCoord;
 
-void main() {
+void main()
+{
     //texCoord = tex;
 
     vec4 posT = M * vec4(pos,1.0);

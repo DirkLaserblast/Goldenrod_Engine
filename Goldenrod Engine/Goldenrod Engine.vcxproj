@@ -85,8 +85,8 @@
     <None Include="hole.02.db" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.txt" />
-    <None Include="shaders\vertex.txt" />
+    <None Include="shaders\fragment.frag" />
+    <None Include="shaders\vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

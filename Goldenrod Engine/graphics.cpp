@@ -457,23 +457,13 @@ void setupGL()
 
 	vector<vec3> testShapeVerts;
 
-	testShapeVerts.push_back(vec3(0,0,0));
-	testShapeVerts.push_back(vec3(1,0,0));
-	testShapeVerts.push_back(vec3(1,1,0));
-	testShapeVerts.push_back(vec3(0,1,0));
-	testShapeVerts.push_back(vec3(0,0,0));
+	testShapeVerts.push_back(vec3(-4,-4,0));
+	testShapeVerts.push_back(vec3(4,-4,0));
+	testShapeVerts.push_back(vec3(4,4,0));
+	testShapeVerts.push_back(vec3(-4,4,0));
+	testShapeVerts.push_back(vec3(-4,-4,0));
 
 	addShape(testShapeVerts, vec4(1,1,0,1));
-
-	testShapeVerts.clear();
-
-	testShapeVerts.push_back(vec3(0,0,4));
-	testShapeVerts.push_back(vec3(1,0,4));
-	testShapeVerts.push_back(vec3(1,1,4));
-	testShapeVerts.push_back(vec3(0,1,4));
-	testShapeVerts.push_back(vec3(0,0,4));
-
-	addShape(testShapeVerts, vec4(0,1,1,1));
 
     camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,0,1));
 
@@ -489,7 +479,7 @@ void setupGL()
 void setupShaders()
 {
     //create the shader program from a vertex and fragment shader
-    shader = new Shader("shaders/vertex.txt", "shaders/fragment.txt");
+    shader = new Shader("shaders/vertex.vert", "shaders/fragment.frag");
 
     //Here's where we setup handles to each variable that is used in the shader
     //program. See the shader source code for more detail on what the difference
@@ -556,34 +546,6 @@ void setupShaders()
 
 }
 
-void findNorms()
-{
-	vec3 nVec1;
-	vec3 nVec2;
-	vec3 rVec;
-	for (int niter = 0; niter < (int) verts.size(); niter+=9)
-	{
-		nVec1.x = verts[niter] - verts[niter + 3];
-		nVec1.y = verts[niter + 1] - verts[niter + 4];
-		nVec1.z = verts[niter + 2] - verts[niter + 5];
-
-		nVec2.x = verts[niter + 6] - verts[niter + 3];
-		nVec2.y = verts[niter + 7] - verts[niter + 4];
-		nVec2.z = verts[niter + 8] - verts[niter + 5];
-
-		rVec = cross(nVec2, nVec1);
-		norms.push_back(rVec.x);
-		norms.push_back(rVec.y);
-		norms.push_back(rVec.z);
-		norms.push_back(rVec.x);
-		norms.push_back(rVec.y);
-		norms.push_back(rVec.z);
-		norms.push_back(rVec.x);
-		norms.push_back(rVec.y);
-		norms.push_back(rVec.z);
-	}
-}
-
 void initializeGraphics(int argc, char** argv, char* programName, int windowWidth, int windowHeight)
 {
 	WIN_WIDTH = windowWidth;
@@ -593,7 +555,6 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
 	upMouseXPos = WIN_WIDTH / 2;
 	downMouseXPos = WIN_WIDTH / 2;
 
-	findNorms();
     glutInit(&argc, argv);
     setupGLUT(programName);
     setupGL();
