@@ -30,9 +30,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="fileiocontroller.cpp">
       <Filter>Source Files\IO Controllers</Filter>
     </ClCompile>
@@ -62,9 +59,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="graphics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="fileiocontroller.h">
       <Filter>Header Files\IO Controllers</Filter>
     </ClInclude>
@@ -103,12 +97,10 @@
     <None Include="hole.02.db">
       <Filter>Resource Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\vertex.txt">
+    <None Include="shaders\fragment.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="shaders\fragment.txt">
+    <None Include="shaders\vertex.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
