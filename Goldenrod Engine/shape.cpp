@@ -31,8 +31,8 @@ int Shape::numVertices(){return shapeVertices.size();};
 Shape::Shape(vector<vec3> vertices, vec4 color)
 {
 	shapeVertices = vertices;
-	shapeColors = vector<vec4>(vertices.size(), color);
-	shapeNormals = vector<vec3>(vertices.size(), vec3(1));
+	shapeColors = vector<vec4>(vertices.size(), color); //Fill colors vector with input color
+	shapeNormals = vector<vec3>(vertices.size(), vec3(1)); //Fill normals vector with 1's
 }
 
 void Shape::transform(mat4 matrix)
@@ -40,6 +40,16 @@ void Shape::transform(mat4 matrix)
 	for (int i = 0; i < shapeVertices.size(); i++)
 	{
 		shapeVertices[i] = (vec3) (vec4(shapeVertices[i], 1.0) * matrix);
+	}
+}
+
+void Shape::translate(float x, float y, float z)
+{
+	vec3 delta = vec3(x, y, z);
+
+	for (int i = 0; i < shapeVertices.size(); i++)
+	{
+		shapeVertices[i] += delta;
 	}
 }
 
@@ -84,7 +94,11 @@ vector<float> Shape::rawNormals()
 	return convert(shapeNormals);
 }
 
-void reloadShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector)
+
+
+
+//Create the three vectors needed to render, using a list of shapes
+void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector)
 {
 	vertsVector->clear();
 	colorsVector->clear();
@@ -92,9 +106,21 @@ void reloadShapes(vector<float> * vertsVector, vector<float> * colorsVector, vec
 
 	for(int i = 0; i < shapesVector->size(); i++)
 	{
-		shapesVector->at(i).startIndex = vertsVector->size();
-		vertsVector->insert(vertsVector->end(), shapesVector->at(i).rawVerts().begin(), shapesVector->at(i).rawVerts().end());
-//		colorsVector->insert(colorsVector->end(), shapesVector->at(i).rawColors().begin(), shapesVector->at(i).rawColors().end());
-//		normsVector->insert(normsVector->end(), shapesVector->at(i).rawNormals().begin(), shapesVector->at(i).rawNormals().end());
+		shapesVector->at(i).startIndex = vertsVector->size(); //Stores the current position in the verts vector into the current shape
+
+		Shape currentShape = shapesVector->at(i);
+		vector<float> currentVerts = currentShape.rawVerts();
+		vector<float> currentColors = currentShape.rawColors();
+		vector<float> currentNormals = currentShape.rawNormals();
+
+
+		vertsVector->insert(vertsVector->end(), currentVerts.begin(), currentVerts.end());
+		colorsVector->insert(colorsVector->end(), currentColors.begin(), currentColors.end());
+		normsVector->insert(normsVector->end(), currentNormals.begin(), currentNormals.end());
 	}
+}
+
+void reloadShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape)
+{
+	
 }

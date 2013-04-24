@@ -386,10 +386,19 @@ void setupGL()
 	testShapeVerts.push_back(vec3(4,-4,0));
 	testShapeVerts.push_back(vec3(4,4,0));
 	testShapeVerts.push_back(vec3(-4,4,0));
-	testShapeVerts.push_back(vec3(-4,-4,0));
 
-	shapes.push_back(Shape(testShapeVerts, vec4(1,1,1,1)));
-	reloadShapes(&verts, &color, &norms, &shapes);
+	shapes.push_back(Shape(testShapeVerts, vec4(0,1,1,1)));
+
+	testShapeVerts.clear();
+
+	testShapeVerts.push_back(vec3(-4,-4,-1));
+	testShapeVerts.push_back(vec3(4,-4,-1));
+	testShapeVerts.push_back(vec3(4,4,-1));
+	testShapeVerts.push_back(vec3(-4,4,-1));
+
+	shapes.push_back(Shape(testShapeVerts, vec4(1,0,1,1)));
+
+	reloadAllShapes(&verts, &color, &norms, &shapes);
 
     camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,0,1));
 

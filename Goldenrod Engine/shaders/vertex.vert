@@ -26,9 +26,11 @@ void main()
 {
     //texCoord = tex;
 
+	vec3 lightPosition = vec3(0, 0, 0);
+
     vec4 posT = M * vec4(pos,1.0);
     
-    L = normalize(M * vec4(L_p, 1.0)).xyz;
+    L = normalize(M * vec4(lightPosition, 1.0)).xyz;
     V = (M * vec4(E,1.0)).xyz;
     
     N = normalize(M_n * norm);
@@ -36,7 +38,6 @@ void main()
     V = normalize(V - posT.xyz);
     H = normalize(L + V);
     
-    //determine vertex color based on position and time
     frag_color = color;
     
     gl_Position = P * posT;

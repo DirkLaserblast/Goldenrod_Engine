@@ -20,14 +20,14 @@ const vec4 K_s = vec4(1.0);
 void main()
 {
     //vec4 c = vec4(texture(tex0, texCoord));
-    //vec4 c = frag_color;
+    vec4 c = frag_color;
     
-    //float phi = acos(dot(N,H));
-    //float LdotN = dot(L,N);
+    float phi = acos(dot(N,H));
+    float LdotN = dot(L,N);
 
-    //vec4 diff = c * L_d * LdotN;
-    //vec4 spec = K_s * L_s * pow(cos(phi), s);
-    //end_color = clamp(diff + max(spec,0.0), 0.0, 1.0);
+    vec4 diff = c * L_d * LdotN;
+    vec4 spec = K_s * L_s * pow(cos(phi), s);
+    end_color = clamp(diff + max(spec,0.0), 0.0, 1.0);
 
-	end_color = frag_color;
+	//end_color = frag_color;
 }

@@ -29,6 +29,7 @@ public:
 	Shape(vector<vec3> vertices, vec4 color);
 	//Apply a matrix transform to all the vertices in the shape
 	void transform(mat4 matrix);
+	void translate(float x, float y, float z);
 	//Return vertices, normals, or colors as lists of vectors
 	vector<vec3> vertices();
 	vector<vec4> colors();
@@ -51,6 +52,13 @@ public:
 	vector<vec3> shapeNormals;
 };
 
-void reloadShapes(vector<float> * verts, vector<float> * colors, vector<float> * norms, vector<Shape> * shapesVector);
+//Erase and populate the rendering arrays
+void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector);
+
+//Update a single shape in the rendering arrays without clearing them
+void reloadShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape);
+
+//Remove a shape from the rendering arrays, leaving the rest intact
+void deleteShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape);
 
 #endif
