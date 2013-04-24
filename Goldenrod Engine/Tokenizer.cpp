@@ -88,6 +88,30 @@ std::string Tokenizer::next()
 
 
 ///////////////////////////////////////////////////////////////////////////////
+// return the next token and echo to command line
+// If cannot find a token anymore, return "".
+///////////////////////////////////////////////////////////////////////////////
+std::string Tokenizer::nextEcho()
+{
+    if(buffer.size() <= 0) return "";           // skip if buffer is empty
+
+    token.clear();                              // reset token string
+
+    this->skipDelimiter();                      // skip leading delimiters
+
+    // append each char to token string until it meets delimiter
+    while(currPos != buffer.end() && !isDelimiter(*currPos))
+    {
+        token += *currPos;
+        ++currPos;
+    }
+    std::cout << token << std::endl;
+    return token;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 // skip ang leading delimiters
 ///////////////////////////////////////////////////////////////////////////////
 void Tokenizer::skipDelimiter()

@@ -17,8 +17,13 @@
 #include <vector>
 #include <string>
 #include <fstream>
+
 using namespace std;
 using namespace glm;
+
+#define MAX_PTS 40
+#define MAXFLOAT ((float)3.40282346638528860e+38) // taken from math.h
+#define MINFLOAT (-MAXFLOAT)
 
 //Starts up OpenGL
 void initializeGraphics(int argc, char** argv, char* programName, int windowWidth, int windowHeight);

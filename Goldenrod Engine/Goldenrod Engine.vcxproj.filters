@@ -19,6 +19,12 @@
     <Filter Include="Source Files\IO Controllers">
       <UniqueIdentifier>{83597b7a-2e0f-45d7-b435-93967ece3d24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game Entities">
+      <UniqueIdentifier>{83a5dc9d-006b-4945-a3ff-ad73cc917e31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Entities">
+      <UniqueIdentifier>{e874d094-0e21-467c-8ae0-297b89ba843d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,20 +39,26 @@
     <ClCompile Include="gameiocontroller.cpp">
       <Filter>Source Files\IO Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="level.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="gamecontroller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Tokenizer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
+      <Filter>Source Files\Game Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="level.cpp">
+      <Filter>Source Files\Game Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="tee.cpp">
+      <Filter>Source Files\Game Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="cup.cpp">
+      <Filter>Source Files\Game Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -59,20 +71,26 @@
     <ClInclude Include="gameiocontroller.h">
       <Filter>Header Files\IO Controllers</Filter>
     </ClInclude>
-    <ClInclude Include="level.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="gamecontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Tokenizer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cup.h">
+      <Filter>Header Files\Game Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="tile.h">
+      <Filter>Header Files\Game Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="tee.h">
+      <Filter>Header Files\Game Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
+      <Filter>Header Files\Game Entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

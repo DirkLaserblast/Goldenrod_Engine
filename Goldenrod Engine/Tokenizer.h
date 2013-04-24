@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 // default delimiter string (space, tab, newline, carriage return, form feed)
 const std::string DEFAULT_DELIMITER = " \t\v\n\r\f";
@@ -36,6 +37,8 @@ public:
     void setDelimiter(const std::string& delimiter);    // set delimiter string only
 
     std::string next();                                 // return the next token, return "" if it ends
+
+    std::string nextEcho();                             // return the next token and print, return "" if it ends
 
     std::vector<std::string> split();                   // return array of tokens from current cursor
 

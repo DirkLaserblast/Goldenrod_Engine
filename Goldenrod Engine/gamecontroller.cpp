@@ -17,10 +17,21 @@ void GameController::addLevel(){
 
 };
 
-void GameController::addTileCurrentLevel(int ID, int numEdges, int numVerts, int posIndex, int colIndex,
-                             int normIndex, int numNeighbors, int neighborIndex){
+void GameController::addTileCurrentLevel(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs){
 
-    this->currentLevel->addTile(ID, numEdges, numVerts, posIndex, colIndex, normIndex, numNeighbors, neighborIndex);
+    this->currentLevel->addTile(ID, numEdges, numNeighbors, verts, neighborIDs);
+
+};
+
+void GameController::addTeeCurrentLevel(int ID, glm::vec3 loc){
+
+    this->currentLevel->addTee(ID, loc);
+
+};
+
+void GameController::addCupCurrentLevel(int ID, glm::vec3 loc){
+
+    this->currentLevel->addCup(ID, loc);
 
 };
 

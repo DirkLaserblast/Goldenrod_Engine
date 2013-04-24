@@ -4,6 +4,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+
+#include "glm/glm.hpp"
 
 #include "gamecontroller.h"
 #include "Tokenizer.h"
@@ -20,7 +23,26 @@ public:
 	bool createLevelFromFile(GameController* game, string levelFile);
 
 private:
-    void parseFileContent(ifstream inFile);
+    /* InputData: helper class that temporarily contains input data */
+    class InputData {
+
+    public:
+        string keyword;
+        int ID;
+        int numEdges;
+        int numNeighbors;
+        vector<glm::vec3> verts;
+        vector<int> neighborIDs;
+
+        InputData();
+        ~InputData();
+        void clear();
+        void setTileData(Tokenizer &str);
+        void setTeeData(Tokenizer &str);
+        void setCupData(Tokenizer &str);
+
+    };
+    
 };
 
 #endif

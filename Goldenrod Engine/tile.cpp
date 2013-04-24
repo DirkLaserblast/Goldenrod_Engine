@@ -7,18 +7,16 @@ Tile datatype
 
 #include "tile.h"
 
-Tile::Tile(int ID, int numEdges, int numVerts, int posIndex, int colIndex,
-           int normIndex, int numNeighbors, int neighborIndex){
+Tile::Tile(int ID, int numEdges, int numNeighbors, int locIndex, int colIndex,
+           int normIndex){
 
     this->ID = ID;
 
     this->numEdges = numEdges;
-    this->numVerts = numVerts;
-    this->posIndex = posIndex;
+    this->locIndex = locIndex;
     this->colIndex = colIndex;
     this->normIndex = normIndex;
     this->numNeighbors = numNeighbors;
-    this->neighborIndex = neighborIndex;
 
     this->validate();
 
@@ -42,12 +40,10 @@ bool Tile::isValid(){
 
 int Tile::getID(){ return ID; };
 
-int Tile::getNumEdges(){ return numEdges; };
-int Tile::getNumVerts(){ return numVerts; };   
-int Tile::getPosIndex(){ return posIndex; };
+int Tile::getNumEdges(){ return numEdges; };   
+int Tile::getLocIndex(){ return locIndex; };
 int Tile::getColIndex(){ return colIndex; };
 int Tile::getNormIndex(){ return normIndex; };
 
 int Tile::getNumNeighbors(){ return numNeighbors; };
-int Tile::getNeighborIndex(){ return neighborIndex; };
 

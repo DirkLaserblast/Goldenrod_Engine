@@ -7,34 +7,7 @@
  */
 
 #include "graphics.h"
-
-#include "GL/glew.h"
-#include "GL/freeglut.h"
-#include "GL/glui.h"
-//#include <GL/gl.h>
-
-#define GLM_SWIZZLE
-#define PICKINGSHAPE_ID 700
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/matrix_access.hpp"
-
-#include <cmath>
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-
 #include "shader.h"
-
-using namespace std;
-using namespace glm;
-
-#define MAX_PTS 40
-#define MAXFLOAT ((float)3.40282346638528860e+38) // taken from math.h
-#define MINFLOAT (-MAXFLOAT)
 
 Shader *shader = NULL;
 

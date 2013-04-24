@@ -22,8 +22,11 @@ public:
      */
 	void addLevel();
 
-    void addTileCurrentLevel(int ID, int numEdges, int numVerts, int posIndex, int colIndex,
-                             int normIndex, int numNeighbors, int neighborIndex);
+    void addTileCurrentLevel(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs);
+
+    void addTeeCurrentLevel(int ID, glm::vec3 loc);
+
+    void addCupCurrentLevel(int ID, glm::vec3 loc);
 
     bool checkValidCurrentLevel();
 
@@ -31,7 +34,7 @@ public:
 
 private:
 	Level* currentLevel;
-	vector<Level> levels;
+	vector<Level> levels; // Currently unused
 
 };
 

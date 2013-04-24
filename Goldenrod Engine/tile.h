@@ -9,8 +9,8 @@ class Tile{
 
 public:
     // Functions
-	Tile(int ID, int numEdges, int numVerts, int posIndex, int colIndex,
-         int normIndex, int numNeighbors, int neighborIndex);
+	Tile(int ID, int numEdges, int numNeighbors, int locIndex, int colIndex,
+         int normIndex);
 	~Tile();
 
     void validate();
@@ -19,13 +19,10 @@ public:
     int getID();
 
     int getNumEdges();
-    int getNumVerts();
-    int getPosIndex();
+    int getLocIndex();
     int getColIndex();
     int getNormIndex();
-
     int getNumNeighbors();
-    int getNeighborIndex();
 
 private:
     // Local Variables
@@ -34,13 +31,10 @@ private:
 	int ID;
 
     int numEdges,
-        numVerts,
-        posIndex,
+        locIndex,
         colIndex,
-        normIndex;
-
-    int numNeighbors,
-        neighborIndex;
+        normIndex,
+        numNeighbors;
 	
     // Functions    
 

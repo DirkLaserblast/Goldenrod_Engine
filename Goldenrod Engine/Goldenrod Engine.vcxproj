@@ -61,6 +61,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cup.cpp" />
     <ClCompile Include="fileiocontroller.cpp" />
     <ClCompile Include="gamecontroller.cpp" />
     <ClCompile Include="gameiocontroller.cpp" />
@@ -68,16 +69,19 @@
     <ClCompile Include="level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="tee.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cup.h" />
     <ClInclude Include="fileiocontroller.h" />
     <ClInclude Include="gamecontroller.h" />
     <ClInclude Include="gameiocontroller.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="tee.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="Tokenizer.h" />
   </ItemGroup>
