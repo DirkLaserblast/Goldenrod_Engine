@@ -64,7 +64,7 @@
     <ClCompile Include="fileiocontroller.cpp" />
     <ClCompile Include="gamecontroller.cpp" />
     <ClCompile Include="gameiocontroller.cpp" />
-    <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="shape.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
@@ -74,7 +74,7 @@
     <ClInclude Include="fileiocontroller.h" />
     <ClInclude Include="gamecontroller.h" />
     <ClInclude Include="gameiocontroller.h" />
-    <ClInclude Include="graphics.h" />
+    <ClInclude Include="shape.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="tile.h" />
