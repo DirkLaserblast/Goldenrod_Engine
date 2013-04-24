@@ -45,15 +45,14 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
     int colIndex = this->cols.size();
     int normIndex = this->norms.size();
 
-    Tile* newTile = new Tile(ID, numEdges, numNeighbors, posIndex, colIndex, normIndex);
-
-    // Add vert data to level
-    this->verts.insert(this->verts.end(), verts.begin(), verts.end());
+    Tile* newTile = new Tile(ID, numEdges, numNeighbors, posIndex, colIndex, normIndex);  
 
     // Validate Entity
     if(newTile->isValid()){
+        // Add tile to level
 		this->tiles.push_back((*newTile));
-        //assert(this->tiles.size() != 1); // debug
+        // Add vert data to level
+        this->verts.insert(this->verts.end(), verts.begin(), verts.end());
 		return true;
 	}
 	else{
@@ -69,12 +68,12 @@ bool Level::addTee(int ID, glm::vec3 loc){
 
     Tee* newTee = new Tee(ID, locIndex);
 
-    // Add vert data to level
-    this->verts.push_back(loc);
-
     // Validate Entity
     if(newTee->isValid()){
+        // Add tee to level
 		this->tee = newTee;
+        // Add vert data to level
+        this->verts.push_back(loc);
 		return true;
 	}
 	else{
@@ -90,12 +89,12 @@ bool Level::addCup(int ID, glm::vec3 loc){
 
     Cup* newCup = new Cup(ID, locIndex);
 
-    // Add vert data to level
-    this->verts.push_back(loc);
-
     // Validate Entity
     if(newCup->isValid()){
+        // Add cup to level
 		this->cup = newCup;
+        // Add vert data to level
+        this->verts.push_back(loc);
 		return true;
 	}
 	else{

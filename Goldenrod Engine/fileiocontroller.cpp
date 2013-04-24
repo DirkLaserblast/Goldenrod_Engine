@@ -47,7 +47,7 @@ bool FileIOController::createLevelFromFile(GameController* game, string levelFil
             }
             else if(data.keyword == ""){
 
-                cout << "End of file." << endl;
+                cout << "End of file." << endl << endl;
 
             }
             else{
@@ -108,12 +108,12 @@ void FileIOController::InputData::setTileData(Tokenizer &str){
 
     // Get position data
     int tmpNeighborID;
-    glm::vec3 tmpVec;
+    float x, y, z;
     for(int i = 0; i < numEdges; i++){
-        tmpVec.x = atof(str.next().c_str());
-        tmpVec.y = atof(str.next().c_str());
-        tmpVec.z = atof(str.next().c_str());
-        verts.push_back(tmpVec);
+        x = atof(str.next().c_str());
+        y = atof(str.next().c_str());
+        z = atof(str.next().c_str());
+        verts.push_back(glm::vec3(x, y, z));
     }
 
     // Get neighbor data
@@ -130,14 +130,25 @@ void FileIOController::InputData::setTileData(Tokenizer &str){
 void FileIOController::InputData::setTeeData(Tokenizer &str){
 
     ID = atoi(str.next().c_str()); // there has to be a better way to convert strings to int...
-    verts.push_back(glm::vec3(atof(str.next().c_str()), atof(str.next().c_str()), atof(str.next().c_str())));
+    //verts.push_back(glm::vec3(atof(str.next().c_str()), atof(str.next().c_str()), atof(str.next().c_str())));
+
+    // Debug test code
+    float x = atof(str.next().c_str());
+    float y = atof(str.next().c_str());
+    float z = atof(str.next().c_str());
+    verts.push_back(glm::vec3(x,y,z));
 
 };
 
 void FileIOController::InputData::setCupData(Tokenizer &str){
 
     ID = atoi(str.next().c_str()); // there has to be a better way to convert strings to int...
-    verts.push_back(glm::vec3(atof(str.next().c_str()), atof(str.next().c_str()), atof(str.next().c_str())));
+    //verts.push_back(glm::vec3(atof(str.next().c_str()), atof(str.next().c_str()), atof(str.next().c_str())));
 
+    // Debug test code
+    float x = atof(str.next().c_str());
+    float y = atof(str.next().c_str());
+    float z = atof(str.next().c_str());
+    verts.push_back(glm::vec3(x,y,z));
 
 };
