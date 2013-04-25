@@ -73,12 +73,18 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
 bool Level::addTee(int ID, glm::vec3 loc){
 
     int locIndex = this->verts.size();
+    int shapeIndex = this->shapes.size();
 
     // Determine verts for tee based on pos
     vector<vec3> teeVerts;
+    teeVerts.push_back(glm::vec3(loc.x - TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z + TEE_RADIUS));
+    teeVerts.push_back(glm::vec3(loc.x + TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z + TEE_RADIUS));
+    teeVerts.push_back(glm::vec3(loc.x + TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z - TEE_RADIUS));
+    teeVerts.push_back(glm::vec3(loc.x - TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z - TEE_RADIUS));     
+    
+    Shape* newShape = new Shape(teeVerts, TEE_COLOR);
 
-
-    Tee* newTee = new Tee(ID, locIndex);
+    Tee* newTee = new Tee(ID, locIndex, shapeIndex);
 
     // Validate Entity
     if(newTee->isValid()){
@@ -86,6 +92,8 @@ bool Level::addTee(int ID, glm::vec3 loc){
 		this->tee = newTee;
         // Add vert data to level
         this->verts.push_back(loc);
+        // Add shape data to level
+        this->shapes.push_back((*newShape));
 		return true;
 	}
 	else{
@@ -98,8 +106,18 @@ bool Level::addTee(int ID, glm::vec3 loc){
 bool Level::addCup(int ID, glm::vec3 loc){
 
     int locIndex = this->verts.size();
+    int shapeIndex = this->shapes.size();
 
-    Cup* newCup = new Cup(ID, locIndex);
+    // Determine verts for tee based on pos
+    vector<vec3> cupVerts;
+    cupVerts.push_back(glm::vec3(loc.x - CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z + CUP_RADIUS));
+    cupVerts.push_back(glm::vec3(loc.x + CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z + CUP_RADIUS));
+    cupVerts.push_back(glm::vec3(loc.x + CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z - CUP_RADIUS));
+    cupVerts.push_back(glm::vec3(loc.x - CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z - CUP_RADIUS));     
+    
+    Shape* newShape = new Shape(cupVerts, CUP_COLOR);
+
+    Cup* newCup = new Cup(ID, locIndex, shapeIndex);
 
     // Validate Entity
     if(newCup->isValid()){
@@ -107,6 +125,8 @@ bool Level::addCup(int ID, glm::vec3 loc){
 		this->cup = newCup;
         // Add vert data to level
         this->verts.push_back(loc);
+        // Add shape data to level
+        this->shapes.push_back((*newShape));
 		return true;
 	}
 	else{

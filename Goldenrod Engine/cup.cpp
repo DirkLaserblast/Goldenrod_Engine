@@ -1,9 +1,10 @@
 #include "cup.h"
 
-Cup::Cup(int ID, int locIndex){
+Cup::Cup(int ID, int locIndex, int shapeIndex){
 
     this->ID = ID;    
-    this->locIndex = locIndex;    
+    this->locIndex = locIndex;
+    this->shapeIndex = shapeIndex;
 
     this->validate();
 
@@ -28,3 +29,5 @@ bool Cup::isValid(){
 int Cup::getID(){ return ID; };
 
 int Cup::getLocIndex(){ return locIndex; };
+
+int Cup::getShapeIndex(){ return shapeIndex; };

@@ -1,9 +1,10 @@
 #include "tee.h"
 
-Tee::Tee(int ID, int locIndex){
+Tee::Tee(int ID, int locIndex, int shapeIndex){
 
     this->ID = ID;    
-    this->locIndex = locIndex;    
+    this->locIndex = locIndex;
+    this->shapeIndex = shapeIndex;
 
     this->validate();
 
@@ -28,3 +29,5 @@ bool Tee::isValid(){
 int Tee::getID(){ return ID; };
 
 int Tee::getLocIndex(){ return locIndex; };
+
+int Tee::getShapeIndex(){ return shapeIndex; };
