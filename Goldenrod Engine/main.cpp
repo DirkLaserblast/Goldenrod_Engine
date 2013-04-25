@@ -493,7 +493,6 @@ int main(int argc, char **argv)
         fileIO->createLevelFromFile(game, "hole.01.db"); // default level
     }
 
-	//Contains GLUT main loop
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
     // Add shapes to game level

@@ -14,7 +14,14 @@ Shape::Shape(vector<vec3> vertices, vec4 color)
 {
 	shapeVertices = vertices;
 	shapeColors = vector<vec4>(vertices.size(), color); //Fill colors vector with input color
-	shapeNormals = vector<vec3>(vertices.size(), vec3(1.0, 1.0, 1.0)); //Fill normals vector with 1's
+
+	vec3 v1 = vec3(shapeVertices[1] - shapeVertices[0]);
+	vec3 v2 = vec3(shapeVertices[2] - shapeVertices[0]);
+	vec3 normal = normalize(cross(v1, v2));
+
+	shapeNormals = vector<vec3>(vertices.size(), normal);
+
+
 }
 
 void Shape::transform(mat4 matrix)
@@ -76,7 +83,10 @@ vector<float> Shape::rawNormals()
 	return convert(shapeNormals);
 }
 
-
+void findNorms()
+{
+	
+}
 
 //Create the three vectors needed to render, using a list of shapes
 void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector)
@@ -99,6 +109,8 @@ void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, 
 		colorsVector->insert(colorsVector->end(), currentColors.begin(), currentColors.end());
 		normsVector->insert(normsVector->end(), currentNormals.begin(), currentNormals.end());
 	}
+
+
 }
 
 void reloadShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape)
