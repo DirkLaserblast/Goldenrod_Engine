@@ -13,6 +13,7 @@ Level::~Level(){
     this->verts.clear();
     this->cols.clear();
     this->norms.clear();
+    this->shapes.clear();
 
     if(tee != NULL){
         delete tee;
@@ -26,6 +27,8 @@ Level::~Level(){
 int Level::getTotalLevels(){ return Level::totalLevels; };
 
 int Level::getID(){ return this->ID; };
+
+vector<Shape>* Level::getShapes(){ return &(this->shapes); };
 
 void Level::validate(){
 
@@ -44,8 +47,11 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
     int posIndex = this->verts.size();
     int colIndex = this->cols.size();
     int normIndex = this->norms.size();
+    int shapeIndex = this->shapes.size();
 
-    Tile* newTile = new Tile(ID, numEdges, numNeighbors, posIndex, colIndex, normIndex);  
+    Shape* newShape = new Shape(verts,TILE_COLOR);  
+
+    Tile* newTile = new Tile(ID, numEdges, numNeighbors, posIndex, colIndex, normIndex, shapeIndex);
 
     // Validate Entity
     if(newTile->isValid()){
@@ -53,6 +59,8 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
 		this->tiles.push_back((*newTile));
         // Add vert data to level
         this->verts.insert(this->verts.end(), verts.begin(), verts.end());
+        // Add shape data to level
+        this->shapes.push_back((*newShape));
 		return true;
 	}
 	else{

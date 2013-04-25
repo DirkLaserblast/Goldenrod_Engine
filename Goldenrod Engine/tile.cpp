@@ -8,14 +8,14 @@ Tile datatype
 #include "tile.h"
 
 Tile::Tile(int ID, int numEdges, int numNeighbors, int locIndex, int colIndex,
-           int normIndex){
+           int normIndex, int shapeIndex){
 
     this->ID = ID;
-
     this->numEdges = numEdges;
     this->locIndex = locIndex;
     this->colIndex = colIndex;
     this->normIndex = normIndex;
+    this->shapeIndex = shapeIndex;
     this->numNeighbors = numNeighbors;
 
     this->validate();
@@ -44,6 +44,5 @@ int Tile::getNumEdges(){ return numEdges; };
 int Tile::getLocIndex(){ return locIndex; };
 int Tile::getColIndex(){ return colIndex; };
 int Tile::getNormIndex(){ return normIndex; };
-
+int Tile::getShapeIndex(){ return shapeIndex; };
 int Tile::getNumNeighbors(){ return numNeighbors; };
-

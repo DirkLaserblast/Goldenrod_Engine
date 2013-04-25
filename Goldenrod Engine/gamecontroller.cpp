@@ -10,6 +10,12 @@ GameController::~GameController(){
 
 };
 
+vector<Shape>* GameController::getCurrentLevelShapes(){
+
+    return this->currentLevel->getShapes();
+
+};
+
 void GameController::addLevel(){
 
 	Level* newLevel = new Level();

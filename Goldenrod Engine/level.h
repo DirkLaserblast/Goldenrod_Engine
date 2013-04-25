@@ -6,6 +6,7 @@
 
 #include "glm/glm.hpp"
 
+#include "shape.h"
 #include "tile.h"
 #include "tee.h"
 #include "cup.h"
@@ -20,6 +21,7 @@ public:
 
 	static int getTotalLevels();
 	int getID();
+    vector<Shape>* getShapes();
     void validate();
 	bool isValid();
     bool addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs);
@@ -36,6 +38,7 @@ private:
     vector<glm::vec3> verts;
     vector<glm::vec3> cols;
     vector<glm::vec3> norms;
+    vector<Shape> shapes;
 	
 };
 

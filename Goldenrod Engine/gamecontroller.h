@@ -16,6 +16,8 @@ public:
 
 	/* Level functions */
 
+    vector<Shape>* getCurrentLevelShapes(); // This function seems to defeat the purpose of this entire class...
+
 	/*
      * addLevel(): Creates a new level object and adds a pointer to the levels vector.
 	 *			   Changes current level so that it points to the newly added level.
