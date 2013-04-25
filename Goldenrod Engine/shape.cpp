@@ -14,7 +14,7 @@ Shape::Shape(vector<vec3> vertices, vec4 color)
 {
 	shapeVertices = vertices;
 	shapeColors = vector<vec4>(vertices.size(), color); //Fill colors vector with input color
-	shapeNormals = vector<vec3>(vertices.size(), vec3(1)); //Fill normals vector with 1's
+	shapeNormals = vector<vec3>(vertices.size(), vec3(1.0, 1.0, 1.0)); //Fill normals vector with 1's
 }
 
 void Shape::transform(mat4 matrix)
@@ -39,11 +39,11 @@ void Shape::translate(float x, float y, float z)
 vector<float> Shape::convert(vector<vec3> in)
 {
 	vector<float> out;
-	for (int i = 0; i < shapeVertices.size(); i++)
+	for (int i = 0; i < in.size(); i++)
 	{
-		out.push_back(shapeVertices[i].x);
-		out.push_back(shapeVertices[i].y);
-		out.push_back(shapeVertices[i].z);
+		out.push_back(in[i].x);
+		out.push_back(in[i].y);
+		out.push_back(in[i].z);
 	}
 	return out;
 }
@@ -51,12 +51,12 @@ vector<float> Shape::convert(vector<vec3> in)
 vector<float> Shape::convert(vector<vec4> in)
 {
 	vector<float> out;
-	for (int i = 0; i < shapeColors.size(); i++)
+	for (int i = 0; i < in.size(); i++)
 	{
-		out.push_back(shapeColors[i].r);
-		out.push_back(shapeColors[i].g);
-		out.push_back(shapeColors[i].b);
-		out.push_back(shapeColors[i].a);
+		out.push_back(in[i].r);
+		out.push_back(in[i].g);
+		out.push_back(in[i].b);
+		out.push_back(in[i].a);
 	}
 	return out;
 }
@@ -75,7 +75,6 @@ vector<float> Shape::rawNormals()
 {
 	return convert(shapeNormals);
 }
-
 
 
 

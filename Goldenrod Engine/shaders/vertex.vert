@@ -26,7 +26,7 @@ void main()
 {
     //texCoord = tex;
 
-	vec3 lightPosition = vec3(0, 0, 0);
+	vec3 lightPosition = vec3(0, 0, 1);
 
     vec4 posT = M * vec4(pos,1.0);
     

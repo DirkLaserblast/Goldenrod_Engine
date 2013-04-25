@@ -23,7 +23,6 @@ float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
 
 vector<Shape> shapes; //Stores all the currently rendered shapes
 
-vector<float> raw;
 vector<float> verts; //vertex array
 vector<float> norms;
 
@@ -374,6 +373,8 @@ void setupGL()
 
 	reloadAllShapes(&verts, &color, &norms, &shapes);*/
 
+	//norms = vector<float>(verts.size(), 1.0);
+	
     camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,0,1));
 
     projection = perspective(
@@ -492,6 +493,7 @@ int main(int argc, char **argv)
         fileIO->createLevelFromFile(game, "hole.01.db"); // default level
     }
 
+	//Contains GLUT main loop
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
     // Add shapes to game level
