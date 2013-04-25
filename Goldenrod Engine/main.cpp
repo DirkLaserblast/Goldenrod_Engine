@@ -17,7 +17,7 @@ Shader *shader = NULL;
 
 int WIN_WIDTH = 1280, WIN_HEIGHT = 720; //window width/height
 mat4 modelView, projection, camera; //matrices for shaders
-vec3 lightPos(0,0,1), viewPos(10,10,10);
+vec3 lightPos(0,0,1), viewPos(4,1,4);
 mat4 modelTrans, mTrans, crTrans, csTrans, ctTrans; //Transformation matrices.
 float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
 
@@ -86,7 +86,7 @@ void display()
 
     //Setup the modelview matrix
     //Mat4x4F modelCam = camera * modelView;
-    camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,0,1));
+    camera = lookAt(viewPos, vec3(0,0,0), vec3(0,1,0));
     camera = crTrans * csTrans * ctTrans * camera;
     mat4 modelCam = camera * modelView;
 
@@ -375,7 +375,7 @@ void setupGL()
 
 	//norms = vector<float>(verts.size(), 1.0);
 	
-    camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,0,1));
+    //camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,1,0));
 
     projection = perspective(
             float_t(45),
