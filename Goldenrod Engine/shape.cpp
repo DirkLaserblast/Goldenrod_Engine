@@ -85,7 +85,7 @@ void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, 
 	vertsVector->clear();
 	colorsVector->clear();
 	normsVector->clear();
-
+    
 	for(int i = 0; i < shapesVector->size(); i++)
 	{
 		shapesVector->at(i).startIndex = vertsVector->size(); //Stores the current position in the verts vector into the current shape

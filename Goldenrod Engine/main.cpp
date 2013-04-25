@@ -354,7 +354,7 @@ void setupGL()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
-	vector<vec3> testShapeVerts;
+	/*vector<vec3> testShapeVerts;
 
 	testShapeVerts.push_back(vec3(-4,-4,0));
 	testShapeVerts.push_back(vec3(4,-4,0));
@@ -372,7 +372,7 @@ void setupGL()
 
 	shapes.push_back(Shape(testShapeVerts, vec4(1,0,1,1)));
 
-	reloadAllShapes(&verts, &color, &norms, &shapes);
+	reloadAllShapes(&verts, &color, &norms, &shapes);*/
 
     camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,0,1));
 
@@ -472,12 +472,8 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
     glewInit();
 
     setupShaders();
-    
-	glutMainLoop();
-
-	if (shader) delete shader;
+    	
 }
-
 
 int main(int argc, char **argv)
 {
@@ -486,14 +482,30 @@ int main(int argc, char **argv)
 	GameIOController* gameIO = new GameIOController();
 	GameController* game = new GameController();
 
-    fileIO->createLevelFromFile(game, "hole.01.db"); // test code
+    // Check if input file was given, if not use default
+    if(argc != 0){
+        //fileIO->createLevelFromFile(game, argv[0]); // Create level from input file -- NOT WORKING!!!
+        fileIO->createLevelFromFile(game, "hole.01.db"); // debug
+    }
+    else{
+        cout << "No input file was provided." << endl;
+        fileIO->createLevelFromFile(game, "hole.01.db"); // default level
+    }
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
+    // Add shapes to game level
+    shapes.clear();
+    shapes.insert(shapes.begin(), game->getCurrentLevelShapes()->begin(), game->getCurrentLevelShapes()->end());
+    reloadAllShapes(&verts, &color, &norms, &shapes);
+
+    glutMainLoop();
+
 	// Clean-up
-	delete fileIO;
-	delete gameIO;
-	delete game;
+    if(shader) delete shader;
+	if(fileIO) delete fileIO;
+	if(gameIO) delete gameIO;
+	if(game) delete game;
 
 	return 0;
 }
