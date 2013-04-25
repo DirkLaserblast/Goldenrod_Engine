@@ -1,23 +1,5 @@
 #include "shape.h"
-
-#define GLM_SWIZZLE
-#define PICKINGSHAPE_ID 700
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/matrix_access.hpp"
-
-#include <cmath>
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-
 #include "shader.h"
-
-using namespace std;
-using namespace glm;
 
 //Creates a shape made from vertexes, to be drawn with TRIANGLE_FAN
 //Assumes vertexes are given in counterclockwise order

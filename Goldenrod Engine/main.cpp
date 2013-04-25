@@ -1,10 +1,8 @@
-
-
 /*main.cpp
 */
 
 /*	Based on CMPS 160 work
- * OpenGL base program by Nathaniel Cesario
+ *  OpenGL base program by Nathaniel Cesario
  *	Lab3 example by Kevin Meggs
  *  Further modified by Casey Scheide
  */
@@ -13,31 +11,7 @@
 #include "fileiocontroller.h"
 #include "gameiocontroller.h"
 #include "gamecontroller.h"
-
-
-#include "GL/glew.h"
-#include "GL/freeglut.h"
-#include "GL/glui.h"
-//#include <GL/gl.h>
-
-#define GLM_SWIZZLE
-#define PICKINGSHAPE_ID 700
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/matrix_access.hpp"
-
-#include <cmath>
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <fstream>
-
 #include "shader.h"
-
-using namespace std;
-using namespace glm;
 
 Shader *shader = NULL;
 

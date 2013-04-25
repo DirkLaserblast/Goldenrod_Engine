@@ -57,6 +57,9 @@
     <ClCompile Include="cup.cpp">
       <Filter>Source Files\Game Entities</Filter>
     </ClCompile>
+    <ClCompile Include="shape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fileiocontroller.h">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="level.h">
       <Filter>Header Files\Game Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="shape.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
