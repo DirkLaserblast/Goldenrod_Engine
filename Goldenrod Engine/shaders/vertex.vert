@@ -1,4 +1,4 @@
-#version 150
+#version 330
 
 //These variables are constant for all vertices
 uniform mat4 M; //modelview matrix

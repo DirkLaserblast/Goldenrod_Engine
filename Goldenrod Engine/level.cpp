@@ -74,6 +74,10 @@ bool Level::addTee(int ID, glm::vec3 loc){
 
     int locIndex = this->verts.size();
 
+    // Determine verts for tee based on pos
+    vector<vec3> teeVerts;
+
+
     Tee* newTee = new Tee(ID, locIndex);
 
     // Validate Entity
