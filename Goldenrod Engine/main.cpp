@@ -15,7 +15,6 @@
 
 #include "GL/glui.h";
 
-
 Shader *shader = NULL;
 
 int mainWindow; //Used for GLUI
@@ -26,6 +25,11 @@ mat4 modelTrans, mTrans, crTrans, csTrans, ctTrans; //Transformation matrices.
 float cameraRotate[2] = {0, 1.0}; //Set by GLUI controls (horizontal, vertical)
 float cameraPan[2] = {0, 0};
 float cameraZoom[1] = {6.0};
+
+float modelRotate[2];
+float modelTranslateXZ[2];
+float modelTranslateY[1];
+
 float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
 
 vector<Shape> shapes; //Stores all the currently rendered shapes
@@ -33,6 +37,22 @@ vector<Shape> shapes; //Stores all the currently rendered shapes
 vector<float> verts; //vertex array
 vector<float> norms; //normals array
 vector<float> color; //Model color array
+
+
+int upMouseXPos;
+int downMouseXPos;
+int upMouseYPos;
+int downMouseYPos;
+int mousePosDiff;
+int mouseYPosDiff;
+bool d_down = false;
+bool r_down = false;
+bool s_down = false;
+bool x_down = false;
+bool y_down = false;
+bool z_down = false;
+bool leftbDown = false;
+bool rightbDown = false;
 
 
 //reshape function for GLUT
@@ -58,11 +78,19 @@ void display()
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Setup the modelview matrix
-    //Mat4x4F modelCam = camera * modelView;
+	//Resets all transformation matrices.
+    if (r_down == true)
+    {
+    	modelView = glm::mat4();
+    	mTrans = glm::mat4();
+        r_down = false;
+    }
 
-    camera = crTrans * csTrans * ctTrans * camera;
-	viewPos = vec3((cameraZoom[0] * cos(cameraRotate[0])), cameraRotate[1] * 2, (cameraZoom[0] * sin(cameraRotate[0])));
+    //camera = crTrans * csTrans * ctTrans * camera;
+	float yRotation = cameraRotate[0];
+	float height = cameraRotate[1];
+	float zoom = cameraZoom[0];
+	viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 	camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
     mat4 modelCam = camera * modelView;
 
@@ -177,19 +205,48 @@ void idle()
 //Sets variables for doing transforms
 void keyboard(unsigned char key, int x, int y)
 {
-	switch (key)
-	{
-    case 27:
-        exit(0);
-        break;
-    }
+	if (key == 27)
+		exit(0);
+	if (key == 'r')
+		r_down = true;
+	if (key == 's')
+		s_down = true;
+    if (key == 'x')
+    	x_down = true;
+    if (key == 'y')
+    	y_down = true;
+    if (key == 'z')
+    	z_down = true;
 }
 
 //Callback for mouse button events.
 //Sets variables for position and button state.
 void mouse(int button, int state, int x, int y)
 {
-
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    {
+    	upMouseXPos = x;
+    	downMouseXPos = x;
+    	upMouseYPos = y;
+    	downMouseYPos = y;
+    	leftbDown = true;
+    }
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+    {
+        leftbDown = false;
+    }
+    else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+    {
+    	upMouseXPos = x;
+    	downMouseXPos = x;
+    	upMouseYPos = y;
+    	downMouseYPos = y;
+    	rightbDown = true;
+    }
+    else if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
+    {
+        rightbDown = false;
+    }
 }
 
 
@@ -198,7 +255,38 @@ void mouse(int button, int state, int x, int y)
 //    transforms to slide, rather than just move.
 void mouseMove(int x, int y)
 {
-    
+    downMouseXPos = x;
+    downMouseYPos = y;
+    mousePosDiff = downMouseXPos - upMouseXPos;
+    mouseYPosDiff = downMouseYPos - upMouseYPos;
+    upMouseXPos = downMouseXPos;
+    upMouseYPos = downMouseYPos;
+
+    modelView = glm::mat4();
+
+
+    if (x_down == true && leftbDown == true)
+        mTrans = glm::translate(mTrans, glm::vec3((static_cast<float>(mousePosDiff) / -10),0,0));
+    else if (y_down == true && leftbDown == true)
+        mTrans = glm::translate(mTrans, glm::vec3(0,(static_cast<float>(mousePosDiff) / 10),0));
+    else if (z_down == true && leftbDown == true)
+        mTrans = glm::translate(mTrans, glm::vec3(0,0,(static_cast<float>(mousePosDiff) / -10)));
+    else if (s_down == true && leftbDown == true)
+        mTrans = glm::scale(mTrans, glm::vec3(pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff)))));
+    else if (x_down == true && rightbDown == true)
+        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(1,0,0));
+    else if (y_down == true && rightbDown == true)
+        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,1,0));
+    else if (z_down == true && rightbDown == true)
+        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,0,1));
+
+
+    modelView = modelView * mTrans;
+    s_down = false;
+    x_down = false;
+    y_down = false;
+    z_down = false;
+    glutPostRedisplay();
 }
 
 //do some GLUT initialization
@@ -227,7 +315,6 @@ void setupGLUT(char* programName)
 	//GLUI stuff
 	GLUI *gluiWindow = GLUI_Master.create_glui("Camera");
 	gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate)->set_speed(0.01f);
-	gluiWindow->add_column();
 	gluiWindow->add_translation("Zoom Camera", GLUI_TRANSLATION_Z, cameraZoom)->set_speed(0.1f);
 	gluiWindow->add_separator();
 	gluiWindow->add_button( "Quit", 0,(GLUI_Update_CB)exit );
