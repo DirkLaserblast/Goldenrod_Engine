@@ -23,9 +23,10 @@ void GameController::addLevel(){
 
 };
 
-void GameController::addTileCurrentLevel(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs){
+void GameController::addTileCurrentLevel(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts,
+    vector<int> neighborIDs, bool addDepthFlag){
 
-    this->currentLevel->addTile(ID, numEdges, numNeighbors, verts, neighborIDs);
+    this->currentLevel->addTile(ID, numEdges, numNeighbors, verts, neighborIDs, addDepthFlag);
 
 };
 

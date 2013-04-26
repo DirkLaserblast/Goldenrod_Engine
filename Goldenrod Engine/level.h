@@ -24,9 +24,14 @@ public:
     vector<Shape>* getShapes();
     void validate();
 	bool isValid();
-    bool addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs);
+    bool addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs, bool addDepthFlag);
     bool addTee(int ID, glm::vec3 loc);
     bool addCup(int ID, glm::vec3 loc);
+
+    /* generateDepthShapes: Creates shapes to diplay tile as 3D slab.
+     *                      Does not work for verticle tiles.
+     */
+    vector<Shape> generateDepthShapes(vector<glm::vec3> verts);
 
 private:
 	static int totalLevels;

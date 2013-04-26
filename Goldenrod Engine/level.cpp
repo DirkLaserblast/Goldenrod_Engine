@@ -42,25 +42,34 @@ bool Level::isValid(){
 
 };
 
-bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs){
+bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs, bool addDepthFlag){
 
     int posIndex = this->verts.size();
     int colIndex = this->cols.size();
     int normIndex = this->norms.size();
     int shapeIndex = this->shapes.size();
+    vector<Shape> newShapes;
 
-    Shape* newShape = new Shape(verts,TILE_COLOR);  
+    // Code to generate the Shapes to add for the tile
+    if(addDepthFlag){
+        newShapes = generateDepthShapes(verts); // testing code
+    }
+    else{
+        newShapes.push_back(Shape(verts, TILE_COLOR));
+    }  
 
-    Tile* newTile = new Tile(ID, numEdges, numNeighbors, posIndex, colIndex, normIndex, shapeIndex);
+    Tile* newTile = new Tile(ID, numEdges, numNeighbors, newShapes.size(), posIndex, colIndex, normIndex, shapeIndex);
 
     // Validate Entity
     if(newTile->isValid()){
         // Add tile to level
 		this->tiles.push_back((*newTile));
-        // Add vert data to level
+        // Add vert data to level -- DOES NOT INCLUDE ADDITIONAL VERT DATA FOR TILES WITH DEPTH
         this->verts.insert(this->verts.end(), verts.begin(), verts.end());
-        // Add shape data to level
-        this->shapes.push_back((*newShape));
+        // Add shape(s) data to level
+        for(int i = 0; i < newShapes.size(); i++){
+            this->shapes.push_back(newShapes[i]);
+        }
 		return true;
 	}
 	else{
@@ -133,5 +142,75 @@ bool Level::addCup(int ID, glm::vec3 loc){
 		delete newCup;
 		return false;
 	}
+
+};
+
+vector<Shape> Level::generateDepthShapes(vector<glm::vec3> verts){
+    
+    // Separate out new vectors with verts for each face in correct order for shape generation
+    // Top and bottom
+    vector<glm::vec3> top = verts;
+
+    vector<glm::vec3> bottom;
+    int topVertIndex = 0;
+    for(int i = 0; i < verts.size(); i++){
+        bottom.push_back(glm::vec3(top[topVertIndex].x, top[topVertIndex].y - TILE_DEPTH, top[topVertIndex].z));
+
+        topVertIndex--;
+        if(topVertIndex < 0){
+            topVertIndex = top.size() - 1;
+        }
+    }
+
+    // Sides
+    // Initial vert index setup
+    int firstVertIndex = 0, // index of top vert
+        secondVertIndex = 0, // index of bottom vert
+        thirdVertIndex = (bottom.size() - 1), // index of bottom vert
+        fourthVertIndex = 1; // index of top vert
+
+    vector<glm::vec3> sides; // Store all side verts 
+
+    for(int i = 0; i < verts.size(); i++){ // For each side
+        sides.push_back(top[firstVertIndex]);
+        sides.push_back(bottom[secondVertIndex]);
+        sides.push_back(bottom[thirdVertIndex]);
+        sides.push_back(top[fourthVertIndex]);
+
+        // Update vert indices
+        firstVertIndex--;
+        secondVertIndex++;
+        thirdVertIndex++;
+        fourthVertIndex--;
+
+        // Correct for wrap around
+        if(firstVertIndex < 0){
+            firstVertIndex = (top.size() - 1);
+        }
+        if(secondVertIndex > (bottom.size() - 1)){
+            secondVertIndex = 0;
+        }
+        if(thirdVertIndex > (bottom.size() - 1)){
+            thirdVertIndex = 0;
+        }
+        if(fourthVertIndex < 0){
+            fourthVertIndex = (top.size() - 1);
+        }
+    }
+
+    // Create shape vector to return
+    vector<Shape> newShapes;
+    vector<glm::vec3> tmpVec;
+    vector<glm::vec3>::iterator it;
+
+    newShapes.push_back(Shape(top, TILE_COLOR));
+    newShapes.push_back(Shape(bottom, TILE_COLOR));
+    for(it = sides.begin(); it != sides.end(); it+=4){
+        tmpVec.clear();
+        tmpVec.insert(tmpVec.begin(), it, (it +4));
+        newShapes.push_back(Shape(tmpVec, TILE_COLOR));
+    }
+
+    return newShapes;
 
 };

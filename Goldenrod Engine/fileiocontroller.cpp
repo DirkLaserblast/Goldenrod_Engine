@@ -30,7 +30,7 @@ bool FileIOController::createLevelFromFile(GameController* game, string levelFil
             if(data.keyword == "tile"){
 
                 data.setTileData(str);
-                game->addTileCurrentLevel(data.ID, data.numEdges, data.numNeighbors, data.verts, data.neighborIDs);
+                game->addTileCurrentLevel(data.ID, data.numEdges, data.numNeighbors, data.verts, data.neighborIDs, TILE_DEPTH_FLAG);
 
             }
             else if(data.keyword == "tee"){
