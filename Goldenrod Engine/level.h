@@ -32,6 +32,7 @@ public:
         vector<int> neighborIDs, bool addBorderFlag = TILE_BORDER_FLAG, bool addDepthFlag = TILE_DEPTH_FLAG);
     bool addTee(int ID, glm::vec3 loc);
     bool addCup(int ID, glm::vec3 loc);
+	bool addBorder();
 
     /* generateDepthShapes: Creates shapes to diplay tile as 3D slab.
      *                      Does not work for verticle tiles.
@@ -50,8 +51,6 @@ private:
     vector<glm::vec3> cols;
     vector<glm::vec3> norms;
     vector<Shape> shapes;
-	
-    bool addBorder(int ID, vector<glm::vec3> edgeVerts, bool addDepthFlag = TILE_DEPTH_FLAG);
 
 };
 

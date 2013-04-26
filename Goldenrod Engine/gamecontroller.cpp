@@ -20,7 +20,6 @@ void GameController::addLevel(){
 
 	Level* newLevel = new Level();
     this->currentLevel = newLevel;
-
 };
 
 void GameController::addTileCurrentLevel(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts,
@@ -47,3 +46,5 @@ bool GameController::checkValidCurrentLevel(){
     return this->currentLevel->isValid();
 
 };
+
+Level* GameController::getCurrentLevel() { return currentLevel; };

@@ -61,6 +61,7 @@ bool FileIOController::createLevelFromFile(GameController* game, string levelFil
 
         }
 
+		game->getCurrentLevel()->addBorder();
 
 		// Check if a valid level was created
         return game->checkValidCurrentLevel();

@@ -32,6 +32,8 @@ public:
 
     bool checkValidCurrentLevel();
 
+	Level* getCurrentLevel();
+
     // Need to add a function to cycle through levels.
 
 private:

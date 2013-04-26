@@ -224,8 +224,6 @@ void setupGLUT(char* programName)
 	GLUI_Master.set_glutKeyboardFunc(keyboard);
 	GLUI_Master.set_glutReshapeFunc(reshape);
 
-	cameraTemp = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
-
 	//GLUI stuff
 	GLUI *gluiWindow = GLUI_Master.create_glui("Camera");
 	gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate)->set_speed(0.01f);
@@ -350,12 +348,12 @@ int main(int argc, char **argv)
 	GameController* game = new GameController();
 
     // Check if input file was given, if not use default
-    if(argc != 1){
+    if(argc > 1){
         fileIO->createLevelFromFile(game, argv[1]); // Create level from input file -- NOT WORKING!!!
     }
     else{
         cout << "No input file was provided." << endl;
-        fileIO->createLevelFromFile(game, "hole.01.db"); // default level
+        fileIO->createLevelFromFile(game, "hole.02.db"); // default level
     }
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);

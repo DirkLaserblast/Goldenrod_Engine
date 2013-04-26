@@ -15,7 +15,7 @@ class Border{
 
 public:
     // Functions
-	Border(int ID, int numShapes, int locIndex, int colIndex, int normIndex, int shapeIndex);
+	Border(int ID, int numShapes);
 	~Border();
 
     void validate();
@@ -28,6 +28,7 @@ public:
     int getColIndex();
     int getNormIndex();
     int getShapeIndex();
+	vector<Shape*> shapesPointer;
 
 private:
     // Local Variables

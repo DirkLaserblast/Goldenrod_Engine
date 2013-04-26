@@ -1,6 +1,6 @@
 #include "tileborder.h"
 
-Border::Border(int ID, int numShapes, int locIndex, int colIndex, int normIndex, int shapeIndex){
+Border::Border(int ID, int numShapes){
 
     this->ID = ID;
     this->numShapes = numShapes;

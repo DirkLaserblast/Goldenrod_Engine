@@ -1,5 +1,7 @@
 #include "level.h"
 
+#include <iostream>
+
 int Level::totalLevels = 0; // initialize static member
 
 Level::Level(){
@@ -50,6 +52,7 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
     int normIndex = this->norms.size();
     int shapeIndex = this->shapes.size();
     vector<Shape> newShapes;
+	vector<Shape> edgeShapes;
 
     // Code to generate the Shapes to add for the tile
     if(addDepthFlag){
@@ -59,9 +62,7 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
         newShapes.push_back(Shape(verts, TILE_COLOR));
     }  
 
-    // Code to generate borders if flag is set goes here
-
-    Tile* newTile = new Tile(ID, numEdges, numNeighbors, newShapes.size(), posIndex, colIndex, normIndex, shapeIndex);
+    Tile* newTile = new Tile(ID, numEdges, numNeighbors, newShapes.size(), posIndex, colIndex, normIndex, shapeIndex, verts, neighborIDs);
 
     // Validate Entity
     if(newTile->isValid()){
@@ -72,7 +73,11 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
         // Add shape(s) data to level
         for(int i = 0; i < newShapes.size(); i++){
             this->shapes.push_back(newShapes[i]);
+			//newTile->shapesPointer.push_back(&newShapes[i]); //Save shape pointer in tile
         }
+
+
+
 		return true;
 	}
 	else{
@@ -218,46 +223,44 @@ vector<Shape> Level::generateDepthShapes(vector<glm::vec3> verts, glm::vec4 colo
 
 };
 
-bool Level::addBorder(int ID, vector<glm::vec3> edgeVerts, bool addDepthFlag){
+bool Level::addBorder(){
 
-    int posIndex = this->verts.size();
-    int colIndex = this->cols.size();
-    int normIndex = this->norms.size();
-    int shapeIndex = this->shapes.size();
-    vector<Shape> newShapes;
+	vector<Shape> newShapes;
+	vector<Shape> edgeShapes;
+	vector<vec3> openEdges;
+	int ID;
 
-    // Calculate additional vertices -- THIS IS BROKEN AND NEEDS TO BE FIXED!!!
-    vector<glm::vec3> newVerts;
-    newVerts.push_back(glm::vec3(edgeVerts[0].x, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z));
-    newVerts.push_back(glm::vec3(edgeVerts[1].x, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z));
-    newVerts.push_back(glm::vec3(edgeVerts[0].x + BORDER_RADIUS, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z + BORDER_RADIUS));
-    newVerts.push_back(glm::vec3(edgeVerts[1].x - BORDER_RADIUS, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z - BORDER_RADIUS));
+		for (int tileIndex = 0; tileIndex < this->tiles.size(); tileIndex++)
+		{
+			Tile * currentTile = &this->tiles[tileIndex];
+			ID = currentTile->getID();
 
-    // Code to generate the Shapes to add for the tile
-    if(addDepthFlag){
-        newShapes = generateDepthShapes(newVerts, BORDER_COLOR); // testing code
-    }
-    else{
-        newShapes.push_back(Shape(newVerts, BORDER_COLOR));
-    }  
+			vec3 edge1[2];
+			vec3 edge2[2];
 
-    Border* newBorder = new Border(ID, newShapes.size(), posIndex, colIndex, normIndex, shapeIndex);
+			for (int i = 0; i < currentTile->getNeighbors().size(); i++)
+			{
+				if (currentTile->getNeighbors()[i] == 0)
+				{
 
-    // Validate Entity
-    if(newBorder->isValid()){
-        // Add tile to level
-		this->borders.push_back((*newBorder));
-        // Add vert data to level -- DOES NOT INCLUDE ADDITIONAL VERT DATA FOR TILES WITH DEPTH
-        this->verts.insert(this->verts.end(), newVerts.begin(), newVerts.end());
-        // Add shape(s) data to level
-        for(int i = 0; i < newShapes.size(); i++){
-            this->shapes.push_back(newShapes[i]);
-        }
+					vector<vec3> edgeVerts;
+					Border* newBorder = new Border(ID, 1);
+					this->borders.push_back(*newBorder);
+					edgeVerts.push_back(currentTile->edges[i+1]);
+					edgeVerts.push_back(currentTile->edges[i]);
+					edgeVerts.push_back(currentTile->edges[i] + vec3(0, 0.1, 0));
+					edgeVerts.push_back(currentTile->edges[i+1] + vec3(0, 0.1, 0));
+					edgeShapes.push_back(Shape(edgeVerts, vec4(1, 0, 0, 1)));
+					newBorder->shapesPointer.push_back(&edgeShapes.back());
+
+					this->shapes.insert(this->shapes.end(), edgeShapes.begin(), edgeShapes.end());
+				}
+			
+			}
+
+		}
+
+
+
 		return true;
-	}
-	else{
-		delete newBorder;
-		return false;
-	}
-
 };
