@@ -1,7 +1,7 @@
 /*main.cpp
 */
 
-/*	Based on CMPS 160 work
+/*	Graphics code based on CMPS 160 work
  *  OpenGL base program by Nathaniel Cesario
  *	Lab3 example by Kevin Meggs
  *  Further modified by Casey Scheide
@@ -13,50 +13,32 @@
 #include "gamecontroller.h"
 #include "shader.h"
 
+#include "GL/glui.h";
+
+
 Shader *shader = NULL;
 
+int mainWindow; //Used for GLUI
 int WIN_WIDTH = 1280, WIN_HEIGHT = 720; //window width/height
-mat4 modelView, projection, camera; //matrices for shaders
-vec3 lightPos(0,0,1), viewPos(4,1,4);
+mat4 modelView, projection, camera, cameraTemp; //matrices for shaders
+vec3 lightPos(0,1,0), viewPos(4,1,4); //Initial position of light source and camera
 mat4 modelTrans, mTrans, crTrans, csTrans, ctTrans; //Transformation matrices.
+float cameraRotate[2] = {0, 1.0}; //Set by GLUI controls (horizontal, vertical)
+float cameraPan[2] = {0, 0};
+float cameraZoom[1] = {6.0};
 float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
 
 vector<Shape> shapes; //Stores all the currently rendered shapes
 
 vector<float> verts; //vertex array
-vector<float> norms;
-
+vector<float> norms; //normals array
 vector<float> color; //Model color array
-size_t numVerts; //number of total vertices
-size_t numIndex;
 
-vec3 minpt;
-vec3 maxpt;
-vec3 centerpt;
-
-int numCoords;
-int numPolygons;
-int upMouseXPos;
-int downMouseXPos;
-int upMouseYPos;
-int downMouseYPos;
-int mousePosDiff;
-int mouseYPosDiff;
-bool block = false;
-bool c_down = false;
-bool d_down = false;
-bool r_down = false;
-bool s_down = false;
-bool x_down = false;
-bool y_down = false;
-bool z_down = false;
-bool o_down = false;
-bool leftbDown = false;
-bool rightbDown = false;
 
 //reshape function for GLUT
 void reshape(int w, int h)
 {
+	GLUI_Master.auto_set_viewport();
     WIN_WIDTH = w;
     WIN_HEIGHT = h;
     projection = perspective(
@@ -67,27 +49,21 @@ void reshape(int w, int h)
     );
 }
 
+float a = 0.0;
+
+
 //display function for GLUT
 void display()
 {
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //Resets all transformation matrices.
-    if (r_down == true)
-    {
-    	modelView = mat4();
-    	mTrans = mat4();
-    	crTrans = mat4();
-    	csTrans = mat4();
-    	ctTrans = mat4();
-        r_down = false;
-    }
-
     //Setup the modelview matrix
     //Mat4x4F modelCam = camera * modelView;
-    camera = lookAt(viewPos, vec3(0,0,0), vec3(0,1,0));
+
     camera = crTrans * csTrans * ctTrans * camera;
+	viewPos = vec3((cameraZoom[0] * cos(cameraRotate[0])), cameraRotate[1] * 2, (cameraZoom[0] * sin(cameraRotate[0])));
+	camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
     mat4 modelCam = camera * modelView;
 
     //grab the normal matrix from the modelview matrix (upper 3x3 entries of
@@ -115,12 +91,6 @@ void display()
     glUniform1f(shader->timeLoc, animTime);
     glUniform3fv(shader->lightPosLoc, 1, value_ptr(lightPos));
     glUniform3fv(shader->viewPosLoc, 1, value_ptr(viewPos));
-
-
-    block = false;
-    glUniform1i(shader->lBlockLoc, block);
-
-
 
     glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer); //which buffer we want
       //to use
@@ -196,6 +166,10 @@ void display()
 //idle function for GLUT
 void idle()
 {
+	if(glutGetWindow() != mainWindow){
+		glutSetWindow(mainWindow);
+	}
+
     glutPostRedisplay();
 }
 
@@ -203,69 +177,19 @@ void idle()
 //Sets variables for doing transforms
 void keyboard(unsigned char key, int x, int y)
 {
-
-	if (key == 27)
-		exit(0);
-	if (key == 'c')
+	switch (key)
 	{
-		if (c_down == false)
-		{
-		    c_down = true;
-		    o_down = false;
-		}
-		else
-			c_down = false;
-	}
-	if (key == 'o')
-	{
-		if (o_down == false)
-		{
-			c_down = false;
-		    o_down = true;
-		}
-		else
-			o_down = false;
-	}
-	if (key == 'r')
-		r_down = true;
-	if (key == 's')
-		s_down = true;
-    if (key == 'x')
-    	x_down = true;
-    if (key == 'y')
-    	y_down = true;
-    if (key == 'z')
-    	z_down = true;
+    case 27:
+        exit(0);
+        break;
+    }
 }
 
 //Callback for mouse button events.
 //Sets variables for position and button state.
 void mouse(int button, int state, int x, int y)
 {
-    if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-    {
-    	upMouseXPos = x;
-    	downMouseXPos = x;
-    	upMouseYPos = y;
-    	downMouseYPos = y;
-    	leftbDown = true;
-    }
-    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
-    {
-        leftbDown = false;
-    }
-    else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-    {
-    	upMouseXPos = x;
-    	downMouseXPos = x;
-    	upMouseYPos = y;
-    	downMouseYPos = y;
-    	rightbDown = true;
-    }
-    else if (button == GLUT_RIGHT_BUTTON && state == GLUT_UP)
-    {
-        rightbDown = false;
-    }
+
 }
 
 
@@ -274,56 +198,7 @@ void mouse(int button, int state, int x, int y)
 //    transforms to slide, rather than just move.
 void mouseMove(int x, int y)
 {
-    downMouseXPos = x;
-    downMouseYPos = y;
-    mousePosDiff = downMouseXPos - upMouseXPos;
-    mouseYPosDiff = downMouseYPos - upMouseYPos;
-    upMouseXPos = downMouseXPos;
-    upMouseYPos = downMouseYPos;
-
-    modelView = mat4();
-
-    if (o_down == true)
-    {
-        if (x_down == true && leftbDown == true)
-            mTrans = translate(mTrans, vec3((static_cast<float>(mousePosDiff) / -10),0,0));
-        else if (y_down == true && leftbDown == true)
-            mTrans = translate(mTrans, vec3(0,(static_cast<float>(mousePosDiff) / 10),0));
-        else if (z_down == true && leftbDown == true)
-            mTrans = translate(mTrans, vec3(0,0,(static_cast<float>(mousePosDiff) / -10)));
-        else if (s_down == true && leftbDown == true)
-            mTrans = scale(mTrans, vec3(pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff)))));
-        else if (x_down == true && rightbDown == true)
-            mTrans = rotate(mTrans, static_cast<float>(mousePosDiff), vec3(1,0,0));
-        else if (y_down == true && rightbDown == true)
-            mTrans = rotate(mTrans, static_cast<float>(mousePosDiff), vec3(0,1,0));
-        else if (z_down == true && rightbDown == true)
-            mTrans = rotate(mTrans, static_cast<float>(mousePosDiff), vec3(0,0,1));
-    }
-    else if (c_down == true)
-    {
-        if (x_down == true && leftbDown == true)
-            ctTrans = translate(ctTrans, vec3((static_cast<float>(mousePosDiff) / -10),0,0));
-        else if (y_down == true && leftbDown == true)
-            ctTrans = translate(ctTrans, vec3(0,(static_cast<float>(mousePosDiff) / 10),0));
-        else if (z_down == true && leftbDown == true)
-            ctTrans = translate(ctTrans, vec3(0,0,(static_cast<float>(mousePosDiff) / -10)));
-        else if (s_down == true && leftbDown == true)
-            csTrans = scale(csTrans, vec3(pow(1.1f, (static_cast<float>(mouseYPosDiff))),pow(1.1f, (static_cast<float>(mouseYPosDiff))),pow(1.1f, (static_cast<float>(mouseYPosDiff)))));
-        else if (x_down == true && rightbDown == true)
-            crTrans = rotate(crTrans, static_cast<float>(mousePosDiff), vec3(1,0,0));
-        else if (y_down == true && rightbDown == true)
-            crTrans = rotate(crTrans, static_cast<float>(mousePosDiff), vec3(0,1,0));
-        else if (z_down == true && rightbDown == true)
-            crTrans = rotate(crTrans, static_cast<float>(mousePosDiff), vec3(0,0,1));
-    }
-
-    modelView = modelView * mTrans;
-    s_down = false;
-    x_down = false;
-    y_down = false;
-    z_down = false;
-    glutPostRedisplay();
+    
 }
 
 //do some GLUT initialization
@@ -332,7 +207,7 @@ void setupGLUT(char* programName)
     glutInitDisplayMode(GLUT_DEPTH | GLUT_RGBA | GLUT_DOUBLE);
     glutInitWindowPosition(100,100);
     glutInitWindowSize(WIN_WIDTH, WIN_HEIGHT);
-	glutCreateWindow(programName);
+	mainWindow = glutCreateWindow(programName);
 
     glutReshapeFunc(reshape);
 
@@ -345,6 +220,25 @@ void setupGLUT(char* programName)
     glutMotionFunc(mouseMove);
 
     glutIdleFunc(idle);
+
+	GLUI_Master.set_glutKeyboardFunc(keyboard);
+	GLUI_Master.set_glutReshapeFunc(reshape);
+
+	cameraTemp = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
+
+	//GLUI stuff
+	GLUI *gluiWindow = GLUI_Master.create_glui("Camera");
+	gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate)->set_speed(0.01f);
+	gluiWindow->add_column();
+	gluiWindow->add_translation("Zoom Camera", GLUI_TRANSLATION_Z, cameraZoom)->set_speed(0.1f);
+	gluiWindow->add_separator();
+	gluiWindow->add_button( "Quit", 0,(GLUI_Update_CB)exit );
+
+	//GLUI_Master.auto_set_viewport();
+
+	gluiWindow->set_main_gfx_window(mainWindow);
+	GLUI_Master.set_glutIdleFunc(idle);
+	GLUI_Master.sync_live_all();
 }
 
 //initialize OpenGL background color and vertex/normal arrays
@@ -352,30 +246,6 @@ void setupGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
-
-	/*vector<vec3> testShapeVerts;
-
-	testShapeVerts.push_back(vec3(-4,-4,0));
-	testShapeVerts.push_back(vec3(4,-4,0));
-	testShapeVerts.push_back(vec3(4,4,0));
-	testShapeVerts.push_back(vec3(-4,4,0));
-
-	shapes.push_back(Shape(testShapeVerts, vec4(0,1,1,1)));
-
-	testShapeVerts.clear();
-
-	testShapeVerts.push_back(vec3(-4,-4,-1));
-	testShapeVerts.push_back(vec3(4,-4,-1));
-	testShapeVerts.push_back(vec3(4,4,-1));
-	testShapeVerts.push_back(vec3(-4,4,-1));
-
-	shapes.push_back(Shape(testShapeVerts, vec4(1,0,1,1)));
-
-	reloadAllShapes(&verts, &color, &norms, &shapes);*/
-
-	//norms = vector<float>(verts.size(), 1.0);
-	
-    //camera = lookAt(vec3(10,10,10), vec3(0,0,0), vec3(0,1,0));
 
     projection = perspective(
             float_t(45),
@@ -461,10 +331,6 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
 
 	WIN_WIDTH = windowWidth;
 	WIN_HEIGHT = windowHeight;
-
-	//A safeguard against Null errors.
-	upMouseXPos = WIN_WIDTH / 2;
-	downMouseXPos = WIN_WIDTH / 2;
 
     glutInit(&argc, argv);
     setupGLUT(programName);

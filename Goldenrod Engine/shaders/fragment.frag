@@ -1,6 +1,6 @@
 #version 330
 
-uniform bool lBlock;
+
 //uniform sampler2D tex0;
 
 in vec3 L;
@@ -12,7 +12,7 @@ in vec4 frag_color;
 
 out vec4 end_color;
 
-const float s = 64.0;
+const float s = 32.0;
 const vec4 L_s = vec4(1.0);
 const vec4 L_d = vec4(1.0);
 const vec4 K_s = vec4(1.0);
