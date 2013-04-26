@@ -484,9 +484,8 @@ int main(int argc, char **argv)
 	GameController* game = new GameController();
 
     // Check if input file was given, if not use default
-    if(argc != 0){
-        //fileIO->createLevelFromFile(game, argv[1]); // Create level from input file -- NOT WORKING!!!
-        fileIO->createLevelFromFile(game, "hole.01.db"); // debug
+    if(argc != 1){
+        fileIO->createLevelFromFile(game, argv[1]); // Create level from input file -- NOT WORKING!!!
     }
     else{
         cout << "No input file was provided." << endl;

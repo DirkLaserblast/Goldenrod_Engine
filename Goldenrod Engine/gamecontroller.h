@@ -6,8 +6,6 @@
 
 #include "level.h"
 
-#define TILE_DEPTH_FLAG true // Determine if tiles will be generated with depth
-
 using namespace std;
 
 class GameController{
@@ -26,7 +24,7 @@ public:
      */
 	void addLevel();
 
-    void addTileCurrentLevel(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs, bool addDepthFlag);
+    void addTileCurrentLevel(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs);
 
     void addTeeCurrentLevel(int ID, glm::vec3 loc);
 

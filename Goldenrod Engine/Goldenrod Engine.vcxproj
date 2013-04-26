@@ -71,6 +71,7 @@
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="tee.cpp" />
     <ClCompile Include="tile.cpp" />
+    <ClCompile Include="tileborder.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +84,7 @@
     <ClInclude Include="shader.h" />
     <ClInclude Include="tee.h" />
     <ClInclude Include="tile.h" />
+    <ClInclude Include="tileborder.h" />
     <ClInclude Include="Tokenizer.h" />
   </ItemGroup>
   <ItemGroup>

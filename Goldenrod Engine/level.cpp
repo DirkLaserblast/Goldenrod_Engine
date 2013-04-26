@@ -42,7 +42,8 @@ bool Level::isValid(){
 
 };
 
-bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs, bool addDepthFlag){
+bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs,
+    bool addBorderFlag, bool addDepthFlag){
 
     int posIndex = this->verts.size();
     int colIndex = this->cols.size();
@@ -52,11 +53,13 @@ bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> ve
 
     // Code to generate the Shapes to add for the tile
     if(addDepthFlag){
-        newShapes = generateDepthShapes(verts); // testing code
+        newShapes = generateDepthShapes(verts, TILE_COLOR); // testing code
     }
     else{
         newShapes.push_back(Shape(verts, TILE_COLOR));
     }  
+
+    // Code to generate borders if flag is set goes here
 
     Tile* newTile = new Tile(ID, numEdges, numNeighbors, newShapes.size(), posIndex, colIndex, normIndex, shapeIndex);
 
@@ -145,7 +148,7 @@ bool Level::addCup(int ID, glm::vec3 loc){
 
 };
 
-vector<Shape> Level::generateDepthShapes(vector<glm::vec3> verts){
+vector<Shape> Level::generateDepthShapes(vector<glm::vec3> verts, glm::vec4 color){
     
     // Separate out new vectors with verts for each face in correct order for shape generation
     // Top and bottom
@@ -203,14 +206,58 @@ vector<Shape> Level::generateDepthShapes(vector<glm::vec3> verts){
     vector<glm::vec3> tmpVec;
     vector<glm::vec3>::iterator it;
 
-    newShapes.push_back(Shape(top, TILE_COLOR));
-    newShapes.push_back(Shape(bottom, TILE_COLOR));
+    newShapes.push_back(Shape(top, color));
+    newShapes.push_back(Shape(bottom, color));
     for(it = sides.begin(); it != sides.end(); it+=4){
         tmpVec.clear();
         tmpVec.insert(tmpVec.begin(), it, (it +4));
-        newShapes.push_back(Shape(tmpVec, TILE_COLOR));
+        newShapes.push_back(Shape(tmpVec, color));
     }
 
     return newShapes;
+
+};
+
+bool Level::addBorder(int ID, vector<glm::vec3> edgeVerts, bool addDepthFlag){
+
+    int posIndex = this->verts.size();
+    int colIndex = this->cols.size();
+    int normIndex = this->norms.size();
+    int shapeIndex = this->shapes.size();
+    vector<Shape> newShapes;
+
+    // Calculate additional vertices -- THIS IS BROKEN AND NEEDS TO BE FIXED!!!
+    vector<glm::vec3> newVerts;
+    newVerts.push_back(glm::vec3(edgeVerts[0].x, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z));
+    newVerts.push_back(glm::vec3(edgeVerts[1].x, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z));
+    newVerts.push_back(glm::vec3(edgeVerts[0].x + BORDER_RADIUS, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z + BORDER_RADIUS));
+    newVerts.push_back(glm::vec3(edgeVerts[1].x - BORDER_RADIUS, edgeVerts[0].y + BORDER_OFFSET, edgeVerts[0].z - BORDER_RADIUS));
+
+    // Code to generate the Shapes to add for the tile
+    if(addDepthFlag){
+        newShapes = generateDepthShapes(newVerts, BORDER_COLOR); // testing code
+    }
+    else{
+        newShapes.push_back(Shape(newVerts, BORDER_COLOR));
+    }  
+
+    Border* newBorder = new Border(ID, newShapes.size(), posIndex, colIndex, normIndex, shapeIndex);
+
+    // Validate Entity
+    if(newBorder->isValid()){
+        // Add tile to level
+		this->borders.push_back((*newBorder));
+        // Add vert data to level -- DOES NOT INCLUDE ADDITIONAL VERT DATA FOR TILES WITH DEPTH
+        this->verts.insert(this->verts.end(), newVerts.begin(), newVerts.end());
+        // Add shape(s) data to level
+        for(int i = 0; i < newShapes.size(); i++){
+            this->shapes.push_back(newShapes[i]);
+        }
+		return true;
+	}
+	else{
+		delete newBorder;
+		return false;
+	}
 
 };
