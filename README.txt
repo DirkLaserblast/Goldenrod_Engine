@@ -25,3 +25,5 @@ Comments:       Some code was taken/modified from the example
                 Build with Visual Studio 2010.
             
                 Should be free of external dependencies.
+                
+                The .exe is located in: Goldenrod_Engine/Debug.

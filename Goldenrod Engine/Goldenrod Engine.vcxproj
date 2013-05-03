@@ -61,31 +61,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="component.cpp" />
     <ClCompile Include="cup.cpp" />
+    <ClCompile Include="entity.cpp" />
     <ClCompile Include="fileiocontroller.cpp" />
     <ClCompile Include="gamecontroller.cpp" />
     <ClCompile Include="gameiocontroller.cpp" />
+    <ClCompile Include="gameobject.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="level.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="system.cpp" />
     <ClCompile Include="tee.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="tileborder.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
+    <ClCompile Include="VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="component.h" />
     <ClInclude Include="cup.h" />
+    <ClInclude Include="entity.h" />
     <ClInclude Include="fileiocontroller.h" />
     <ClInclude Include="gamecontroller.h" />
     <ClInclude Include="gameiocontroller.h" />
+    <ClInclude Include="gameobject.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="system.h" />
     <ClInclude Include="tee.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="tileborder.h" />
     <ClInclude Include="Tokenizer.h" />
+    <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db" />

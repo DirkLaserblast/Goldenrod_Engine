@@ -13,90 +13,174 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\IO Controllers">
-      <UniqueIdentifier>{28d415cd-6449-44a6-8b08-d80ba1942c9d}</UniqueIdentifier>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{c1f11a94-a365-4468-b82a-1b5e25545f4c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\IO Controllers">
-      <UniqueIdentifier>{83597b7a-2e0f-45d7-b435-93967ece3d24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Game Entities">
+    <Filter Include="Header Files\Component">
       <UniqueIdentifier>{83a5dc9d-006b-4945-a3ff-ad73cc917e31}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Game Entities">
+    <Filter Include="Header Files\Component\Base Class">
+      <UniqueIdentifier>{7f7c2526-5d9d-4a8e-aac5-c4af2edd50e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Component\Derived Classes">
+      <UniqueIdentifier>{dde12ac0-e89e-452c-9d7e-8dce68764f58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{31c71dc2-15e7-43ce-8a06-8ef07349b56b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System">
+      <UniqueIdentifier>{c74948cc-1ed9-44be-aea0-cb1ba2e1cee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System\Base Class">
+      <UniqueIdentifier>{050e5b0e-15ec-451e-969a-5117c62fc3f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System\Derived Classes">
+      <UniqueIdentifier>{920284ed-f7e0-43f1-a0b4-812e429eec61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System\Derived Classes\IO Controllers">
+      <UniqueIdentifier>{28d415cd-6449-44a6-8b08-d80ba1942c9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity\Base Class">
+      <UniqueIdentifier>{98cc0a84-c58d-405b-8804-75beeec1060c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity">
+      <UniqueIdentifier>{231a9102-f9d7-4b0c-a22e-bb3e73eea2a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component">
       <UniqueIdentifier>{e874d094-0e21-467c-8ae0-297b89ba843d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Base Class">
+      <UniqueIdentifier>{acc22996-e639-4bd4-b2ad-3e39ef8940bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Derived Classes">
+      <UniqueIdentifier>{f330c1b3-ce93-4912-abed-1f00920c1eab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utility">
+      <UniqueIdentifier>{298688f3-be11-49d6-9f7d-3741b0c237e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{e04a19b3-3da4-4ffa-81cd-c39a93b8e9eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System\Base Class">
+      <UniqueIdentifier>{8ee4b3f2-6570-487f-84d0-a634344a0054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System\Derived Classes">
+      <UniqueIdentifier>{8ad8bbe9-a3dc-4a88-ac84-6bb0c8c9f6b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System\Derived Classes\IO Controllers">
+      <UniqueIdentifier>{83597b7a-2e0f-45d7-b435-93967ece3d24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Main">
+      <UniqueIdentifier>{b306d7e9-7143-4998-b3f7-02d65bb7abfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game Object Base Class">
+      <UniqueIdentifier>{a6c12035-a8fa-4620-a23c-4ff01c11ed08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game Object Base Class">
+      <UniqueIdentifier>{9197dc93-d9dc-484b-a552-a39286e64f8c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="fileiocontroller.cpp">
-      <Filter>Source Files\IO Controllers</Filter>
+      <Filter>Source Files\System\Derived Classes\IO Controllers</Filter>
     </ClCompile>
     <ClCompile Include="gameiocontroller.cpp">
-      <Filter>Source Files\IO Controllers</Filter>
+      <Filter>Source Files\System\Derived Classes\IO Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="gamecontroller.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tokenizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tile.cpp">
-      <Filter>Source Files\Game Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="level.cpp">
-      <Filter>Source Files\Game Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="tee.cpp">
-      <Filter>Source Files\Game Entities</Filter>
+    <ClCompile Include="component.cpp">
+      <Filter>Source Files\Component\Base Class</Filter>
     </ClCompile>
     <ClCompile Include="cup.cpp">
-      <Filter>Source Files\Game Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="shape.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
     <ClCompile Include="tileborder.cpp">
-      <Filter>Source Files\Game Entities</Filter>
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="level.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="tee.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="tile.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Tokenizer.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="shape.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="gamecontroller.cpp">
+      <Filter>Source Files\System\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files\System\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="system.cpp">
+      <Filter>Source Files\System\Base Class</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="gameobject.cpp">
+      <Filter>Source Files\Game Object Base Class</Filter>
+    </ClCompile>
+    <ClCompile Include="VBO.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fileiocontroller.h">
-      <Filter>Header Files\IO Controllers</Filter>
+      <Filter>Header Files\System\Derived Classes\IO Controllers</Filter>
     </ClInclude>
     <ClInclude Include="gameiocontroller.h">
-      <Filter>Header Files\IO Controllers</Filter>
-    </ClInclude>
-    <ClInclude Include="gamecontroller.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\System\Derived Classes\IO Controllers</Filter>
     </ClInclude>
     <ClInclude Include="Tokenizer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>Header Files\System\Base Class</Filter>
+    </ClInclude>
+    <ClInclude Include="component.h">
+      <Filter>Header Files\Component\Base Class</Filter>
     </ClInclude>
     <ClInclude Include="cup.h">
-      <Filter>Header Files\Game Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="tile.h">
-      <Filter>Header Files\Game Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="tee.h">
-      <Filter>Header Files\Game Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="level.h">
-      <Filter>Header Files\Game Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="shape.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
     <ClInclude Include="tileborder.h">
-      <Filter>Header Files\Game Entities</Filter>
+      <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="shape.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="tee.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="tile.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="gamecontroller.h">
+      <Filter>Header Files\System\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files\System\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Header Files\Entity\Base Class</Filter>
+    </ClInclude>
+    <ClInclude Include="gameobject.h">
+      <Filter>Header Files\Game Object Base Class</Filter>
+    </ClInclude>
+    <ClInclude Include="VBO.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
