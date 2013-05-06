@@ -132,6 +132,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Main</Filter>
     </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fileiocontroller.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="VBO.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

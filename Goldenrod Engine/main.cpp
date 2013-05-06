@@ -12,13 +12,14 @@
 #include "gameiocontroller.h"
 #include "gamecontroller.h"
 #include "shader.h"
+#include "time.h"
 
 #include "GL/glui.h";
 
 Shader *shader = NULL;
 
 int mainWindow; //Used for GLUI
-int WIN_WIDTH = 1280, WIN_HEIGHT = 720; //window width/height
+int WIN_WIDTH = 1280, WIN_HEIGHT = 900; //window width/height
 mat4 modelView, projection, camera, cameraTemp; //matrices for shaders
 vec3 lightPos(0,1,0), viewPos(4,1,4); //Initial position of light source and camera
 mat4 modelTrans, mTrans, crTrans, csTrans, ctTrans; //Transformation matrices.
@@ -433,10 +434,11 @@ int main(int argc, char **argv)
 	FileIOController* fileIO = new FileIOController();
 	GameIOController* gameIO = new GameIOController();
 	GameController* game = new GameController();
+	Timer* gameTime = new Timer();
 
     // Check if input file was given, if not use default
     if(argc > 1){
-        fileIO->createLevelFromFile(game, argv[1]); // Create level from input file -- NOT WORKING!!!
+        fileIO->createLevelFromFile(game, argv[1]); // Create level from input file
     }
     else{
         cout << "No input file was provided." << endl;
@@ -445,10 +447,14 @@ int main(int argc, char **argv)
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
+	cout << "Engine initialized in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+
     // Add shapes to game level
     shapes.clear();
     shapes.insert(shapes.begin(), game->getCurrentLevelShapes()->begin(), game->getCurrentLevelShapes()->end());
     reloadAllShapes(&verts, &color, &norms, &shapes);
+
+	cout << "Level loaded in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
 
     glutMainLoop();
 
