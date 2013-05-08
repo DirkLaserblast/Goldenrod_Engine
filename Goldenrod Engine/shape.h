@@ -22,9 +22,9 @@ public:
 	Shape(vector<vec3> vertices, vec4 color);
 	//Apply a matrix transform to all the vertices in the shape
 	void transform(mat4 matrix);
-	void translate(float x, float y, float z);
+	void translate(vec3 deltaPos);
 	void changeColor(vec4 color);
-	void reload(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector); //Reloads the shape's verts in to main arrays
+	void reload(); //Reloads the shape's verts in to main arrays
 	//Return vertices, normals, or colors as lists of vectors
 	vector<vec3> vertices();
 	vector<vec4> colors();
@@ -39,6 +39,7 @@ public:
 	//Stores the shape's starting position in the main vertex array and normal array
 	int startIndex;
 	int colorStartIndex;
+	vector<float> * vertsPointer, * colorsPointer, * normsPointer;
 
 	private:
 	vector<float> convert(vector<vec3> in);
@@ -46,7 +47,6 @@ public:
 	vector<vec3> shapeVertices;
 	vector<vec4> shapeColors;
 	vector<vec3> shapeNormals;
-	//vector<float> * vertsPointer, colorsPointer, normsPointer;
 };
 
 //Erase and populate the rendering arrays

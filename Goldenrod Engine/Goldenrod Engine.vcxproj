@@ -89,6 +89,7 @@
     <ClInclude Include="gamecontroller.h" />
     <ClInclude Include="gameiocontroller.h" />
     <ClInclude Include="gameobject.h" />
+    <ClInclude Include="physics.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="shader.h" />

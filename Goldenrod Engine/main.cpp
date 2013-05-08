@@ -76,6 +76,8 @@ float a = 0.0;
 //display function for GLUT
 void display()
 {
+
+
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -456,20 +458,6 @@ int main(int argc, char **argv)
 	//cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
 
 	reloadAllShapes(&verts, &color, &norms, &shapes);
-
-	//for (int i = 0; i < shapes.size(); i++)
-	//{
-	//	shapes[i].changeColor(vec4(1.0, 1.0, 1.0, 1.0));
-	//	shapes[i].reload(&verts, &color, &norms);
-	//}
-
-	//cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
-
-	
-	//for (int i = 0; i < norms.size()-3; i+=3)
-	//{
-	//	cout << "Norm (" << norms[i] << ", " << norms[i+1] << ", " << norms[i+2] << ")\n";
-	//}
 
     glutMainLoop();
 

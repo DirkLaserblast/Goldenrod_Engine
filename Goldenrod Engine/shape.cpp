@@ -33,13 +33,11 @@ void Shape::transform(mat4 matrix)
 	}
 }
 
-void Shape::translate(float x, float y, float z)
+void Shape::translate(vec3 deltaPos)
 {
-	vec3 delta = vec3(x, y, z);
-
 	for (int i = 0; i < shapeVertices.size(); i++)
 	{
-		shapeVertices[i] += delta;
+		shapeVertices[i] += deltaPos;
 	}
 }
 
@@ -92,16 +90,16 @@ vector<float> Shape::rawNormals()
 	return convert(shapeNormals);
 }
 
-void Shape::reload(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector)
+void Shape::reload()
 {
 	int pos = this->startIndex;
-	//Update vectors
+	//Update Pointers
 	for(int i = 0; i < this->shapeVertices.size(); i++)
 	{
 		vec3 newVec = shapeVertices[i];
-		vertsVector->at(pos) = newVec.x;
-		vertsVector->at(pos+1) = newVec.y;
-		vertsVector->at(pos+2) = newVec.z;
+		vertsPointer->at(pos) = newVec.x;
+		vertsPointer->at(pos+1) = newVec.y;
+		vertsPointer->at(pos+2) = newVec.z;
 		pos +=3;
 	}
 	pos = this->colorStartIndex;
@@ -110,21 +108,21 @@ void Shape::reload(vector<float> * vertsVector, vector<float> * colorsVector, ve
 	for(int i = 0; i < this->shapeColors.size(); i++)
 	{
 		vec4 newColor = shapeColors[i];
-		colorsVector->at(pos) = newColor.r;
-		colorsVector->at(pos+1) = newColor.g;
-		colorsVector->at(pos+2) = newColor.b;
-		colorsVector->at(pos+3) = newColor.a;
+		colorsPointer->at(pos) = newColor.r;
+		colorsPointer->at(pos+1) = newColor.g;
+		colorsPointer->at(pos+2) = newColor.b;
+		colorsPointer->at(pos+3) = newColor.a;
 		pos += 4;
 	}
 	pos = this->startIndex;
 
-	//Update vectors
+	//Update Pointers
 	for(int i = 0; i < this->shapeNormals.size(); i++)
 	{
 		vec3 newNorm = shapeNormals[i];
-		normsVector->at(pos) = newNorm.x;
-		normsVector->at(pos+1) = newNorm.y;
-		normsVector->at(pos+2) = newNorm.z;
+		normsPointer->at(pos) = newNorm.x;
+		normsPointer->at(pos+1) = newNorm.y;
+		normsPointer->at(pos+2) = newNorm.z;
 	}
 }
 
@@ -139,6 +137,9 @@ void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, 
 	{
 		shapesVector->at(i).startIndex = vertsVector->size(); //Stores the current position in the verts vector into the current shape
 		shapesVector->at(i).colorStartIndex = colorsVector->size();
+		shapesVector->at(i).vertsPointer = vertsVector;
+		shapesVector->at(i).colorsPointer = colorsVector;
+		shapesVector->at(i).normsPointer = normsVector;
 
 		Shape currentShape = shapesVector->at(i);
 		vector<float> currentVerts = currentShape.rawVerts();

@@ -32,6 +32,7 @@ public:
     int getShapeIndex();
     int getNumNeighbors();
 	vector<int> getNeighbors();
+
 	vector<Shape*> shapesPointer; //Holds pointers to all the shapes used in the tile, good for accessing normals, etc.
 	vector<Border*> borders; //Pointers to all borders associated with the tile
 	vector<vec3> edges; //Vector that holds pairs of vertices (edges), can find out which tiles share vertices with this

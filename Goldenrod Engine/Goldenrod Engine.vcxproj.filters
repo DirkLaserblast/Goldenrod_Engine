@@ -191,6 +191,9 @@
     <ClInclude Include="ball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="physics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db">

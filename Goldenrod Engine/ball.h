@@ -13,11 +13,13 @@ public:
 	vec3 position(); //Position of center of bottom of ball
 	void position(vec3 pos);
 	float velocity();
+	vector<Shape*> shapesPointer;
 
 private:
 	vec3 ballPosition;
 	vec3 ballDirection;
 	float ballVelocity;
+	Tile * currentTile;
 };
 
 #endif
