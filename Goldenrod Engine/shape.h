@@ -23,6 +23,8 @@ public:
 	//Apply a matrix transform to all the vertices in the shape
 	void transform(mat4 matrix);
 	void translate(float x, float y, float z);
+	void changeColor(vec4 color);
+	void reload(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector); //Reloads the shape's verts in to main arrays
 	//Return vertices, normals, or colors as lists of vectors
 	vector<vec3> vertices();
 	vector<vec4> colors();
@@ -34,8 +36,9 @@ public:
 	//Number of vertices in the shape
 	int numVertices();
 	
-	//Stores the shape's starting position in the main vertex array
+	//Stores the shape's starting position in the main vertex array and normal array
 	int startIndex;
+	int colorStartIndex;
 
 	private:
 	vector<float> convert(vector<vec3> in);
@@ -43,13 +46,11 @@ public:
 	vector<vec3> shapeVertices;
 	vector<vec4> shapeColors;
 	vector<vec3> shapeNormals;
+	//vector<float> * vertsPointer, colorsPointer, normsPointer;
 };
 
 //Erase and populate the rendering arrays
 void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector);
-
-//Update a single shape in the rendering arrays without clearing them
-void reloadShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape);
 
 //Remove a shape from the rendering arrays, leaving the rest intact
 void deleteShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape);

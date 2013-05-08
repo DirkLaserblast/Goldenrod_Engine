@@ -314,7 +314,7 @@ void setupGLUT(char* programName)
 	GLUI_Master.set_glutReshapeFunc(reshape);
 
 	//GLUI stuff
-	GLUI *gluiWindow = GLUI_Master.create_glui("Camera");
+	GLUI *gluiWindow = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_RIGHT);
 	gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate)->set_speed(0.01f);
 	gluiWindow->add_translation("Zoom Camera", GLUI_TRANSLATION_Z, cameraZoom)->set_speed(0.1f);
 	gluiWindow->add_separator();
@@ -447,14 +447,29 @@ int main(int argc, char **argv)
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
-	cout << "Engine initialized in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+	//cout << "Engine initialized in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
 
     // Add shapes to game level
     shapes.clear();
     shapes.insert(shapes.begin(), game->getCurrentLevelShapes()->begin(), game->getCurrentLevelShapes()->end());
-    reloadAllShapes(&verts, &color, &norms, &shapes);
 
-	cout << "Level loaded in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+	//cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+
+	reloadAllShapes(&verts, &color, &norms, &shapes);
+
+	//for (int i = 0; i < shapes.size(); i++)
+	//{
+	//	shapes[i].changeColor(vec4(1.0, 1.0, 1.0, 1.0));
+	//	shapes[i].reload(&verts, &color, &norms);
+	//}
+
+	//cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+
+	
+	//for (int i = 0; i < norms.size()-3; i+=3)
+	//{
+	//	cout << "Norm (" << norms[i] << ", " << norms[i+1] << ", " << norms[i+2] << ")\n";
+	//}
 
     glutMainLoop();
 
