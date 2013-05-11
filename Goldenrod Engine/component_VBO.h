@@ -1,9 +1,7 @@
-#ifndef VBO_H
-#define VBO_H
+#ifndef COMPONENT_VBO_H
+#define COMPONENT_VBO_H
 
 #include "component.h"
-
-using namespace std;
 
 class VBO: public Component{
 

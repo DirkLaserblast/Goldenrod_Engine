@@ -62,40 +62,39 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="component.cpp" />
-    <ClCompile Include="cup.cpp" />
+    <ClCompile Include="component_shapes.cpp" />
+    <ClCompile Include="component_tile.cpp" />
     <ClCompile Include="entity.cpp" />
-    <ClCompile Include="fileiocontroller.cpp" />
-    <ClCompile Include="gamecontroller.cpp" />
-    <ClCompile Include="gameiocontroller.cpp" />
-    <ClCompile Include="gameobject.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="fileiocontroller_conversion.cpp" />
+    <ClCompile Include="level_conversion.cpp" />
+    <ClCompile Include="processedinputline.cpp" />
     <ClCompile Include="shape.cpp" />
-    <ClCompile Include="level.cpp" />
-    <ClCompile Include="shader.cpp" />
     <ClCompile Include="system.cpp" />
-    <ClCompile Include="tee.cpp" />
-    <ClCompile Include="tile.cpp" />
-    <ClCompile Include="tileborder.cpp" />
+    <ClCompile Include="system_levelcontroller.cpp" />
+    <ClCompile Include="test_main.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
-    <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="component_VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="component.h" />
-    <ClInclude Include="cup.h" />
+    <ClInclude Include="component_border.h" />
+    <ClInclude Include="component_collision.h" />
+    <ClInclude Include="component_cup.h" />
+    <ClInclude Include="component_physics.h" />
+    <ClInclude Include="component_render.h" />
+    <ClInclude Include="component_shapes.h" />
+    <ClInclude Include="component_tee.h" />
+    <ClInclude Include="component_tile.h" />
+    <ClInclude Include="component_VAO.h" />
     <ClInclude Include="entity.h" />
-    <ClInclude Include="fileiocontroller.h" />
-    <ClInclude Include="gamecontroller.h" />
-    <ClInclude Include="gameiocontroller.h" />
-    <ClInclude Include="gameobject.h" />
+    <ClInclude Include="fileiocontroller_conversion.h" />
+    <ClInclude Include="level_conversion.h" />
+    <ClInclude Include="processedinputline.h" />
     <ClInclude Include="shape.h" />
-    <ClInclude Include="level.h" />
-    <ClInclude Include="shader.h" />
     <ClInclude Include="system.h" />
-    <ClInclude Include="tee.h" />
-    <ClInclude Include="tile.h" />
-    <ClInclude Include="tileborder.h" />
+    <ClInclude Include="system_levelcontroller.h" />
     <ClInclude Include="Tokenizer.h" />
-    <ClInclude Include="VBO.h" />
+    <ClInclude Include="component_VBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db" />
