@@ -1,4 +1,4 @@
-/*main.cpp
+/* main.cpp
 */
 
 /*	Graphics code based on CMPS 160 work
@@ -7,24 +7,43 @@
  *  Further modified by Casey Scheide
  */
 
-#include "shape.h"
-#include "fileiocontroller.h"
-#include "gameiocontroller.h"
-#include "gamecontroller.h"
+// Shader
 #include "shader.h"
 
-#include "GL/glui.h";
+// Entity
+#include "entity.h"
+
+// System
+#include "system.h"
+#include "system_levelcontroller.h"
+
+// Component
+#include "component.h"
+#include "component_VBO.h"
+#include "component_shapes.h"
+
+// IO
+#include "fileiocontroller.h"
+
+// Glui
+#include "GL\glui.h"
 
 Shader *shader = NULL;
 
 int mainWindow; //Used for GLUI
-int WIN_WIDTH = 1280, WIN_HEIGHT = 720; //window width/height
+int WIN_WIDTH = 1280, WIN_HEIGHT = 900; //window width/height
 mat4 modelView, projection, camera, cameraTemp; //matrices for shaders
 vec3 lightPos(0,1,0), viewPos(4,1,4); //Initial position of light source and camera
 mat4 modelTrans, mTrans, crTrans, csTrans, ctTrans; //Transformation matrices.
+
+//Camera variables
 float cameraRotate[2] = {0, 1.0}; //Set by GLUI controls (horizontal, vertical)
 float cameraPan[2] = {0, 0};
 float cameraZoom[1] = {6.0};
+int cameraMode = 0; //Camera selection: 0 = free-look, 1 = third-person, 2 = top-down
+float yRotation;
+float height;
+float zoom;
 
 float modelRotate[2];
 float modelTranslateXZ[2];
@@ -32,12 +51,13 @@ float modelTranslateY[1];
 
 float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
 
+int tickSpeed = 30; //Speed of timer function, in miliseconds
+
 vector<Shape> shapes; //Stores all the currently rendered shapes
 
 vector<float> verts; //vertex array
 vector<float> norms; //normals array
-vector<float> color; //Model color array
-
+vector<float> color; //vertex color array
 
 int upMouseXPos;
 int downMouseXPos;
@@ -54,6 +74,52 @@ bool z_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
+//Variables for gameplay controls
+int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
+vec3 launchVector = vec3(0.0, 0.0, 1.0); //Vector representing same angle
+int launchPower; //How hard to "hit" the ball, between 1 and 100
+
+vec3 fakeBallPosition = vec3(-1, 0, 0);
+
+//GLUI variables
+GLUI *gluiWindow;
+GLUI_Translation *camRotateTrans;
+GLUI_Translation *camZoomTrans;
+GLUI_Spinner *angleSpinner;
+GLUI_Spinner *powerSpinner;
+GLUI_Button *fireButton;
+
+void updateCamera()
+{
+	switch(cameraMode)
+	{
+	case 0:
+		camRotateTrans->enable();
+		camZoomTrans->enable();
+		yRotation = cameraRotate[0];
+		height = cameraRotate[1];
+		zoom = cameraZoom[0];
+		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
+		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
+		break;
+	case 1:
+		break;
+	case 2:
+		camRotateTrans->disable();
+		camZoomTrans->disable();
+		viewPos = vec3(0, 4, 0);
+		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(-1, 0, 0));
+		//camera = rotate(camera, cameraRotate[0], vec3(0, 1, 0));
+		break;
+	}
+}
+
+//Run by GLUT every [tickspeed] miliseconds
+void tick(int in)
+{
+	updateCamera();
+	glutTimerFunc(tickSpeed, tick, 0);
+}
 
 //reshape function for GLUT
 void reshape(int w, int h)
@@ -69,12 +135,13 @@ void reshape(int w, int h)
     );
 }
 
-float a = 0.0;
-
+float a = 0.0; // where is this used???
 
 //display function for GLUT
 void display()
 {
+
+
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -87,11 +154,7 @@ void display()
     }
 
     //camera = crTrans * csTrans * ctTrans * camera;
-	float yRotation = cameraRotate[0];
-	float height = cameraRotate[1];
-	float zoom = cameraZoom[0];
-	viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
-	camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
+	
     mat4 modelCam = camera * modelView;
 
     //grab the normal matrix from the modelview matrix (upper 3x3 entries of
@@ -180,13 +243,13 @@ void display()
 		glDrawArrays(GL_TRIANGLE_FAN, shapes[i].startIndex / 3, shapes[i].numVertices());
 	}
 
-    //update animation variables.
-    //have time oscillate between 0.0 and 1.0.
-    if ((animTime >= 1.0 && deltaT > 0.0) ||
-            (animTime <= 0.0 && deltaT < 0.0))
-	{
-        deltaT = -deltaT;
-    }
+ //   //update animation variables.
+ //   //have time oscillate between 0.0 and 1.0.
+ //   if ((animTime >= 1.0 && deltaT > 0.0) ||
+ //           (animTime <= 0.0 && deltaT < 0.0))
+	//{
+ //       deltaT = -deltaT;
+ //   }
 
     glutSwapBuffers();
 }
@@ -289,7 +352,15 @@ void mouseMove(int x, int y)
     glutPostRedisplay();
 }
 
-//do some GLUT initialization
+//Start the ball moving using direction and power from GLUI input
+void launchBall(int in)
+{
+	angleSpinner->disable();
+	powerSpinner->disable();
+	fireButton->disable();
+}
+
+//do some GLUT initialization, also set up GLUI
 void setupGLUT(char* programName)
 {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_RGBA | GLUT_DOUBLE);
@@ -309,15 +380,39 @@ void setupGLUT(char* programName)
 
     glutIdleFunc(idle);
 
+	glutTimerFunc(tickSpeed, tick, 0);
+
 	GLUI_Master.set_glutKeyboardFunc(keyboard);
 	GLUI_Master.set_glutReshapeFunc(reshape);
 
 	//GLUI stuff
-	GLUI *gluiWindow = GLUI_Master.create_glui("Camera");
-	gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate)->set_speed(0.01f);
-	gluiWindow->add_translation("Zoom Camera", GLUI_TRANSLATION_Z, cameraZoom)->set_speed(0.1f);
+	gluiWindow = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_RIGHT);
+	camRotateTrans = gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate);
+	camRotateTrans->set_speed(0.01f);
+	camZoomTrans = gluiWindow->add_translation("Zoom Camera", GLUI_TRANSLATION_Z, cameraZoom);
+	camZoomTrans->set_speed(0.1f);
 	gluiWindow->add_separator();
 	gluiWindow->add_button( "Quit", 0,(GLUI_Update_CB)exit );
+	
+	GLUI_Panel *viewPanel = gluiWindow->add_panel("Camera View", GLUI_PANEL_EMBOSSED);
+	GLUI_RadioGroup *cameraRadio = gluiWindow->add_radiogroup_to_panel(viewPanel, &cameraMode);
+	gluiWindow->add_radiobutton_to_group(cameraRadio, "Free Look");
+	gluiWindow->add_radiobutton_to_group(cameraRadio, "Third Person");
+	gluiWindow->add_radiobutton_to_group(cameraRadio, "Top View");
+
+	GLUI *gluiWindowLeft = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_LEFT);
+
+	angleSpinner = gluiWindowLeft->add_spinner("Angle", GLUI_SPINNER_INT, &launchAngle);
+	angleSpinner->set_int_limits(0, 359, GLUI_LIMIT_WRAP);
+	angleSpinner->set_speed(0.5);
+	angleSpinner->set_int_val(launchAngle);
+
+	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
+	powerSpinner->set_int_limits(1, 100, GLUI_LIMIT_CLAMP);
+	powerSpinner->set_int_val(launchPower);
+
+	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
+
 
 	//GLUI_Master.auto_set_viewport();
 
@@ -429,34 +524,43 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
 
 int main(int argc, char **argv)
 {
-	// Initialize game engine
+	// Initialize systems and other controllers
+    LevelController* levelController = new LevelController();
 	FileIOController* fileIO = new FileIOController();
-	GameIOController* gameIO = new GameIOController();
-	GameController* game = new GameController();
+    //Timer* gameTime = new Timer();
 
     // Check if input file was given, if not use default
     if(argc > 1){
-        fileIO->createLevelFromFile(game, argv[1]); // Create level from input file -- NOT WORKING!!!
+        fileIO->processFile(argv[1]);
+        // Make sure that file was correctly read and parsed
+        if(fileIO->getCurrentFile() != NULL){
+            levelController->addLevel(fileIO->getCurrentFile());
+        }
     }
     else{
         cout << "No input file was provided." << endl;
-        fileIO->createLevelFromFile(game, "hole.02.db"); // default level
+        // Create default level since no file was specified
+        fileIO->processFile("hole.02.db"); // default level
+        levelController->addLevel(fileIO->getCurrentFile());
     }
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
+    //cout << "Engine initialized in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+
     // Add shapes to game level
+    levelController->updateCurrentLevelShapes();
     shapes.clear();
-    shapes.insert(shapes.begin(), game->getCurrentLevelShapes()->begin(), game->getCurrentLevelShapes()->end());
+    shapes.insert(shapes.begin(), levelController->getCurrentLevelShapes()->begin(), levelController->getCurrentLevelShapes()->end());
+
+    //cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+
     reloadAllShapes(&verts, &color, &norms, &shapes);
 
     glutMainLoop();
 
-	// Clean-up
+	// Clean-up -- NEED TO ADD THE REST OF THIS
     if(shader) delete shader;
-	if(fileIO) delete fileIO;
-	if(gameIO) delete gameIO;
-	if(game) delete game;
 
 	return 0;
 }

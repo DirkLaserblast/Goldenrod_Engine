@@ -3,7 +3,7 @@
 
 #include "system.h"
 #include "entity.h"
-#include "level_conversion.h"
+#include "level.h"
 #include "processedinputline.h"
 
 class LevelController: public System{

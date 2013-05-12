@@ -46,12 +46,6 @@
     <Filter Include="Source Files\Main">
       <UniqueIdentifier>{b306d7e9-7143-4998-b3f7-02d65bb7abfc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Component\Old classes">
-      <UniqueIdentifier>{13c720fa-a9e8-489b-8b3b-66646b3625ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Component\Old Classes">
-      <UniqueIdentifier>{b89394c0-6cb7-426b-a36d-db8f8c470cd2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\File IO Controller">
       <UniqueIdentifier>{28d415cd-6449-44a6-8b08-d80ba1942c9d}</UniqueIdentifier>
     </Filter>
@@ -82,6 +76,12 @@
     <Filter Include="Source Files\Shader">
       <UniqueIdentifier>{3e6b092c-62eb-400a-918a-15966dde5f66}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Component\Shape">
+      <UniqueIdentifier>{13c720fa-a9e8-489b-8b3b-66646b3625ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Shape">
+      <UniqueIdentifier>{b89394c0-6cb7-426b-a36d-db8f8c470cd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -89,9 +89,6 @@
     </ClCompile>
     <ClCompile Include="component_VBO.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="fileiocontroller_conversion.cpp">
-      <Filter>Source Files\File IO Controller</Filter>
     </ClCompile>
     <ClCompile Include="processedinputline.cpp">
       <Filter>Source Files\File IO Controller</Filter>
@@ -103,13 +100,10 @@
       <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
     <ClCompile Include="shape.cpp">
-      <Filter>Source Files\Component\Old Classes</Filter>
+      <Filter>Source Files\Component\Shape</Filter>
     </ClCompile>
     <ClCompile Include="component.cpp">
       <Filter>Source Files\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="level_conversion.cpp">
-      <Filter>Source Files\Level</Filter>
     </ClCompile>
     <ClCompile Include="system.cpp">
       <Filter>Source Files\System</Filter>
@@ -126,9 +120,6 @@
     <ClCompile Include="component_tee.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
-    <ClCompile Include="main_conversion.cpp">
-      <Filter>Source Files\Main</Filter>
-    </ClCompile>
     <ClCompile Include="shader.cpp">
       <Filter>Source Files\Shader</Filter>
     </ClCompile>
@@ -144,15 +135,21 @@
     <ClCompile Include="component_collision.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
+    <ClCompile Include="fileiocontroller.cpp">
+      <Filter>Source Files\File IO Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="level.cpp">
+      <Filter>Source Files\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Tokenizer.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="component_VBO.h">
-      <Filter>Header Files\Component\Derived Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="component_render.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
     <ClInclude Include="component_tee.h">
@@ -170,12 +167,6 @@
     <ClInclude Include="component_collision.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
-    <ClInclude Include="component_physics.h">
-      <Filter>Header Files\Component\Derived Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="fileiocontroller_conversion.h">
-      <Filter>Header Files\File IO Controller</Filter>
-    </ClInclude>
     <ClInclude Include="processedinputline.h">
       <Filter>Header Files\File IO Controller</Filter>
     </ClInclude>
@@ -186,13 +177,10 @@
       <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
     <ClInclude Include="shape.h">
-      <Filter>Header Files\Component\Old classes</Filter>
+      <Filter>Header Files\Component\Shape</Filter>
     </ClInclude>
     <ClInclude Include="entity.h">
       <Filter>Header Files\Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="level_conversion.h">
-      <Filter>Header Files\Level</Filter>
     </ClInclude>
     <ClInclude Include="system.h">
       <Filter>Header Files\System</Filter>
@@ -211,6 +199,15 @@
     </ClInclude>
     <ClInclude Include="time.h">
       <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="fileiocontroller.h">
+      <Filter>Header Files\File IO Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
+      <Filter>Header Files\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="component_physc.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
