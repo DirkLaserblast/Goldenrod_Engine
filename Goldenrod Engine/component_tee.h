@@ -13,12 +13,13 @@ class Tee: public Component{
 
 public:
     Tee();
+    Tee(int tileID);
     ~Tee();
     void update();
     void printInfo();
 
 private:
-    
+    int tileID;
 };
 
 #endif

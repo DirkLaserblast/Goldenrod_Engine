@@ -13,12 +13,13 @@ class Cup: public Component{
 
 public:
     Cup();
+    Cup(int tileID);
     ~Cup();
     void update();
     void printInfo();
 
 private:
-    
+    int tileID;
 };
 
 #endif

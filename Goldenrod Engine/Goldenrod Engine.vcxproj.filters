@@ -138,6 +138,12 @@
     <ClCompile Include="component_ball.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>Source Files\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="component_collision.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Tokenizer.h">
@@ -202,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="shader.h">
       <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>Header Files\Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,8 +6,8 @@
 
 using namespace std;
 
-enum COMPONENT_TYPE { cNONE_T, cVBO_T, cVAO_T, cSHAPES_T, cTILE_T, cBORDER_T, cCUP_T, cTEE_T, cBALL_T, cPHYSC_T };
-const string componentTypes[] = { "NONE", "cVBO_T", "cVAO_T", "cSHAPES_T", "cTILE_T", "cBORDER_T", "cCUP_T", "cTEE_T", "cBALL_T", "cPHYSC_T" };
+enum COMPONENT_TYPE { cNONE_T, cVBO_T, cVAO_T, cSHAPES_T, cTILE_T, cBORDER_T, cCUP_T, cTEE_T, cBALL_T, cPHYSC_T, cCOLLISION_T};
+const string componentTypes[] = { "NONE", "cVBO_T", "cVAO_T", "cSHAPES_T", "cTILE_T", "cBORDER_T", "cCUP_T", "cTEE_T", "cBALL_T", "cPHYSC_T", "cCOLLISION_T"};
 
 class Component{
 

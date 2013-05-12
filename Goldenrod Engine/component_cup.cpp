@@ -4,6 +4,15 @@ Cup::Cup(){
 
     this->name = "NONE";
     this->type = cCUP_T;
+    this->tileID = -1;
+
+};
+
+Cup::Cup(int tileID){
+
+    this->name = "NONE";
+    this->type = cCUP_T;
+    this->tileID = tileID;
 
 };
 

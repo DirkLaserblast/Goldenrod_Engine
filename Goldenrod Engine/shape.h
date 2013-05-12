@@ -3,7 +3,6 @@
 
 #define GLM_SWIZZLE
 #define PICKINGSHAPE_ID 700
-
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -23,7 +22,9 @@ public:
 	Shape(vector<vec3> vertices, vec4 color);
 	//Apply a matrix transform to all the vertices in the shape
 	void transform(mat4 matrix);
-	void translate(float x, float y, float z);
+	void translate(vec3 deltaPos);
+	void changeColor(vec4 color);
+	void reload(); //Reloads the shape's verts in to main arrays
 	//Return vertices, normals, or colors as lists of vectors
 	vector<vec3> vertices();
 	vector<vec4> colors();
@@ -35,8 +36,10 @@ public:
 	//Number of vertices in the shape
 	int numVertices();
 	
-	//Stores the shape's starting position in the main vertex array
+	//Stores the shape's starting position in the main vertex array and normal array
 	int startIndex;
+	int colorStartIndex;
+	vector<float> * vertsPointer, * colorsPointer, * normsPointer;
 
 	private:
 	vector<float> convert(vector<vec3> in);
@@ -48,9 +51,6 @@ public:
 
 //Erase and populate the rendering arrays
 void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector);
-
-//Update a single shape in the rendering arrays without clearing them
-void reloadShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape);
 
 //Remove a shape from the rendering arrays, leaving the rest intact
 void deleteShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape);

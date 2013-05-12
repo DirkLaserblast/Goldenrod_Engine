@@ -73,17 +73,21 @@ void Level::addTile(ProcessedInputLine& inLine){
     Entity* newTile = new Entity(eSTATIC_GEOMETRY_T);
 
     // Attach components
-    newTile->attachComponent(new Tile());
-
-    newTile->attachComponent(new Border(inLine.getID()));
-
-    newTile->attachComponent(new VBO());
+    newTile->attachComponent(new Tile(inLine.getID(), inLine.getNeighborIDs()));
 
     newTile->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
     newTile->publicShapes->addWedgeShapes(inLine.getVerts(), TILE_COLOR, TILE_DEPTH);
 
+    //newTile->attachComponent(new Border(inLine.getID())); // debug
+
+    // Add corresponding border entity
     if(TILE_USE_BORDER){
-        newTile->publicShapes->addBorderShapes(inLine.getVerts(), BORDER_COLOR, inLine.getNeighborIDs(), BORDER_HEIGHT, BORDER_THICKNESS);
+        //newTile->publicShapes->addBorderShapes(inLine.getVerts(), BORDER_COLOR, inLine.getNeighborIDs(), BORDER_HEIGHT, BORDER_THICKNESS); // debug
+        Entity* newBorder = new Entity(eSTATIC_GEOMETRY_T);
+        newBorder->attachComponent(new Border(inLine.getID()));
+        newBorder->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+        newBorder->publicShapes->addBorderShapes(inLine.getVerts(), BORDER_COLOR, inLine.getNeighborIDs(), BORDER_HEIGHT, BORDER_THICKNESS);
+        this->borders.push_back(newBorder);
     }
 
     this->tiles.push_back(newTile);
@@ -100,9 +104,7 @@ void Level::addCup(ProcessedInputLine& inLine){
     Entity* newCup = new Entity(eSTATIC_GEOMETRY_T);
 
     // Attach components
-    newCup->attachComponent(new Cup());
-
-    newCup->attachComponent(new VBO());
+    newCup->attachComponent(new Cup(inLine.getID()));
 
     vector<glm::vec3> cupVerts = squareFromPoint(inLine.getVerts().at(0),CUP_WIDTH,CUP_HEIGHT,CUP_OFFSET);   
     newCup->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
@@ -122,9 +124,7 @@ void Level::addTee(ProcessedInputLine& inLine){
     Entity* newTee = new Entity(eSTATIC_GEOMETRY_T);
 
     // Attach components
-    newTee->attachComponent(new Tee());
-
-    newTee->attachComponent(new VBO());
+    newTee->attachComponent(new Tee(inLine.getID()));
 
     vector<glm::vec3> teeVerts = squareFromPoint(inLine.getVerts().at(0),TEE_WIDTH,TEE_HEIGHT,TEE_OFFSET);  
     newTee->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
@@ -144,9 +144,7 @@ void Level::addBall(ProcessedInputLine& inLine){
     Entity* newBall = new Entity(eDYNAMIC_GEOMETRY_T);
 
     // Attach components
-    newBall->attachComponent(new Ball());
-
-    newBall->attachComponent(new VBO());
+    newBall->attachComponent(new Ball(inLine.getID()));
 
     vector<glm::vec3> ballVerts = circleFromPoint(inLine.getVerts().at(0),BALL_RADIUS, BALL_DEGREE, BALL_OFFSET);  
     newBall->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
@@ -179,6 +177,14 @@ void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VB
     // Get tile shapes
     for(int i = 0; i < this->tiles.size(); i++){
         tmp = this->tiles.at(i)->publicShapes->getShapes();
+        for(int ii = 0; ii < tmp.size(); ii++){ // Add (copy of?) each shape
+            this->currentLevelShapes->push_back(*(tmp[ii]));
+        }
+    }
+
+    // Get border shapes
+    for(int i = 0; i < this->borders.size(); i++){
+        tmp = this->borders.at(i)->publicShapes->getShapes();
         for(int ii = 0; ii < tmp.size(); ii++){ // Add (copy of?) each shape
             this->currentLevelShapes->push_back(*(tmp[ii]));
         }

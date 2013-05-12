@@ -4,7 +4,15 @@ Tee::Tee(){
 
     this->name = "NONE";
     this->type = cTEE_T;
+    this->tileID = -1;
 
+};
+
+Tee::Tee(int tileID){
+
+    this->name = "NONE";
+    this->type = cTEE_T;
+    this->tileID = tileID;
 };
 
 Tee::~Tee(){

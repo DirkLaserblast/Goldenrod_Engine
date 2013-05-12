@@ -64,6 +64,7 @@
     <ClCompile Include="component.cpp" />
     <ClCompile Include="component_ball.cpp" />
     <ClCompile Include="component_border.cpp" />
+    <ClCompile Include="component_collision.cpp" />
     <ClCompile Include="component_cup.cpp" />
     <ClCompile Include="component_shapes.cpp" />
     <ClCompile Include="component_tee.cpp" />
@@ -77,6 +78,7 @@
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="system.cpp" />
     <ClCompile Include="system_levelcontroller.cpp" />
+    <ClCompile Include="time.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="component_VBO.cpp" />
   </ItemGroup>
@@ -100,6 +102,7 @@
     <ClInclude Include="shape.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="system_levelcontroller.h" />
+    <ClInclude Include="time.h" />
     <ClInclude Include="Tokenizer.h" />
     <ClInclude Include="component_VBO.h" />
   </ItemGroup>
