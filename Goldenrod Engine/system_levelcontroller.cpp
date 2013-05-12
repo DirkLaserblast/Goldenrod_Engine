@@ -47,3 +47,15 @@ void LevelController::prevLevel(){
 void LevelController::goToLevel(){
     
 };
+
+vector<Shape>* LevelController::getCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
+    
+    return this->currentLevel->getCurrentLevelShapes();
+
+};
+
+void LevelController::updateCurrentLevelShapes(){
+
+    this->currentLevel->updateCurrentLevelShapes();
+
+};

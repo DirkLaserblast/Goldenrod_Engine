@@ -7,14 +7,6 @@ Shapes::Shapes(){
 
 };
 
-Shapes::Shapes(vector<glm::vec3> verts, glm::vec4 color, float depth){
-
-    this->name = "NONE";
-    this->type = cSHAPES_T;
-    this->generateTileShapes(this->shapes, verts, color, depth);
-
-};
-
 Shapes::~Shapes(){
 
     this->shapes.clear();
@@ -33,9 +25,23 @@ void Shapes::printInfo(){
 
 };
 
-vector<Shape*> Shapes::getShapes(){ return this->shapes; }; // REMOVE THIS AFTER CONVERT TO USING VBOs
+void Shapes::addWedgeShapes(vector<glm::vec3> verts, glm::vec4 color, float depth){
+    
+    generateWedgeShapes(this->shapes, verts, color, depth);
 
-void Shapes::generateTileShapes(vector<Shape*>& shapes, vector<glm::vec3> verts, glm::vec4 color, float depth){
+};
+
+void Shapes::addBorderShapes(vector<glm::vec3> verts, glm::vec4 color, vector<int> neighborIDs, float height, float thickness){
+    
+    generateBorderShapes(this->shapes, verts, color, neighborIDs, height, thickness);
+
+};
+
+vector<Shape*> Shapes::getShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
+    return this->shapes;
+};
+
+void Shapes::generateWedgeShapes(vector<Shape*>& shapes, vector<glm::vec3> verts, glm::vec4 color, float depth){
 
     // Ensure depth >= 0
     depth = abs(depth);
@@ -103,9 +109,94 @@ void Shapes::generateTileShapes(vector<Shape*>& shapes, vector<glm::vec3> verts,
             tmpVec.insert(tmpVec.begin(), it, (it +4));
             shapes.push_back(new Shape(tmpVec, color));
         }
+
     }
     else{
         shapes.push_back(new Shape(top, color));
+    }
+
+};
+
+void Shapes::generateBorderShapes(vector<Shape*>& shapes, vector<glm::vec3> verts, glm::vec4 color, vector<int> neighborIDs, float height, float thickness){
+   
+    glm::vec3 vert1,
+              vert2,
+              vert3,
+              vert4,
+              normal; // store normal to extrude along
+
+    vector<glm::vec3> side;
+
+    // Check each side and generate border if no neighbor
+    for(int i = 0; i < neighborIDs.size(); i++){
+        // Skip all tile that have neighbors
+        if(neighborIDs[i] == 0){
+            // Clear variables
+            side.clear();
+
+            // Special case for edge joining first and last vert
+            if(i == (neighborIDs.size() - 1)){
+                // Grab correct verts
+                vert1 = verts[i];
+                vert2 = verts[0];
+                vert3 = glm::vec3(vert2.x, vert2.y + height, vert2.z);
+                vert4 = glm::vec3(vert1.x, vert1.y + height, vert1.z);              
+
+                // Push inside shape
+                side.push_back(vert1);
+                side.push_back(vert2);
+                side.push_back(vert3);
+                side.push_back(vert4);
+                shapes.push_back(new Shape(side, color));
+
+                side.clear();
+
+                // Modify vert positions for next shape
+                normal = shapes.back()->normals().at(0); // All normals are the same
+                vert1 = glm::vec3(vert1.x - (thickness*normal.x), vert1.y - (thickness*normal.y), vert1.z - (thickness*normal.z));
+                vert2 = glm::vec3(vert2.x - (thickness*normal.x), vert2.y - (thickness*normal.y), vert2.z - (thickness*normal.z));
+                vert3 = glm::vec3(vert3.x - (thickness*normal.x), vert3.y - (thickness*normal.y), vert3.z - (thickness*normal.z));
+                vert4 = glm::vec3(vert4.x - (thickness*normal.x), vert4.y - (thickness*normal.y), vert4.z - (thickness*normal.z));
+
+                // Push outside shape
+                side.push_back(vert4);
+                side.push_back(vert3);
+                side.push_back(vert2);
+                side.push_back(vert1);
+                shapes.push_back(new Shape(side, color));
+            }
+            // All other cases
+            else{
+                // Grab correct verts
+                vert1 = verts[i];
+                vert2 = verts[i+1];
+                vert3 = glm::vec3(vert2.x, vert2.y + height, vert2.z);
+                vert4 = glm::vec3(vert1.x, vert1.y + height, vert1.z);              
+
+                // Push inside shape
+                side.push_back(vert1);
+                side.push_back(vert2);
+                side.push_back(vert3);
+                side.push_back(vert4);
+                shapes.push_back(new Shape(side, color));
+
+                side.clear();
+
+                // Modify vert positions for next shape
+                normal = shapes.back()->normals().at(0); // All normals are the same
+                vert1 = glm::vec3(vert1.x - (thickness*normal.x), vert1.y - (thickness*normal.y), vert1.z - (thickness*normal.z));
+                vert2 = glm::vec3(vert2.x - (thickness*normal.x), vert2.y - (thickness*normal.y), vert2.z - (thickness*normal.z));
+                vert3 = glm::vec3(vert3.x - (thickness*normal.x), vert3.y - (thickness*normal.y), vert3.z - (thickness*normal.z));
+                vert4 = glm::vec3(vert4.x - (thickness*normal.x), vert4.y - (thickness*normal.y), vert4.z - (thickness*normal.z));
+
+                // Push outside shape
+                side.push_back(vert4);
+                side.push_back(vert3);
+                side.push_back(vert2);
+                side.push_back(vert1);
+                shapes.push_back(new Shape(side, color));
+            }
+        }
     }
 
 };

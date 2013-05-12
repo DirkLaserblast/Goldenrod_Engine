@@ -76,13 +76,16 @@
     <Filter Include="Header Files\Entity">
       <UniqueIdentifier>{661e0c32-b75a-4670-a6b1-c35ed8e5e7a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Shader">
+      <UniqueIdentifier>{6bceb00b-29ce-495d-b578-6fbbeb62999f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader">
+      <UniqueIdentifier>{3e6b092c-62eb-400a-918a-15966dde5f66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
       <Filter>Source Files\Utility</Filter>
-    </ClCompile>
-    <ClCompile Include="test_main.cpp">
-      <Filter>Source Files\Main</Filter>
     </ClCompile>
     <ClCompile Include="component_VBO.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
@@ -121,6 +124,15 @@
       <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
     <ClCompile Include="component_tee.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="main_conversion.cpp">
+      <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="component_border.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -184,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="component_ball.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

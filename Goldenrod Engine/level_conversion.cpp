@@ -9,6 +9,8 @@ Level::Level(){
     this->type = "LEVEL_T";
     this->ID = (Level::levelCount)++;
 
+    this->currentLevelShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
+
 };
 
 Level::Level(vector<ProcessedInputLine*>* inLines){
@@ -17,6 +19,8 @@ Level::Level(vector<ProcessedInputLine*>* inLines){
     this->name = "NONE";
     this->type = "LEVEL_T";
     this->ID = (Level::levelCount)++;
+
+    this->currentLevelShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
     string keyword;
 
@@ -40,6 +44,9 @@ Level::Level(vector<ProcessedInputLine*>* inLines){
 };
 
 Level::~Level(){
+
+    this->currentLevelShapes->clear(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    delete this->currentLevelShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 };
 
@@ -67,9 +74,16 @@ void Level::addTile(ProcessedInputLine& inLine){
     // Attach components
     newTile->attachComponent(new Tile());
 
+    newTile->attachComponent(new Border(inLine.getID()));
+
     newTile->attachComponent(new VBO());
 
-    newTile->attachComponent(new Shapes(inLine.getVerts(), TILE_COLOR, TILE_DEPTH));
+    newTile->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    newTile->publicShapes->addWedgeShapes(inLine.getVerts(), TILE_COLOR, TILE_DEPTH);
+
+    if(TILE_USE_BORDER){
+        newTile->publicShapes->addBorderShapes(inLine.getVerts(), BORDER_COLOR, inLine.getNeighborIDs(), BORDER_HEIGHT, BORDER_THICKNESS);
+    }
 
     this->tiles.push_back(newTile);
 
@@ -89,8 +103,9 @@ void Level::addCup(ProcessedInputLine& inLine){
 
     newCup->attachComponent(new VBO());
 
-    vector<glm::vec3> cupVerts = squareFromPoint(inLine.getVerts().at(0),CUP_WIDTH,CUP_HEIGHT,CUP_OFFSET);
-    newCup->attachComponent(new Shapes(cupVerts, CUP_COLOR, CUP_DEPTH));
+    vector<glm::vec3> cupVerts = squareFromPoint(inLine.getVerts().at(0),CUP_WIDTH,CUP_HEIGHT,CUP_OFFSET);   
+    newCup->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    newCup->publicShapes->addWedgeShapes(cupVerts, CUP_COLOR, CUP_DEPTH);
 
     this->cup = newCup;
 
@@ -110,8 +125,9 @@ void Level::addTee(ProcessedInputLine& inLine){
 
     newTee->attachComponent(new VBO());
 
-    vector<glm::vec3> teeVerts = squareFromPoint(inLine.getVerts().at(0),TEE_WIDTH,TEE_HEIGHT,TEE_OFFSET);
-    newTee->attachComponent(new Shapes(teeVerts, TEE_COLOR, TEE_DEPTH));
+    vector<glm::vec3> teeVerts = squareFromPoint(inLine.getVerts().at(0),TEE_WIDTH,TEE_HEIGHT,TEE_OFFSET);  
+    newTee->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    newTee->publicShapes->addWedgeShapes(teeVerts, TEE_COLOR, TEE_DEPTH);
 
     this->tee = newTee;
 
@@ -123,17 +139,39 @@ void deleteTee(){
 
 int Level::getLevelCount(){ return this->levelCount; };
 
-vector<Shape>* Level::getCurrentLevelShapes(){
+vector<Shape>* Level::getCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
 
-  vector<Shape>* allCurrentLevelShapes;
+    return this->currentLevelShapes;
 
-  // Get tile shapes
-  for(int i = 0; i < this->tiles.size(); i++){
-      
-  }
+};
 
-  return allCurrentLevelShapes;
+void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
 
+    if(this->currentLevelShapes->size() != 0){
+        this->currentLevelShapes->clear();
+    }
+
+    vector<Shape*> tmp;
+
+    // Get tile shapes
+    for(int i = 0; i < this->tiles.size(); i++){
+        tmp = this->tiles.at(i)->publicShapes->getShapes(); // Get tile shapes
+        for(int ii = 0; ii < tmp.size(); ii++){ // Add (copy of?) each shape
+            this->currentLevelShapes->push_back(*(tmp[ii]));
+        }
+    }
+
+    // Get tee shapes
+    tmp = this->tee->publicShapes->getShapes(); // Get tee shapes
+    for(int i = 0; i < tmp.size(); i++){
+        this->currentLevelShapes->push_back(*(tmp[i]));
+    }
+
+    // Get cup shapes
+    tmp = this->cup->publicShapes->getShapes(); // Get tee shapes
+    for(int i = 0; i < tmp.size(); i++){
+        this->currentLevelShapes->push_back(*(tmp[i]));
+    }
 
 };
 

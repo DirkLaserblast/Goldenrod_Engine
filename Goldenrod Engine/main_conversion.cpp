@@ -7,7 +7,7 @@
  *  Further modified by Casey Scheide
  */
 
-#include "GL/glui.h";
+//#include "GL\glui.h"
 
 // Shader
 #include "shader.h"
@@ -71,7 +71,7 @@ bool rightbDown = false;
 //reshape function for GLUT
 void reshape(int w, int h)
 {
-	GLUI_Master.auto_set_viewport();
+	//GLUI_Master.auto_set_viewport();
     WIN_WIDTH = w;
     WIN_HEIGHT = h;
     projection = perspective(
@@ -82,7 +82,7 @@ void reshape(int w, int h)
     );
 }
 
-//float a = 0.0; // where is this used???
+float a = 0.0; // where is this used???
 
 
 //display function for GLUT
@@ -320,21 +320,21 @@ void setupGLUT(char* programName)
 
     glutIdleFunc(idle);
 
-	GLUI_Master.set_glutKeyboardFunc(keyboard);
-	GLUI_Master.set_glutReshapeFunc(reshape);
+	//GLUI_Master.set_glutKeyboardFunc(keyboard);
+	//GLUI_Master.set_glutReshapeFunc(reshape);
 
-	//GLUI stuff
-	GLUI *gluiWindow = GLUI_Master.create_glui("Camera");
-	gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate)->set_speed(0.01f);
-	gluiWindow->add_translation("Zoom Camera", GLUI_TRANSLATION_Z, cameraZoom)->set_speed(0.1f);
-	gluiWindow->add_separator();
-	gluiWindow->add_button( "Quit", 0,(GLUI_Update_CB)exit );
+	////GLUI stuff
+	//GLUI *gluiWindow = GLUI_Master.create_glui("Camera");
+	//gluiWindow->add_translation("Rotate Camera", GLUI_TRANSLATION_XY, cameraRotate)->set_speed(0.01f);
+	//gluiWindow->add_translation("Zoom Camera", GLUI_TRANSLATION_Z, cameraZoom)->set_speed(0.1f);
+	//gluiWindow->add_separator();
+	//gluiWindow->add_button( "Quit", 0,(GLUI_Update_CB)exit );
 
-	//GLUI_Master.auto_set_viewport();
+	////GLUI_Master.auto_set_viewport();
 
-	gluiWindow->set_main_gfx_window(mainWindow);
-	GLUI_Master.set_glutIdleFunc(idle);
-	GLUI_Master.sync_live_all();
+	//gluiWindow->set_main_gfx_window(mainWindow);
+	//GLUI_Master.set_glutIdleFunc(idle);
+	//GLUI_Master.sync_live_all();
 }
 
 //initialize OpenGL background color and vertex/normal arrays
@@ -455,26 +455,22 @@ int main(int argc, char **argv)
     else{
         cout << "No input file was provided." << endl;
         // Create default level since no file was specified
-        fileIO->processFile("hole.00.db"); // default level
+        fileIO->processFile("hole.02.db"); // default level
         levelController->addLevel(fileIO->getCurrentFile());
     }
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
-    /* ######################################################################################################*/
-
     // Add shapes to game level
+    levelController->updateCurrentLevelShapes();
     shapes.clear();
-    shapes.insert(shapes.begin(), game->getCurrentLevelShapes()->begin(), game->getCurrentLevelShapes()->end());
+    shapes.insert(shapes.begin(), levelController->getCurrentLevelShapes()->begin(), levelController->getCurrentLevelShapes()->end());
     reloadAllShapes(&verts, &color, &norms, &shapes);
 
     glutMainLoop();
 
-	// Clean-up
+	// Clean-up -- NEED TO ADD THE REST OF THIS
     if(shader) delete shader;
-	if(fileIO) delete fileIO;
-	if(gameIO) delete gameIO;
-	if(game) delete game;
 
 	return 0;
 }

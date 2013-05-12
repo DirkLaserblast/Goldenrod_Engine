@@ -20,6 +20,9 @@ public:
     void prevLevel();
     void goToLevel();
 
+    vector<Shape>* getCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    void updateCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+
 private:
     Level* currentLevel;
     vector<Level*> levels;

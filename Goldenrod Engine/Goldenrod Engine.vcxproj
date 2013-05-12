@@ -62,6 +62,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="component.cpp" />
+    <ClCompile Include="component_border.cpp" />
     <ClCompile Include="component_cup.cpp" />
     <ClCompile Include="component_shapes.cpp" />
     <ClCompile Include="component_tee.cpp" />
@@ -69,11 +70,12 @@
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="fileiocontroller_conversion.cpp" />
     <ClCompile Include="level_conversion.cpp" />
+    <ClCompile Include="main_conversion.cpp" />
     <ClCompile Include="processedinputline.cpp" />
+    <ClCompile Include="shader.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="system.cpp" />
     <ClCompile Include="system_levelcontroller.cpp" />
-    <ClCompile Include="test_main.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="component_VBO.cpp" />
   </ItemGroup>
@@ -93,6 +95,7 @@
     <ClInclude Include="fileiocontroller_conversion.h" />
     <ClInclude Include="level_conversion.h" />
     <ClInclude Include="processedinputline.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="system_levelcontroller.h" />

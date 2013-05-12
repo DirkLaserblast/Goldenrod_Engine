@@ -12,6 +12,7 @@
 #include "component.h"
 #include "component_VBO.h"
 #include "component_tile.h"
+#include "component_border.h"
 #include "component_cup.h"
 #include "component_tee.h"
 #include "component_shapes.h"
@@ -44,9 +45,12 @@ public:
     int getLevelCount();
 
     vector<Shape>* getCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    void updateCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 private:
-    static int levelCount;
+    vector<Shape>* currentLevelShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
+
+    static int levelCount; // Total level objects
 
     string name; // Assigned name for component
     string type; // Tag to identify object as a level

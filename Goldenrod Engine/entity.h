@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "component.h"
+#include "component_shapes.h" // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 using std::vector;
 using std::string;
@@ -26,6 +27,8 @@ public:
     void attachComponent(Component* component);
     void deleteComponent(COMPONENT_TYPE type);
     void printInfo();
+
+    Shapes* publicShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 private:
     string name; // Assigned name for entity
