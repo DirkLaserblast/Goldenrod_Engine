@@ -2,6 +2,7 @@
 
 LevelController::LevelController(){
 
+    this->type = sLEVEL_CONTROLLER_T;
     this->currentLevel = NULL;
 
 };
@@ -22,7 +23,7 @@ void LevelController::addLevel(){
 
 };
 
-void LevelController::addLevel(vector<ProcessedInputLine>& inLines){
+void LevelController::addLevel(vector<ProcessedInputLine*>* inLines){
 
     Level* newLevel = new Level(inLines);
 

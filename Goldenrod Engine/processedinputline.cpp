@@ -30,8 +30,6 @@ void ProcessedInputLine::clear(){
 
 };
 
-string ProcessedInputLine::getKeyword(){ return this->keyword; };
-
 void ProcessedInputLine::setTileData(Tokenizer &str){
     
     keyword = "tile";
@@ -86,3 +84,15 @@ void ProcessedInputLine::setCupData(Tokenizer &str){
     verts.push_back(glm::vec3(x,y,z));
 
 };
+
+string ProcessedInputLine::getKeyword(){ return this->keyword; };
+
+int ProcessedInputLine::getID() { return this->ID; };
+
+int ProcessedInputLine::getNumEdges() { return this->numEdges; };
+
+int ProcessedInputLine::getNumNeighbors() { return this->numNeighbors; };
+
+vector<glm::vec3> ProcessedInputLine::getVerts() { return this->verts; };
+
+vector<int> ProcessedInputLine::getNeighborIDs() { return this->neighborIDs; };

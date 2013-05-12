@@ -23,11 +23,17 @@ public:
     
     ProcessedInputLine();
     ~ProcessedInputLine();
-    void clear();
-    string getKeyword();
+    void clear();    
     void setTileData(Tokenizer &str);
     void setTeeData(Tokenizer &str);
     void setCupData(Tokenizer &str);
+
+    string getKeyword();
+    int getID();
+    int getNumEdges();
+    int getNumNeighbors();
+    vector<glm::vec3> getVerts();
+    vector<int> getNeighborIDs();
 
 private:
     string keyword;

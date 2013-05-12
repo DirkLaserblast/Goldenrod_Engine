@@ -8,15 +8,24 @@ class Shapes: public Component{
 
 public:
     Shapes();
+
+    /* Shapes: constructor that creates and adds shapes to component
+       @param: verts to construct shapes
+       @param: color of shape
+       @param: depth of shape for generating "wedge" instead of flat tile
+    */
+    Shapes(vector<glm::vec3> verts, glm::vec4 color, float depth);
+
     ~Shapes();
     void update();
     void printInfo();
-    void addTileShapes(vector<glm::vec3> verts, glm::vec4 color, float depth);
+
+    vector<Shape*> getShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 private:
     vector<Shape*> shapes;
 
-    vector<Shape*> generateTileShapes(vector<glm::vec3> verts, glm::vec4 color, float depth);
+    void generateTileShapes(vector<Shape*>& shapes, vector<glm::vec3> verts, glm::vec4 color, float depth);
 
 };
 

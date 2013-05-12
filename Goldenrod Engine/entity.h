@@ -6,7 +6,6 @@
 #include <iostream>
 
 #include "component.h"
-#include "component_VBO.h"
 
 using std::vector;
 using std::string;
@@ -21,6 +20,7 @@ class Entity{
 
 public:
     Entity ();
+    Entity (ENTITY_TYPE type);
     ~Entity();
 	void update();
     void attachComponent(Component* component);
@@ -31,7 +31,7 @@ private:
     string name; // Assigned name for entity
     ENTITY_TYPE type; // Entity type tag for object   
     vector<Component*> components; // Vector of pointers to attached components
-    
+       
 };
 
 #endif

@@ -1,16 +1,36 @@
 #include "fileiocontroller_conversion.h"
 
-vector<ProcessedInputLine> FileIOController::processFile(string fileName){
+FileIOController::FileIOController(){
+
+    this->currentFile = NULL;
+
+};
+
+FileIOController::~FileIOController(){
+
+    // Clear vectors
+    this->currentFile->clear(); // Not sure if this is correct way to do this...
+
+    // Set pointers to NULL
+    this->currentFile = NULL;
+
+};
+
+void FileIOController::processFile(string fileName){
 
     ifstream inFile(fileName);
     string line;
     Tokenizer str;
     string keyword;
-    vector<ProcessedInputLine> processedLines;
+
+    
 
     // Check if file was opened correctly
     if(inFile.is_open()){
         cerr << endl << "Successfully opened " << fileName.c_str() << " for reading." << endl;
+
+        // Create new file vector and set to currentFile
+        this->currentFile = new vector<ProcessedInputLine*> ();
 
         // Loop to parse file contents
         while(inFile.good()){
@@ -21,20 +41,20 @@ vector<ProcessedInputLine> FileIOController::processFile(string fileName){
             keyword = str.nextEcho(); // determine keyword
             if(keyword == "tile"){
 
-                processedLines.push_back(ProcessedInputLine());
-                processedLines.back().setTileData(str);
+                this->currentFile->push_back(new ProcessedInputLine());
+                this->currentFile->back()->setTileData(str);
 
             }
             else if(keyword == "tee"){
 
-                processedLines.push_back(ProcessedInputLine());
-                processedLines.back().setTeeData(str);
+                this->currentFile->push_back(new ProcessedInputLine());
+                this->currentFile->back()->setTeeData(str);
 
             }
             else if(keyword == "cup"){
 
-                processedLines.push_back(ProcessedInputLine());
-                processedLines.back().setCupData(str);
+                this->currentFile->push_back(new ProcessedInputLine());
+                this->currentFile->back()->setCupData(str);
 
             }
             else if(keyword == ""){
@@ -51,8 +71,10 @@ vector<ProcessedInputLine> FileIOController::processFile(string fileName){
     }
     else{
 		cerr << endl << "Could not open " << fileName.c_str() << " for reading." << endl;
+        // Bad filename, set currentFile to NULL
+        this->currentFile = NULL;
 	}
 
-    return processedLines;
-
 };
+
+vector<ProcessedInputLine*>* FileIOController::getCurrentFile(){ return this->currentFile; };

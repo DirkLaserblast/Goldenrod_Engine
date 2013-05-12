@@ -7,6 +7,13 @@ Entity::Entity(){
 
 };
 
+Entity::Entity(ENTITY_TYPE type){
+
+    this->name = "NONE";
+    this->type = type;
+
+};
+
 Entity::~Entity(){
 
 };

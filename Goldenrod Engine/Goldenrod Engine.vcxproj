@@ -62,7 +62,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="component.cpp" />
+    <ClCompile Include="component_cup.cpp" />
     <ClCompile Include="component_shapes.cpp" />
+    <ClCompile Include="component_tee.cpp" />
     <ClCompile Include="component_tile.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="fileiocontroller_conversion.cpp" />
@@ -77,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="component.h" />
+    <ClInclude Include="component_ball.h" />
     <ClInclude Include="component_border.h" />
     <ClInclude Include="component_collision.h" />
     <ClInclude Include="component_cup.h" />

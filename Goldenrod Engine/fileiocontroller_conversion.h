@@ -19,10 +19,13 @@ using std::vector;
 class FileIOController{
 
 public:
-    static vector<ProcessedInputLine> processFile(string fileName);
+    FileIOController();
+    ~FileIOController();
+    void processFile(string fileName);
+    vector<ProcessedInputLine*>* getCurrentFile();
 
 private:
-    
+    vector<ProcessedInputLine*>* currentFile;
     
 };
 

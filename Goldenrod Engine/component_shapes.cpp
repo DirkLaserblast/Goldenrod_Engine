@@ -7,6 +7,14 @@ Shapes::Shapes(){
 
 };
 
+Shapes::Shapes(vector<glm::vec3> verts, glm::vec4 color, float depth){
+
+    this->name = "NONE";
+    this->type = cSHAPES_T;
+    this->generateTileShapes(this->shapes, verts, color, depth);
+
+};
+
 Shapes::~Shapes(){
 
     this->shapes.clear();
@@ -25,13 +33,9 @@ void Shapes::printInfo(){
 
 };
 
-void Shapes::addTileShapes(vector<glm::vec3> verts, glm::vec4 color, float depth){
+vector<Shape*> Shapes::getShapes(){ return this->shapes; }; // REMOVE THIS AFTER CONVERT TO USING VBOs
 
-    this->shapes = generateTileShapes(verts, color, depth);
-
-};
-
-vector<Shape*> Shapes::generateTileShapes(vector<glm::vec3> verts, glm::vec4 color, float depth){
+void Shapes::generateTileShapes(vector<Shape*>& shapes, vector<glm::vec3> verts, glm::vec4 color, float depth){
 
     // Ensure depth >= 0
     depth = abs(depth);
@@ -39,9 +43,6 @@ vector<Shape*> Shapes::generateTileShapes(vector<glm::vec3> verts, glm::vec4 col
     // Separate out new vectors with verts for each face in correct order for shape generation
     // Top and bottom
     vector<glm::vec3> top = verts;
-
-    // Create shape vector to return
-    vector<Shape*> newShapes;
 
     // Check if need to calculate additional verts
     if(depth > 0){
@@ -95,18 +96,16 @@ vector<Shape*> Shapes::generateTileShapes(vector<glm::vec3> verts, glm::vec4 col
         vector<glm::vec3> tmpVec;
         vector<glm::vec3>::iterator it;
 
-        newShapes.push_back(new Shape(top, color));
-        newShapes.push_back(new Shape(bottom, color));
+        shapes.push_back(new Shape(top, color));
+        shapes.push_back(new Shape(bottom, color));
         for(it = sides.begin(); it != sides.end(); it+=4){
             tmpVec.clear();
             tmpVec.insert(tmpVec.begin(), it, (it +4));
-            newShapes.push_back(new Shape(tmpVec, color));
+            shapes.push_back(new Shape(tmpVec, color));
         }
     }
     else{
-        newShapes.push_back(new Shape(top, color));
+        shapes.push_back(new Shape(top, color));
     }
-
-    return newShapes;
 
 };

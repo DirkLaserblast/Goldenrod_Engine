@@ -14,7 +14,7 @@ public:
     void update();
     void printInfo();
     void addLevel();
-    void addLevel(vector<ProcessedInputLine>& inLines);
+    void addLevel(vector<ProcessedInputLine*>* inLines);
     void deleteLevel();
     void nextLevel();
     void prevLevel();

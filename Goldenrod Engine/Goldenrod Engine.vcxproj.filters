@@ -49,20 +49,8 @@
     <Filter Include="Header Files\Component\Old classes">
       <UniqueIdentifier>{13c720fa-a9e8-489b-8b3b-66646b3625ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\System\Derived Classes\Level Controller">
-      <UniqueIdentifier>{87f4d172-5904-42e8-923c-cae60b2bb03e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Component\Old Classes">
       <UniqueIdentifier>{b89394c0-6cb7-426b-a36d-db8f8c470cd2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Game Object Base Classes">
-      <UniqueIdentifier>{a6c12035-a8fa-4620-a23c-4ff01c11ed08}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Game Object Base Classes">
-      <UniqueIdentifier>{9197dc93-d9dc-484b-a552-a39286e64f8c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\System\Derived Classes\Level Controller">
-      <UniqueIdentifier>{3f25159b-c8de-45cf-97e7-3cf26c778875}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\File IO Controller">
       <UniqueIdentifier>{28d415cd-6449-44a6-8b08-d80ba1942c9d}</UniqueIdentifier>
@@ -76,6 +64,18 @@
     <Filter Include="Header Files\Game IO Controller">
       <UniqueIdentifier>{94b18384-25a4-49fe-a033-deb7d2da2737}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Level">
+      <UniqueIdentifier>{4d883386-e65b-431a-9ec3-6297f639d32f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Entity">
+      <UniqueIdentifier>{f752f826-579e-428e-a47a-1890d232d0b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Level">
+      <UniqueIdentifier>{4da255a5-815f-4a5b-9cbc-3d4d1f17024f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Entity">
+      <UniqueIdentifier>{661e0c32-b75a-4670-a6b1-c35ed8e5e7a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -86,21 +86,6 @@
     </ClCompile>
     <ClCompile Include="component_VBO.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="entity.cpp">
-      <Filter>Source Files\Game Object Base Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="component.cpp">
-      <Filter>Source Files\Game Object Base Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="system.cpp">
-      <Filter>Source Files\Game Object Base Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="level_conversion.cpp">
-      <Filter>Source Files\Game Object Base Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="system_levelcontroller.cpp">
-      <Filter>Source Files\System\Derived Classes\Level Controller</Filter>
     </ClCompile>
     <ClCompile Include="fileiocontroller_conversion.cpp">
       <Filter>Source Files\File IO Controller</Filter>
@@ -117,6 +102,27 @@
     <ClCompile Include="shape.cpp">
       <Filter>Source Files\Component\Old Classes</Filter>
     </ClCompile>
+    <ClCompile Include="component.cpp">
+      <Filter>Source Files\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="level_conversion.cpp">
+      <Filter>Source Files\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="system.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Source Files\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="system_levelcontroller.cpp">
+      <Filter>Source Files\System\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="component_cup.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="component_tee.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Tokenizer.h">
@@ -124,9 +130,6 @@
     </ClInclude>
     <ClInclude Include="component_VBO.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="system_levelcontroller.h">
-      <Filter>Header Files\System\Derived Classes\Level Controller</Filter>
     </ClInclude>
     <ClInclude Include="component_render.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
@@ -149,18 +152,6 @@
     <ClInclude Include="component_physics.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
-    <ClInclude Include="component.h">
-      <Filter>Header Files\Game Object Base Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="entity.h">
-      <Filter>Header Files\Game Object Base Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>Header Files\Game Object Base Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="level_conversion.h">
-      <Filter>Header Files\Game Object Base Classes</Filter>
-    </ClInclude>
     <ClInclude Include="fileiocontroller_conversion.h">
       <Filter>Header Files\File IO Controller</Filter>
     </ClInclude>
@@ -175,6 +166,24 @@
     </ClInclude>
     <ClInclude Include="shape.h">
       <Filter>Header Files\Component\Old classes</Filter>
+    </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Header Files\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="level_conversion.h">
+      <Filter>Header Files\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="component.h">
+      <Filter>Header Files\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="system_levelcontroller.h">
+      <Filter>Header Files\System\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="component_ball.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
