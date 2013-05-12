@@ -135,6 +135,9 @@
     <ClCompile Include="component_border.cpp">
       <Filter>Source Files\Component\Derived Classes</Filter>
     </ClCompile>
+    <ClCompile Include="component_ball.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Tokenizer.h">

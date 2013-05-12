@@ -15,6 +15,7 @@
 #include "component_border.h"
 #include "component_cup.h"
 #include "component_tee.h"
+#include "component_ball.h"
 #include "component_shapes.h"
 
 using std::string;
@@ -41,6 +42,8 @@ public:
     void deleteCup(); // Currently does nothing
     void addTee(ProcessedInputLine& inLine);
     void deleteTee(); // Currently does nothing
+    void addBall(ProcessedInputLine& inLine);
+    void deleteBall(); // Currently does nothing
 
     int getLevelCount();
 
@@ -58,6 +61,7 @@ private:
     bool valid;
     Entity* tee;
     Entity* cup;
+    Entity* ball;
     vector<Entity*> tiles;
     vector<Entity*> borders;
 
@@ -68,6 +72,8 @@ private:
        @param: offset from given point
     */
     vector<glm::vec3> squareFromPoint(glm::vec3 point, float width, float height, float offset);
+
+    vector<glm::vec3> circleFromPoint(glm::vec3 point, float radius, float degree, float offset);
 
 };
 

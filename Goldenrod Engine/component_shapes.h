@@ -1,6 +1,8 @@
 #ifndef COMPONENT_SHAPES_H
 #define COMPONENT_SHAPES_H
 
+#include <math.h>
+
 #include "component.h"
 #include "shape.h"
 

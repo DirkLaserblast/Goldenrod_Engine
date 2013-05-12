@@ -62,6 +62,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="component.cpp" />
+    <ClCompile Include="component_ball.cpp" />
     <ClCompile Include="component_border.cpp" />
     <ClCompile Include="component_cup.cpp" />
     <ClCompile Include="component_shapes.cpp" />

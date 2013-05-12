@@ -32,6 +32,7 @@ Level::Level(vector<ProcessedInputLine*>* inLines){
         }
         else if(keyword == "tee"){
             this->addTee(*((*inLines)[i]));
+            this->addBall(*((*inLines)[i]));
         }
         else if(keyword == "cup"){
             this->addCup(*((*inLines)[i]));
@@ -137,6 +138,28 @@ void deleteTee(){
     
 };
 
+void Level::addBall(ProcessedInputLine& inLine){
+
+    // New entity
+    Entity* newBall = new Entity(eDYNAMIC_GEOMETRY_T);
+
+    // Attach components
+    newBall->attachComponent(new Ball());
+
+    newBall->attachComponent(new VBO());
+
+    vector<glm::vec3> ballVerts = circleFromPoint(inLine.getVerts().at(0),BALL_RADIUS, BALL_DEGREE, BALL_OFFSET);  
+    newBall->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    newBall->publicShapes->addWedgeShapes(ballVerts, BALL_COLOR, BALL_DEPTH);
+
+    this->ball = newBall;
+
+};
+
+void Level::deleteBall(){
+
+};
+
 int Level::getLevelCount(){ return this->levelCount; };
 
 vector<Shape>* Level::getCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
@@ -155,20 +178,26 @@ void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VB
 
     // Get tile shapes
     for(int i = 0; i < this->tiles.size(); i++){
-        tmp = this->tiles.at(i)->publicShapes->getShapes(); // Get tile shapes
+        tmp = this->tiles.at(i)->publicShapes->getShapes();
         for(int ii = 0; ii < tmp.size(); ii++){ // Add (copy of?) each shape
             this->currentLevelShapes->push_back(*(tmp[ii]));
         }
     }
 
     // Get tee shapes
-    tmp = this->tee->publicShapes->getShapes(); // Get tee shapes
+    tmp = this->tee->publicShapes->getShapes();
     for(int i = 0; i < tmp.size(); i++){
         this->currentLevelShapes->push_back(*(tmp[i]));
     }
 
     // Get cup shapes
-    tmp = this->cup->publicShapes->getShapes(); // Get tee shapes
+    tmp = this->cup->publicShapes->getShapes();
+    for(int i = 0; i < tmp.size(); i++){
+        this->currentLevelShapes->push_back(*(tmp[i]));
+    }
+
+    // Get ball shapes
+    tmp = this->ball->publicShapes->getShapes();
     for(int i = 0; i < tmp.size(); i++){
         this->currentLevelShapes->push_back(*(tmp[i]));
     }
@@ -185,5 +214,25 @@ vector<glm::vec3> Level::squareFromPoint(glm::vec3 point, float width, float hei
     squareVerts.push_back(glm::vec3(point.x - width, point.y + offset, point.z - height));
 
     return squareVerts;
+
+};
+
+vector<glm::vec3> Level::circleFromPoint(glm::vec3 point, float radius, float degree, float offset){
+
+    vector<glm::vec3> circleVerts;
+    float newX,
+          newY,
+          newZ;
+
+    // Add verts for circle
+    for(float i = 0; i <= 360; i += degree){
+        newX = (radius*sin(i)) + point.x;
+        newY = point.y + offset;
+        newZ = (radius*cos(i)) + point.z;
+
+        circleVerts.push_back(glm::vec3(newX,newY,newZ));
+    }
+
+    return circleVerts;
 
 };
