@@ -74,6 +74,8 @@ bool z_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
+const float PI = 3.14159265;
+
 //Variables for gameplay controls
 int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
 vec3 launchVector = vec3(0.0, 0.0, 1.0); //Vector representing same angle
@@ -422,6 +424,9 @@ void launchBall(int in)
 	angleSpinner->disable();
 	powerSpinner->disable();
 	fireButton->disable();
+
+	float launchAngleRadians = launchAngle * (PI/180);
+	launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 }
 
 //do some GLUT initialization, also set up GLUI
