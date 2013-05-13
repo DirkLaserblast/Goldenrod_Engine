@@ -79,7 +79,7 @@ int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
 vec3 launchVector = vec3(0.0, 0.0, 1.0); //Vector representing same angle
 int launchPower; //How hard to "hit" the ball, between 1 and 100
 
-vec3 fakeBallPosition = vec3(-1, 0, 0);
+vec3 fakeBallPosition = vec3(1, 0, 1);
 
 //GLUI variables
 GLUI *gluiWindow;
@@ -89,37 +89,53 @@ GLUI_Spinner *angleSpinner;
 GLUI_Spinner *powerSpinner;
 GLUI_Button *fireButton;
 
+//Replace fakeBallPosition with actual ball position!
+//Updates the camera position
 void updateCamera()
 {
+	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
+	yRotation = cameraRotate[0];
+	height = cameraRotate[1];
+	zoom = cameraZoom[0];
+
 	switch(cameraMode)
 	{
 	case 0:
 		camRotateTrans->enable();
 		camZoomTrans->enable();
-		yRotation = cameraRotate[0];
-		if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
-		height = cameraRotate[1];
-		if (cameraZoom[0] < 2) cameraZoom[0] = 2;
-		zoom = cameraZoom[0];
+
+		if (cameraRotate[1] > 2) cameraRotate[1] = 2;
+		if (cameraZoom[0] < 2) cameraZoom[0] = 2; //Prevent zooming through the ground
+
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
 		break;
 	case 1:
+		camRotateTrans->enable();
+		camZoomTrans->enable();
+		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
+		camera = lookAt(fakeBallPosition + viewPos, fakeBallPosition, vec3(0, 1, 0));
 		break;
 	case 2:
 		camRotateTrans->disable();
-		if (cameraZoom[0] < 2) cameraZoom[0] = 2;
+		camZoomTrans->enable();
 		camZoomTrans->set_float_val(2.0);
 		viewPos = vec3(0, cameraZoom[0], 0);
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(-1, 0, 0));
-		//camera = rotate(camera, cameraRotate[0], vec3(0, 1, 0));
 		break;
 	}
 }
 
+bool positiveAdd = true;
+
 //Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
+	//Move fake ball for camera testing
+	//if (positiveAdd) fakeBallPosition += vec3(0.1, 0.0, 0.1);
+	//else fakeBallPosition -= vec3(0.1, 0.0, 0.1);
+	//if (fakeBallPosition.x > 1 || fakeBallPosition.x < -1) positiveAdd = !positiveAdd;
+
 	updateCamera();
 	glutTimerFunc(tickSpeed, tick, 0);
 }
@@ -560,7 +576,7 @@ int main(int argc, char **argv)
 
     reloadAllShapes(&verts, &color, &norms, &shapes);
 
-	cout << "Distance = " << shapes[0].distanceToPlane(vec3(0, 0, 0)) << "\n";
+	//cout << "Distance = " << shapes[0].distanceToPlane(vec3(0, 1, 0)) << "\n";
 
     glutMainLoop();
 

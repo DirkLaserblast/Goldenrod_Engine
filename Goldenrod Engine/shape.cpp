@@ -126,7 +126,7 @@ void Shape::reload()
 	}
 }
 
-//Calculates distance between 
+//Calculates signed distance between a point and a shape (as a plane)
 float Shape::distanceToPlane(vec3 point)
 {
 	vec3 planeNormal, planePoint, originVector; //Originvector is the vector from the original point to the plane's point
@@ -134,7 +134,7 @@ float Shape::distanceToPlane(vec3 point)
 	planeNormal = this->normals().at(0);
 	originVector = planePoint - point;
 
-	return dot(originVector, planeNormal);
+	return abs(dot(originVector, normalize(planeNormal)));
 }
 
 //Create the three vectors needed to render, using a list of shapes
