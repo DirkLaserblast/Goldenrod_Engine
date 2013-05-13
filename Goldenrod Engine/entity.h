@@ -8,6 +8,11 @@
 #include "component.h"
 #include "component_shapes.h" // REMOVE THIS AFTER CONVERT TO USING VBOs
 
+// Have to use these as a work around until I figure out how
+// to make a real components based system
+#include "component_physc.h" 
+#include "component_collision.h"
+
 using std::vector;
 using std::string;
 using std::cerr;
@@ -29,6 +34,11 @@ public:
     void printInfo();
 
     Shapes* publicShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
+
+    // Remove when actually have compoenent system working
+    Physc* publicPhysics;
+    Collision* publicCollision;
+
 
 private:
     string name; // Assigned name for entity

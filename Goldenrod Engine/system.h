@@ -10,8 +10,8 @@ using std::string;
 using std::cerr;
 using std::cout;
 
-enum SYSTEM_TYPE { sNONE_T, sRENDERER_T, sFILEIO_T, sGAMEIO_T, sLEVEL_CONTROLLER_T, sPHYSICS_T, sSHADER_MANAGER_T };
-const string systemTypes[] = { "NONE", "sRENDERER_T", "sFILEIO_T", "sGAMEIO_T", "sLEVEL_CONTROLLER_T", "sPHYSICS_T", "sSHADER_MANAGER_T" };
+enum SYSTEM_TYPE { sNONE_T, sTEST_T, sGAMEIO_T, sLEVEL_CONTROLLER_T, sPHYSICS_T, sSHADER_MANAGER_T };
+const string systemTypes[] = { "NONE_T", "sTEST_T", "sGAMEIO_T", "sLEVEL_CONTROLLER_T", "sPHYSICS_T", "sSHADER_MANAGER_T" };
 
 class System{
 

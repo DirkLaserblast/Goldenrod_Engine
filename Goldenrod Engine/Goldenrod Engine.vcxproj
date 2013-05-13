@@ -62,12 +62,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="component.cpp" />
+    <ClCompile Include="arrow.cpp" />
     <ClCompile Include="component_ball.cpp" />
     <ClCompile Include="component_border.cpp" />
     <ClCompile Include="component_collision.cpp" />
     <ClCompile Include="component_cup.cpp" />
+    <ClCompile Include="component_physc.cpp" />
     <ClCompile Include="component_shapes.cpp" />
     <ClCompile Include="component_tee.cpp" />
+    <ClCompile Include="component_test.cpp" />
     <ClCompile Include="component_tile.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="fileiocontroller.cpp" />
@@ -78,12 +81,15 @@
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="system.cpp" />
     <ClCompile Include="system_levelcontroller.cpp" />
+    <ClCompile Include="system_physics.cpp" />
+    <ClCompile Include="system_test.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="component_VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="component.h" />
+    <ClInclude Include="arrow.h" />
     <ClInclude Include="component_ball.h" />
     <ClInclude Include="component_border.h" />
     <ClInclude Include="component_collision.h" />
@@ -91,6 +97,7 @@
     <ClInclude Include="component_physc.h" />
     <ClInclude Include="component_shapes.h" />
     <ClInclude Include="component_tee.h" />
+    <ClInclude Include="component_test.h" />
     <ClInclude Include="component_tile.h" />
     <ClInclude Include="component_VAO.h" />
     <ClInclude Include="entity.h" />
@@ -101,6 +108,8 @@
     <ClInclude Include="shape.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="system_levelcontroller.h" />
+    <ClInclude Include="system_physics.h" />
+    <ClInclude Include="system_test.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="Tokenizer.h" />
     <ClInclude Include="component_VBO.h" />

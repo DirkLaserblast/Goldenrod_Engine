@@ -5,9 +5,9 @@
 
 #define BALL_COLOR glm::vec4(1.0,1.0,1.0,1.0) // WHITE
 #define BALL_DEPTH 0.0f
-#define BALL_RADIUS 0.1f
-#define BALL_OFFSET 0.005f
-#define BALL_DEGREE 45 // Lower than 45 doesn't work; maybe an issue with shapes
+#define BALL_RADIUS 0.05f
+#define BALL_OFFSET 0.01f
+#define BALL_DEGREE 90 // Lower than 45 doesn't work; maybe an issue with shapes
 
 class Ball: public Component{
 

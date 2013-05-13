@@ -16,6 +16,7 @@
 // System
 #include "system.h"
 #include "system_levelcontroller.h"
+#include "system_physics.h"
 
 // Component
 #include "component.h"
@@ -25,10 +26,29 @@
 // IO
 #include "fileiocontroller.h"
 
+// Arrow for aiming
+#include "arrow.h"
+
+// Timer
+#include "time.h"
+
 // Glui
 #include "GL\glui.h"
 
+#define PI 3.14159L
+
+// Initialize systems and other controllers -- These have to be global for the time being...
+LevelController* levelController = new LevelController();
+Physics* physics = new Physics();
+
+FileIOController* fileIO = new FileIOController();
+
+Timer* gameTime = new Timer();
+int tickSpeed = 30; //Speed of timer function in milliseconds
+
 Shader *shader = NULL;
+
+Arrow* arrow = new Arrow();
 
 int mainWindow; //Used for GLUI
 int WIN_WIDTH = 1280, WIN_HEIGHT = 900; //window width/height
@@ -51,8 +71,6 @@ float modelTranslateY[1];
 
 float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
 
-int tickSpeed = 30; //Speed of timer function, in miliseconds
-
 vector<Shape> shapes; //Stores all the currently rendered shapes
 
 vector<float> verts; //vertex array
@@ -74,13 +92,6 @@ bool z_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
-//Variables for gameplay controls
-int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
-vec3 launchVector = vec3(0.0, 0.0, 1.0); //Vector representing same angle
-int launchPower; //How hard to "hit" the ball, between 1 and 100
-
-vec3 fakeBallPosition = vec3(1, 0, 1);
-
 //GLUI variables
 GLUI *gluiWindow;
 GLUI_Translation *camRotateTrans;
@@ -89,7 +100,45 @@ GLUI_Spinner *angleSpinner;
 GLUI_Spinner *powerSpinner;
 GLUI_Button *fireButton;
 
-//Replace fakeBallPosition with actual ball position!
+//Variables for gameplay controls
+int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
+vec3 launchVector = vec3(0.0, 0.0, 1.0); //Vector representing same angle
+float launchAngleRadians = 0;
+int launchPower; //How hard to "hit" the ball, between 1 and 7 (for now)
+bool ballMoving = false;
+
+// Ball
+Entity* ball = NULL;
+vec3 ballPosition = vec3(1, 0, 1);
+
+//Start the ball moving using direction and power from GLUI input
+void launchBall(int i)
+{
+    ballMoving = true;
+
+    launchAngleRadians = launchAngle * (PI/180);
+    launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
+
+    ball->publicPhysics->setDirection(launchVector);
+    ball->publicPhysics->setSpeed(launchPower/10.0f);
+
+	angleSpinner->disable();
+	powerSpinner->disable();
+	fireButton->disable();
+}
+
+// Ball stopped moving
+void ballStopped(){
+
+    ballMoving = false;    
+
+    angleSpinner->enable();
+	powerSpinner->enable();
+	fireButton->enable();
+
+};
+
+//Replace ballPosition with actual ball position!
 //Updates the camera position
 void updateCamera()
 {
@@ -114,7 +163,7 @@ void updateCamera()
 		camRotateTrans->enable();
 		camZoomTrans->enable();
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
-		camera = lookAt(fakeBallPosition + viewPos, fakeBallPosition, vec3(0, 1, 0));
+		camera = lookAt(ballPosition + viewPos, ballPosition, vec3(0, 1, 0));
 		break;
 	case 2:
 		camRotateTrans->disable();
@@ -132,9 +181,33 @@ bool positiveAdd = true;
 void tick(int in)
 {
 	//Move fake ball for camera testing
-	//if (positiveAdd) fakeBallPosition += vec3(0.1, 0.0, 0.1);
-	//else fakeBallPosition -= vec3(0.1, 0.0, 0.1);
-	//if (fakeBallPosition.x > 1 || fakeBallPosition.x < -1) positiveAdd = !positiveAdd;
+	//if (positiveAdd) ballPosition += vec3(0.1, 0.0, 0.1);
+	//else ballPosition -= vec3(0.1, 0.0, 0.1);
+	//if (ballPosition.x > 1 || ballPosition.x < -1) positiveAdd = !positiveAdd;
+
+    if(ballMoving){
+        // Calculate new delt pos and move ball shapes
+        glm::vec3 deltaPos; // Needed to pull out from physics_component
+        deltaPos.x = (ball->publicPhysics->getDirection().x * ball->publicPhysics->getSpeed());
+        deltaPos.y = (ball->publicPhysics->getDirection().y * ball->publicPhysics->getSpeed());
+        deltaPos.z = (ball->publicPhysics->getDirection().z * ball->publicPhysics->getSpeed());
+
+        // Update arrow pos
+        arrow->translate(deltaPos);
+
+        // Update shapes for drawing
+        reloadAllShapes(&verts, &color, &norms, &shapes); 
+        shapes[shapes.size() - 1].translate(deltaPos);
+        shapes[shapes.size() - 1].reload();
+
+        // Update physc component
+        physics->update(TILE_FRICTION);
+
+        // Check if ball stopped
+        if(ball->publicPhysics->getSpeed() == 0){
+            ballStopped();
+        }
+    }
 
 	updateCamera();
 	glutTimerFunc(tickSpeed, tick, 0);
@@ -159,7 +232,6 @@ float a = 0.0; // where is this used???
 //display function for GLUT
 void display()
 {
-
 
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -262,6 +334,59 @@ void display()
 		glDrawArrays(GL_TRIANGLE_FAN, shapes[i].startIndex / 3, shapes[i].numVertices());
 	}
 
+    //----------------------------DRAW ARROW----------------------------//
+    if(ballMoving == false){
+        // Update arrow rotation        
+        arrow->rotate(launchAngle);
+
+        modelCam = camera * arrow->getModelTransformMatrix();
+
+        //Pass the matrix
+        glUniformMatrix4fv(
+                shader->modelViewLoc, //handle to variable in the shader program
+                1, //how many matrices we want to send
+                GL_FALSE, //transpose the matrix
+                value_ptr(modelCam) //a pointer to an array containing the entries for
+                  //the matrix
+                );
+
+        glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer); //which buffer we want
+          //to use
+        glBufferData(
+                    GL_ARRAY_BUFFER, //what kind of buffer (an array)
+                    arrow->getVerts().size() * sizeof(glm::vec3), //size of the buffer in bytes
+                    arrow->getVerts().data(), //pointer to data we want to fill the buffer with
+                    GL_DYNAMIC_DRAW //how we intend to use the buffer
+                    );
+        glEnableVertexAttribArray(shader->vertexLoc); //enable the attribute
+        glVertexAttribPointer(
+                shader->vertexLoc, //handle to variable in shader program
+                3, //vector size (e.g. for texture coordinates this could be 2).
+                GL_FLOAT, //what type of data is (e.g. GL_FLOAT, GL_INT, etc.)
+                GL_FALSE, //normalize the data?
+                0, //stride of data (e.g. offset in bytes). Most of the time leaving
+                  //this at 0 (assumes data is in one, contiguous array) is fine
+                  //unless we're doing something really complex.
+                NULL //since our stride will be 0 in general, leaving this NULL is
+                  //also fine in general
+                );
+
+        glBindBuffer(GL_ARRAY_BUFFER, shader->colorBuffer);
+            glBufferData(
+                    GL_ARRAY_BUFFER,
+                    arrow->getVertColors().size() * sizeof(glm::vec4),
+                    arrow->getVertColors().data(),
+                    GL_DYNAMIC_DRAW
+                    );
+        glEnableVertexAttribArray(shader->colorLoc);
+        glVertexAttribPointer(shader->colorLoc, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+
+        glDrawArrays(GL_LINES, 0, 6);
+
+    }
+
+    //------------------------------------------------------------------//
+
  //   //update animation variables.
  //   //have time oscillate between 0.0 and 1.0.
  //   if ((animTime >= 1.0 && deltaT > 0.0) ||
@@ -271,6 +396,7 @@ void display()
  //   }
 
     glutSwapBuffers();
+
 }
 
 //idle function for GLUT
@@ -371,14 +497,6 @@ void mouseMove(int x, int y)
     glutPostRedisplay();
 }
 
-//Start the ball moving using direction and power from GLUI input
-void launchBall(int in)
-{
-	angleSpinner->disable();
-	powerSpinner->disable();
-	fireButton->disable();
-}
-
 //do some GLUT initialization, also set up GLUI
 void setupGLUT(char* programName)
 {
@@ -427,7 +545,7 @@ void setupGLUT(char* programName)
 	angleSpinner->set_int_val(launchAngle);
 
 	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
-	powerSpinner->set_int_limits(1, 100, GLUI_LIMIT_CLAMP);
+	powerSpinner->set_int_limits(1, 7, GLUI_LIMIT_CLAMP);
 	powerSpinner->set_int_val(launchPower);
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
@@ -542,11 +660,7 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
 }
 
 int main(int argc, char **argv)
-{
-	// Initialize systems and other controllers
-    LevelController* levelController = new LevelController();
-	FileIOController* fileIO = new FileIOController();
-    //Timer* gameTime = new Timer();
+{	
 
     // Check if input file was given, if not use default
     if(argc > 1){
@@ -559,24 +673,27 @@ int main(int argc, char **argv)
     else{
         cout << "No input file was provided." << endl;
         // Create default level since no file was specified
-        fileIO->processFile("hole.02.db"); // default level
+        fileIO->processFile("hole.00.db"); // default level
         levelController->addLevel(fileIO->getCurrentFile());
     }
 
-	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
+    // Add ball entity to physics
+    physics->addEntity(levelController->getCurrentLevel()->getBall());
+    ball = levelController->getCurrentLevel()->getBall();
+    ballPosition = ball->publicPhysics->getPosition();
 
-    //cout << "Engine initialized in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
+    // Move arrow to ball's starting position
+    arrow->translate(ball->publicPhysics->getPosition());
+    arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
+
+	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
     // Add shapes to game level
     levelController->updateCurrentLevelShapes();
     shapes.clear();
     shapes.insert(shapes.begin(), levelController->getCurrentLevelShapes()->begin(), levelController->getCurrentLevelShapes()->end());
 
-    //cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
-
     reloadAllShapes(&verts, &color, &norms, &shapes);
-
-	//cout << "Distance = " << shapes[0].distanceToPlane(vec3(0, 1, 0)) << "\n";
 
     glutMainLoop();
 

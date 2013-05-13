@@ -18,37 +18,37 @@ using namespace glm;
 class Shape
 {
 public:
-	//Constructor: takes a counterclockwise list of vertices and a RGBA color
-	Shape(vector<vec3> vertices, vec4 color);
-	//Apply a matrix transform to all the vertices in the shape
-	void transform(mat4 matrix);
-	void translate(vec3 deltaPos);
-	void changeColor(vec4 color);
-	void reload(); //Reloads the shape's verts in to main arrays
-	//Return vertices, normals, or colors as lists of vectors
-	vector<vec3> vertices();
-	vector<vec4> colors();
-	vector<vec3> normals();
-	//Return as raw lists of floats
-	vector<float> rawVerts();
-	vector<float> rawColors();
-	vector<float> rawNormals();
-	//Number of vertices in the shape
-	int numVertices();
-	float distanceToPlane(vec3 point); //Find the distance from a point to a shape, for collision detection with the ball
-	
-	//Stores the shape's starting position in the main vertex array and normal array
-	int startIndex;
-	int colorStartIndex;
-	vector<float> * vertsPointer, * colorsPointer, * normsPointer;
+    //Constructor: takes a counterclockwise list of vertices and a RGBA color
+    Shape(vector<vec3> vertices, vec4 color);
+    //Apply a matrix transform to all the vertices in the shape
+    void transform(mat4 matrix);
+    void translate(vec3 deltaPos);
+    void changeColor(vec4 color);
+    void reload(); //Reloads the shape's verts in to main arrays
+    //Return vertices, normals, or colors as lists of vectors
+    vector<vec3> vertices();
+    vector<vec4> colors();
+    vector<vec3> normals();
+    //Return as raw lists of floats
+    vector<float> rawVerts();
+    vector<float> rawColors();
+    vector<float> rawNormals();
+    //Number of vertices in the shape
+    int numVertices();
+    float distanceToPlane(vec3 point); //Find the distance from a point to a shape, for collision detection with the ball
 
-	private:
-	vector<float> convert(vector<vec3> in);
-	vector<float> convert(vector<vec4> in);
-	vector<vec3> shapeVertices;
-	vector<vec4> shapeColors;
-	vector<vec3> shapeNormals;
-	vec3 center;
+    //Stores the shape's starting position in the main vertex array and normal array
+    int startIndex;
+    int colorStartIndex;
+    vector<float> * vertsPointer, * colorsPointer, * normsPointer;
+
+private:
+    vector<float> convert(vector<vec3> in);
+    vector<float> convert(vector<vec4> in);
+    vector<vec3> shapeVertices;
+    vector<vec4> shapeColors;
+    vector<vec3> shapeNormals;
+    vec3 center;
 };
 
 //Erase and populate the rendering arrays

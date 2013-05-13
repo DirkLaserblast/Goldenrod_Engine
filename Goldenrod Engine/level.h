@@ -17,6 +17,7 @@
 #include "component_tee.h"
 #include "component_ball.h"
 #include "component_shapes.h"
+#include "component_collision.h"
 
 using std::string;
 using std::cerr;
@@ -48,6 +49,11 @@ public:
     int getLevelCount();
 
     vector<Shape>* getCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+
+    Entity* getCup(); // Obviously defeat the purpose...
+    Entity* getTee();
+    Entity* getBall();
+
     void updateCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 private:

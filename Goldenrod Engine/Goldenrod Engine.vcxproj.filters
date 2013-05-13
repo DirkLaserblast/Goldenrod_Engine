@@ -82,6 +82,12 @@
     <Filter Include="Source Files\Component\Shape">
       <UniqueIdentifier>{b89394c0-6cb7-426b-a36d-db8f8c470cd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Arrow">
+      <UniqueIdentifier>{9ecb3e67-1b88-4ee0-b49e-7bdd81583506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Arrow">
+      <UniqueIdentifier>{2fac1b15-68e4-4bda-b72b-d111dadbdd2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -143,6 +149,21 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files\Main</Filter>
+    </ClCompile>
+    <ClCompile Include="component_physc.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="component_test.cpp">
+      <Filter>Source Files\Component\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="system_test.cpp">
+      <Filter>Source Files\System\Derived Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="arrow.cpp">
+      <Filter>Source Files\Arrow</Filter>
+    </ClCompile>
+    <ClCompile Include="system_physics.cpp">
+      <Filter>Source Files\System\Derived Classes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -208,6 +229,18 @@
     </ClInclude>
     <ClInclude Include="component_physc.h">
       <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="component_test.h">
+      <Filter>Header Files\Component\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="system_test.h">
+      <Filter>Header Files\System\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="arrow.h">
+      <Filter>Header Files\Arrow</Filter>
+    </ClInclude>
+    <ClInclude Include="system_physics.h">
+      <Filter>Header Files\System\Derived Classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,6 +21,7 @@ public:
     void goToLevel();
 
     vector<Shape>* getCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+    Level* getCurrentLevel(); // Obviously defeats the purpose of everything...
     void updateCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 private:

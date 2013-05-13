@@ -6,6 +6,7 @@
 
 // System
 #include "system.h"
+#include "system_test.h"
 #include "system_levelcontroller.h"
 
 // Component
@@ -14,7 +15,7 @@
 #include "component_shapes.h"
 
 // IO
-#include "fileiocontroller_conversion.h"
+#include "fileiocontroller.h"
 
 int main(int argc, char **argv)
 {
@@ -23,6 +24,7 @@ int main(int argc, char **argv)
     Entity* myEntity = new Entity();
     LevelController* myLevelController = new LevelController();
     FileIOController* myFileIOController = new FileIOController();
+    SystemTest* myTestSystem = new SystemTest();
 
     // Test Entity
     myEntity->attachComponent(new VBO());
@@ -38,6 +40,9 @@ int main(int argc, char **argv)
     
     myFileIOController->processFile("hole.01.db");
     myLevelController->addLevel(myFileIOController->getCurrentFile());
+
+    // Test access to components
+    
 
     int wait;
     cin >> wait;

@@ -54,6 +54,8 @@ vector<Shape>* LevelController::getCurrentLevelShapes(){ // REMOVE THIS AFTER CO
 
 };
 
+Level* LevelController::getCurrentLevel(){ return this->currentLevel; };
+
 void LevelController::updateCurrentLevelShapes(){
 
     this->currentLevel->updateCurrentLevelShapes();
