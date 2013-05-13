@@ -110,6 +110,9 @@ bool ballMoving = false;
 // Ball
 Entity* ball = NULL;
 vec3 ballPosition = vec3(1, 0, 1);
+vec3 prevBallPosition = vec3(1, 0, 1);
+vec3 ballDirection = vec3(1, 0, 1);
+float oldYRotation;
 
 //Start the ball moving using direction and power from GLUI input
 void launchBall(int i)
@@ -142,40 +145,65 @@ void ballStopped(){
 //Updates the camera position
 void updateCamera()
 {
+    ballPosition = ball->publicPhysics->getPosition();
+    ballDirection = ball->publicPhysics->getDirection();
+
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
-	yRotation = cameraRotate[0];
-	height = cameraRotate[1];
-	zoom = cameraZoom[0];
+	if (cameraRotate[1] > 2) cameraRotate[1] = 2;
+	if (cameraZoom[0] < 2) cameraZoom[0] = 2; //Prevent zooming through the ground
 
 	switch(cameraMode)
 	{
-	case 0:
+	case 0: //Free look
 		camRotateTrans->enable();
 		camZoomTrans->enable();
 
-		if (cameraRotate[1] > 2) cameraRotate[1] = 2;
-		if (cameraZoom[0] < 2) cameraZoom[0] = 2; //Prevent zooming through the ground
+		yRotation = cameraRotate[0];
+		height = cameraRotate[1];
+		zoom = cameraZoom[0];
 
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
 		break;
-	case 1:
-		camRotateTrans->enable();
-		camZoomTrans->enable();
+	case 1: //Third person
+		camRotateTrans->disable(); //Disable camera controls
+		camZoomTrans->disable();
+
+		height = 1;
+		zoom = 2;
+
+		//Set rotation based on direction ball is moving
+		//If ball has changed direction, start to turn in that direction
+		oldYRotation = yRotation;
+		yRotation = atan2(ballDirection.z, ballDirection.x);
+
+		if(oldYRotation - yRotation < -0.1)
+		{
+			yRotation = oldYRotation + 0.1;
+		}
+		else if (oldYRotation - yRotation > 0.1)
+		{
+			yRotation = oldYRotation - 0.1;
+		}
+		else yRotation = atan2(ballDirection.z, ballDirection.x);
+		
+
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(ballPosition + viewPos, ballPosition, vec3(0, 1, 0));
 		break;
-	case 2:
+	case 2: //Top down
 		camRotateTrans->disable();
 		camZoomTrans->enable();
-		camZoomTrans->set_float_val(2.0);
+
+		yRotation = cameraRotate[0];
+		height = cameraRotate[1];
+		zoom = cameraZoom[0];
+
 		viewPos = vec3(0, cameraZoom[0], 0);
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(-1, 0, 0));
 		break;
 	}
 }
-
-bool positiveAdd = true;
 
 //Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
@@ -541,11 +569,11 @@ void setupGLUT(char* programName)
 
 	angleSpinner = gluiWindowLeft->add_spinner("Angle", GLUI_SPINNER_INT, &launchAngle);
 	angleSpinner->set_int_limits(0, 359, GLUI_LIMIT_WRAP);
-	angleSpinner->set_speed(0.5);
+	angleSpinner->set_speed(0.2);
 	angleSpinner->set_int_val(launchAngle);
 
 	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
-	powerSpinner->set_int_limits(1, 7, GLUI_LIMIT_CLAMP);
+	powerSpinner->set_int_limits(1, 6, GLUI_LIMIT_CLAMP);
 	powerSpinner->set_int_val(launchPower);
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
@@ -681,6 +709,8 @@ int main(int argc, char **argv)
     physics->addEntity(levelController->getCurrentLevel()->getBall());
     ball = levelController->getCurrentLevel()->getBall();
     ballPosition = ball->publicPhysics->getPosition();
+    prevBallPosition = ball->publicPhysics->getPosition();
+    ballDirection = ball->publicPhysics->getDirection();
 
     // Move arrow to ball's starting position
     arrow->translate(ball->publicPhysics->getPosition());

@@ -78,6 +78,8 @@ void Level::addTile(ProcessedInputLine& inLine){
     // Setup public components since real components not working yet
     newTile->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
     newTile->publicShapes->addWedgeShapes(inLine.getVerts(), TILE_COLOR, TILE_DEPTH);
+    newTile->publicPhysics = new Physc();
+    newTile->publicPhysics->setPosition(calculateCenter(inLine.getVerts()));
 
     // Add corresponding border entity
     if(TILE_USE_BORDER){
@@ -284,5 +286,19 @@ vector<glm::vec3> Level::circleFromPoint(glm::vec3 point, float radius, float de
     circleVerts.push_back(glm::vec3(point.x - 0.7*radius, point.y + offset, point.z + 0.7*radius));
 
     return circleVerts;
+
+};
+
+glm::vec3 Level::calculateCenter(vector<glm::vec3> plane){
+
+    glm::vec3 center = glm::vec3();
+
+    for(int i = 0; i < plane.size(); i++){
+        center += plane[i];
+    }
+
+    center = glm::vec3(center.x/plane.size(), center.y/plane.size(), center.z/plane.size());
+
+    return center;
 
 };

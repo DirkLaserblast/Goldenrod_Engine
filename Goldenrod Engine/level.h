@@ -81,6 +81,8 @@ private:
 
     vector<glm::vec3> circleFromPoint(glm::vec3 point, float radius, float degree, float offset);
 
+    glm::vec3 calculateCenter(vector<glm::vec3> plane);
+
 };
 
 #endif
