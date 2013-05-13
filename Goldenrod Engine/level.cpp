@@ -1,244 +1,266 @@
 #include "level.h"
 
-int Level::levelCount = 0;
+#include <iostream>
+
+int Level::totalLevels = 0; // initialize static member
 
 Level::Level(){
-
-    // Default values
-    this->name = "NONE";
-    this->type = "LEVEL_T";
-    this->ID = (Level::levelCount)++;
-
-    this->currentLevelShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
-
-};
-
-Level::Level(vector<ProcessedInputLine*>* inLines){
-
-    // Same as default
-    this->name = "NONE";
-    this->type = "LEVEL_T";
-    this->ID = (Level::levelCount)++;
-
-    this->currentLevelShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
-
-    string keyword;
-
-    for(int i = 0; i < inLines->size(); i++){
-        // Create appropriate Entities and add to corresponding vectors
-        keyword = (*inLines)[i]->getKeyword();
-        if(keyword == "tile"){
-            this->addTile(*((*inLines)[i]));
-        }
-        else if(keyword == "tee"){
-            this->addTee(*((*inLines)[i]));
-            this->addBall(*((*inLines)[i]));
-        }
-        else if(keyword == "cup"){
-            this->addCup(*((*inLines)[i]));
-        }
-        else{
-            cerr << endl << "Invalid keyword in processed file." << endl;
-        }
-    }
-
+	this->ID = ++(Level::totalLevels);
+    this->validate();
 };
 
 Level::~Level(){
 
-    this->currentLevelShapes->clear(); // REMOVE THIS AFTER CONVERT TO USING VBOs
-    delete this->currentLevelShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
+    this->tiles.clear();
+    this->verts.clear();
+    this->cols.clear();
+    this->norms.clear();
+    this->shapes.clear();
 
-};
-
-void Level::update(){
-
-};
-
-void Level::printInfo(){
-
-    // Print level name
-    cerr << endl << "LEVEL NAME: " << this->name << endl;
-    // Print level type
-    cerr << "TYPE: " << this->type << endl;
-    // Print ID
-    cerr << "ID: " << this->ID << endl;
-
-
-};
-
-void Level::addTile(ProcessedInputLine& inLine){
-    
-    // New entity
-    Entity* newTile = new Entity(eSTATIC_GEOMETRY_T);
-
-    // Attach components
-    newTile->attachComponent(new Tile(inLine.getID(), inLine.getNeighborIDs()));
-
-    newTile->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
-    newTile->publicShapes->addWedgeShapes(inLine.getVerts(), TILE_COLOR, TILE_DEPTH);
-
-    //newTile->attachComponent(new Border(inLine.getID())); // debug
-
-    // Add corresponding border entity
-    if(TILE_USE_BORDER){
-        //newTile->publicShapes->addBorderShapes(inLine.getVerts(), BORDER_COLOR, inLine.getNeighborIDs(), BORDER_HEIGHT, BORDER_THICKNESS); // debug
-        Entity* newBorder = new Entity(eSTATIC_GEOMETRY_T);
-        newBorder->attachComponent(new Border(inLine.getID()));
-        newBorder->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
-        newBorder->publicShapes->addBorderShapes(inLine.getVerts(), BORDER_COLOR, inLine.getNeighborIDs(), BORDER_HEIGHT, BORDER_THICKNESS);
-        this->borders.push_back(newBorder);
+    if(tee != NULL){
+        delete tee;
+    }
+    if(cup != NULL){
+        delete cup;
     }
 
-    this->tiles.push_back(newTile);
+}
+
+int Level::getTotalLevels(){ return Level::totalLevels; };
+
+int Level::getID(){ return this->ID; };
+
+vector<Shape>* Level::getShapes(){ return &(this->shapes); };
+
+void Level::validate(){
+
+    // Need to add this function
 
 };
 
-void Level::deleteTile(){
-    
-};
+bool Level::isValid(){
 
-void Level::addCup(ProcessedInputLine& inLine){
-    
-    // New entity
-    Entity* newCup = new Entity(eSTATIC_GEOMETRY_T);
-
-    // Attach components
-    newCup->attachComponent(new Cup(inLine.getID()));
-
-    vector<glm::vec3> cupVerts = squareFromPoint(inLine.getVerts().at(0),CUP_WIDTH,CUP_HEIGHT,CUP_OFFSET);   
-    newCup->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
-    newCup->publicShapes->addWedgeShapes(cupVerts, CUP_COLOR, CUP_DEPTH);
-
-    this->cup = newCup;
+	return this->valid;
 
 };
 
-void Level::deleteCup(){
-    
-};
+bool Level::addTile(int ID, int numEdges, int numNeighbors, vector<glm::vec3> verts, vector<int> neighborIDs,
+    bool addBorderFlag, bool addDepthFlag){
 
-void Level::addTee(ProcessedInputLine& inLine){
-    
-    // New entity
-    Entity* newTee = new Entity(eSTATIC_GEOMETRY_T);
+    int posIndex = this->verts.size();
+    int colIndex = this->cols.size();
+    int normIndex = this->norms.size();
+    int shapeIndex = this->shapes.size();
+    vector<Shape> newShapes;
+	vector<Shape> edgeShapes;
 
-    // Attach components
-    newTee->attachComponent(new Tee(inLine.getID()));
-
-    vector<glm::vec3> teeVerts = squareFromPoint(inLine.getVerts().at(0),TEE_WIDTH,TEE_HEIGHT,TEE_OFFSET);  
-    newTee->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
-    newTee->publicShapes->addWedgeShapes(teeVerts, TEE_COLOR, TEE_DEPTH);
-
-    this->tee = newTee;
-
-};
-
-void deleteTee(){
-    
-};
-
-void Level::addBall(ProcessedInputLine& inLine){
-
-    // New entity
-    Entity* newBall = new Entity(eDYNAMIC_GEOMETRY_T);
-
-    // Attach components
-    newBall->attachComponent(new Ball(inLine.getID()));
-
-    vector<glm::vec3> ballVerts = circleFromPoint(inLine.getVerts().at(0),BALL_RADIUS, BALL_DEGREE, BALL_OFFSET);  
-    newBall->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
-    newBall->publicShapes->addWedgeShapes(ballVerts, BALL_COLOR, BALL_DEPTH);
-
-    this->ball = newBall;
-
-};
-
-void Level::deleteBall(){
-
-};
-
-int Level::getLevelCount(){ return this->levelCount; };
-
-vector<Shape>* Level::getCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
-
-    return this->currentLevelShapes;
-
-};
-
-void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
-
-    if(this->currentLevelShapes->size() != 0){
-        this->currentLevelShapes->clear();
+    // Code to generate the Shapes to add for the tile
+    if(addDepthFlag){
+        newShapes = generateDepthShapes(verts, TILE_COLOR); // testing code
     }
+    else{
+        newShapes.push_back(Shape(verts, TILE_COLOR));
+    }  
 
-    vector<Shape*> tmp;
+    Tile* newTile = new Tile(ID, numEdges, numNeighbors, newShapes.size(), posIndex, colIndex, normIndex, shapeIndex, verts, neighborIDs);
 
-    // Get tile shapes
-    for(int i = 0; i < this->tiles.size(); i++){
-        tmp = this->tiles.at(i)->publicShapes->getShapes();
-        for(int ii = 0; ii < tmp.size(); ii++){ // Add (copy of?) each shape
-            this->currentLevelShapes->push_back(*(tmp[ii]));
+    // Validate Entity
+    if(newTile->isValid()){
+        // Add tile to level
+		this->tiles.push_back((*newTile));
+        // Add vert data to level -- DOES NOT INCLUDE ADDITIONAL VERT DATA FOR TILES WITH DEPTH
+        this->verts.insert(this->verts.end(), verts.begin(), verts.end());
+        // Add shape(s) data to level
+        for(int i = 0; i < newShapes.size(); i++){
+            this->shapes.push_back(newShapes[i]);
+			//newTile->shapesPointer.push_back(&newShapes[i]); //Save shape pointer in tile
+        }
+
+
+
+		return true;
+	}
+	else{
+		delete newTile;
+		return false;
+	}
+
+};
+
+bool Level::addTee(int ID, glm::vec3 loc){
+
+    int locIndex = this->verts.size();
+    int shapeIndex = this->shapes.size();
+
+    // Determine verts for tee based on pos
+    vector<vec3> teeVerts;
+    teeVerts.push_back(glm::vec3(loc.x - TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z + TEE_RADIUS));
+    teeVerts.push_back(glm::vec3(loc.x + TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z + TEE_RADIUS));
+    teeVerts.push_back(glm::vec3(loc.x + TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z - TEE_RADIUS));
+    teeVerts.push_back(glm::vec3(loc.x - TEE_RADIUS, loc.y + TEE_PLANE_OFFSET, loc.z - TEE_RADIUS));     
+    
+    Shape* newShape = new Shape(teeVerts, TEE_COLOR);
+
+    Tee* newTee = new Tee(ID, locIndex, shapeIndex);
+
+    // Validate Entity
+    if(newTee->isValid()){
+        // Add tee to level
+		this->tee = newTee;
+        // Add vert data to level
+        this->verts.push_back(loc);
+        // Add shape data to level
+        this->shapes.push_back((*newShape));
+		return true;
+	}
+	else{
+		delete newTee;
+		return false;
+	}
+
+};
+
+bool Level::addCup(int ID, glm::vec3 loc){
+
+    int locIndex = this->verts.size();
+    int shapeIndex = this->shapes.size();
+
+    // Determine verts for tee based on pos
+    vector<vec3> cupVerts;
+    cupVerts.push_back(glm::vec3(loc.x - CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z + CUP_RADIUS));
+    cupVerts.push_back(glm::vec3(loc.x + CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z + CUP_RADIUS));
+    cupVerts.push_back(glm::vec3(loc.x + CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z - CUP_RADIUS));
+    cupVerts.push_back(glm::vec3(loc.x - CUP_RADIUS, loc.y + CUP_PLANE_OFFSET, loc.z - CUP_RADIUS));     
+    
+    Shape* newShape = new Shape(cupVerts, CUP_COLOR);
+
+    Cup* newCup = new Cup(ID, locIndex, shapeIndex);
+
+    // Validate Entity
+    if(newCup->isValid()){
+        // Add cup to level
+		this->cup = newCup;
+        // Add vert data to level
+        this->verts.push_back(loc);
+        // Add shape data to level
+        this->shapes.push_back((*newShape));
+		return true;
+	}
+	else{
+		delete newCup;
+		return false;
+	}
+
+};
+
+vector<Shape> Level::generateDepthShapes(vector<glm::vec3> verts, glm::vec4 color){
+    
+    // Separate out new vectors with verts for each face in correct order for shape generation
+    // Top and bottom
+    vector<glm::vec3> top = verts;
+
+    vector<glm::vec3> bottom;
+    int topVertIndex = 0;
+    for(int i = 0; i < verts.size(); i++){
+        bottom.push_back(glm::vec3(top[topVertIndex].x, top[topVertIndex].y - TILE_DEPTH, top[topVertIndex].z));
+
+        topVertIndex--;
+        if(topVertIndex < 0){
+            topVertIndex = top.size() - 1;
         }
     }
 
-    // Get border shapes
-    for(int i = 0; i < this->borders.size(); i++){
-        tmp = this->borders.at(i)->publicShapes->getShapes();
-        for(int ii = 0; ii < tmp.size(); ii++){ // Add (copy of?) each shape
-            this->currentLevelShapes->push_back(*(tmp[ii]));
+    // Sides
+    // Initial vert index setup
+    int firstVertIndex = 0, // index of top vert
+        secondVertIndex = 0, // index of bottom vert
+        thirdVertIndex = (bottom.size() - 1), // index of bottom vert
+        fourthVertIndex = 1; // index of top vert
+
+    vector<glm::vec3> sides; // Store all side verts 
+
+    for(int i = 0; i < verts.size(); i++){ // For each side
+        sides.push_back(top[firstVertIndex]);
+        sides.push_back(bottom[secondVertIndex]);
+        sides.push_back(bottom[thirdVertIndex]);
+        sides.push_back(top[fourthVertIndex]);
+
+        // Update vert indices
+        firstVertIndex--;
+        secondVertIndex++;
+        thirdVertIndex++;
+        fourthVertIndex--;
+
+        // Correct for wrap around
+        if(firstVertIndex < 0){
+            firstVertIndex = (top.size() - 1);
+        }
+        if(secondVertIndex > (bottom.size() - 1)){
+            secondVertIndex = 0;
+        }
+        if(thirdVertIndex > (bottom.size() - 1)){
+            thirdVertIndex = 0;
+        }
+        if(fourthVertIndex < 0){
+            fourthVertIndex = (top.size() - 1);
         }
     }
 
-    // Get tee shapes
-    tmp = this->tee->publicShapes->getShapes();
-    for(int i = 0; i < tmp.size(); i++){
-        this->currentLevelShapes->push_back(*(tmp[i]));
+    // Create shape vector to return
+    vector<Shape> newShapes;
+    vector<glm::vec3> tmpVec;
+    vector<glm::vec3>::iterator it;
+
+    newShapes.push_back(Shape(top, color));
+    newShapes.push_back(Shape(bottom, color));
+    for(it = sides.begin(); it != sides.end(); it+=4){
+        tmpVec.clear();
+        tmpVec.insert(tmpVec.begin(), it, (it +4));
+        newShapes.push_back(Shape(tmpVec, color));
     }
 
-    // Get cup shapes
-    tmp = this->cup->publicShapes->getShapes();
-    for(int i = 0; i < tmp.size(); i++){
-        this->currentLevelShapes->push_back(*(tmp[i]));
-    }
-
-    // Get ball shapes
-    tmp = this->ball->publicShapes->getShapes();
-    for(int i = 0; i < tmp.size(); i++){
-        this->currentLevelShapes->push_back(*(tmp[i]));
-    }
+    return newShapes;
 
 };
 
-vector<glm::vec3> Level::squareFromPoint(glm::vec3 point, float width, float height, float offset){
-    
-    vector<glm::vec3> squareVerts;
+bool Level::addBorder(){
 
-    squareVerts.push_back(glm::vec3(point.x - width, point.y + offset, point.z + height));
-    squareVerts.push_back(glm::vec3(point.x + width, point.y + offset, point.z + height));
-    squareVerts.push_back(glm::vec3(point.x + width, point.y + offset, point.z - height));
-    squareVerts.push_back(glm::vec3(point.x - width, point.y + offset, point.z - height));
+	vector<Shape> newShapes;
+	vector<Shape> edgeShapes;
+	vector<vec3> openEdges;
+	int ID;
 
-    return squareVerts;
+		for (int tileIndex = 0; tileIndex < this->tiles.size(); tileIndex++)
+		{
+			Tile * currentTile = &this->tiles[tileIndex];
+			ID = currentTile->getID();
 
-};
+			vec3 edge1[2];
+			vec3 edge2[2];
 
-vector<glm::vec3> Level::circleFromPoint(glm::vec3 point, float radius, float degree, float offset){
+			for (int i = 0; i < currentTile->getNeighbors().size(); i++)
+			{
+				if (currentTile->getNeighbors()[i] == 0)
+				{
 
-    vector<glm::vec3> circleVerts;
-    float newX,
-          newY,
-          newZ;
+					vector<vec3> edgeVerts;
+					Border* newBorder = new Border(ID, 1);
+					this->borders.push_back(*newBorder);
+					edgeVerts.push_back(currentTile->edges[i+1]);
+					edgeVerts.push_back(currentTile->edges[i]);
+					edgeVerts.push_back(currentTile->edges[i] + vec3(0, 0.1, 0));
+					edgeVerts.push_back(currentTile->edges[i+1] + vec3(0, 0.1, 0));
+					edgeShapes.push_back(Shape(edgeVerts, vec4(1, 0, 0, 1)));
+					newBorder->shapesPointer.push_back(&edgeShapes.back());
 
-    // Add verts for circle
-    for(float i = 0; i <= 360; i += degree){
-        newX = (radius*sin(i)) + point.x;
-        newY = point.y + offset;
-        newZ = (radius*cos(i)) + point.z;
+					this->shapes.insert(this->shapes.end(), edgeShapes.begin(), edgeShapes.end());
+				}
+			
+			}
 
-        circleVerts.push_back(glm::vec3(newX,newY,newZ));
-    }
+		}
 
-    return circleVerts;
 
+
+		return true;
 };

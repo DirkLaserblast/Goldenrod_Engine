@@ -2,15 +2,8 @@
 
 Entity::Entity(){
 
-    this->name = "NONE";
+    this->name = NONE;
     this->type = eNONE_T;
-
-};
-
-Entity::Entity(ENTITY_TYPE type){
-
-    this->name = "NONE";
-    this->type = type;
 
 };
 
@@ -32,7 +25,7 @@ void Entity::deleteComponent(COMPONENT_TYPE type){
 
     for(int i = 0; i < this->components.size(); i++){
         if((this->components[i])->getType() == type){
-            this->components.erase(this->components.begin() + i);
+            delete (this->components[i]);
         }
     }
 
@@ -40,17 +33,17 @@ void Entity::deleteComponent(COMPONENT_TYPE type){
 
 void Entity::printInfo(){
 
-    // Print entity name
-    cerr << endl << "Entity NAME: " << this->name << endl;
+    // Print name from super class
+    this->GameObject::printInfo();
 
     // Print entity type
-    cerr << "TYPE: " << entityTypes[this->type] << endl;
+    cout << "ENTITY TYPE: " << entityTypes[this->type] << endl;
 
     // Print info for each component
-    cerr << "COMPONENTS:" << endl;
+    cout << "COMPONENTS:" << endl;
     for(int i = 0; i < this->components.size(); i++){
         (this->components[i])->printInfo();
     }
-    cerr << endl;
+    cout << endl;
 
 };

@@ -1,17 +1,23 @@
 #include "system.h"
 
-using namespace std;
-
 void  System::update(){
 
 };
 
 void System::printInfo(){
 
-    // Print system name
-    cerr << endl << "SYSTEM NAME: " << this->name << endl;
+    // Print name from super class
+    this->GameObject::printInfo();
 
     // Print system type
-    cerr << "TYPE: " << systemTypes[this->type] << endl;
+    cout << "SYSTEM TYPE: " << systemTypes[this->type] << endl;
+
+    // Print name of each assigned entity
+    cout << "ENTITIES:" << endl;
+    for(int i = 0; i < this->entities.size(); i++){
+        (this->entities[i])->GameObject::printInfo(); // only print name
+    }
+
+    cout << endl;
 
 };

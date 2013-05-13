@@ -1,4 +1,4 @@
-/* main.cpp
+/*main.cpp
 */
 
 /*	Graphics code based on CMPS 160 work
@@ -7,27 +7,14 @@
  *  Further modified by Casey Scheide
  */
 
-// Shader
+#include "shape.h"
+#include "fileiocontroller.h"
+#include "gameiocontroller.h"
+#include "gamecontroller.h"
 #include "shader.h"
 #include "time.h"
 
-// Entity
-#include "entity.h"
-
-// System
-#include "system.h"
-#include "system_levelcontroller.h"
-
-// Component
-#include "component.h"
-#include "component_VBO.h"
-#include "component_shapes.h"
-
-// IO
-#include "fileiocontroller.h"
-
-// Glui
-#include "GL\glui.h"
+#include "GL/glui.h";
 
 Shader *shader = NULL;
 
@@ -58,11 +45,7 @@ vector<Shape> shapes; //Stores all the currently rendered shapes
 
 vector<float> verts; //vertex array
 vector<float> norms; //normals array
-<<<<<<< HEAD
 vector<float> color; //Model color array
-=======
-vector<float> color; //vertex color array
->>>>>>> origin/component
 
 int upMouseXPos;
 int downMouseXPos;
@@ -140,7 +123,8 @@ void reshape(int w, int h)
     );
 }
 
-float a = 0.0; // where is this used???
+float a = 0.0;
+
 
 //display function for GLUT
 void display()
@@ -529,10 +513,8 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
 
 int main(int argc, char **argv)
 {
-	// Initialize systems and other controllers
-    LevelController* levelController = new LevelController();
+	// Initialize game engine
 	FileIOController* fileIO = new FileIOController();
-<<<<<<< HEAD
 	GameIOController* gameIO = new GameIOController();
 	GameController* game = new GameController();
 	//Timer* gameTime = new Timer();
@@ -544,52 +526,27 @@ int main(int argc, char **argv)
     else{
         cout << "No input file was provided." << endl;
         fileIO->createLevelFromFile(game, "hole.01.db"); // default level
-=======
-    //Timer* gameTime = new Timer();
-
-    // Check if input file was given, if not use default
-    if(argc > 1){
-        fileIO->processFile(argv[1]);
-        // Make sure that file was correctly read and parsed
-        if(fileIO->getCurrentFile() != NULL){
-            levelController->addLevel(fileIO->getCurrentFile());
-        }
-    }
-    else{
-        cout << "No input file was provided." << endl;
-        // Create default level since no file was specified
-        fileIO->processFile("hole.02.db"); // default level
-        levelController->addLevel(fileIO->getCurrentFile());
->>>>>>> origin/component
     }
 
 	initializeGraphics(argc, argv, "MiniGolf", WIN_WIDTH, WIN_HEIGHT);
 
 	//cout << "Engine initialized in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
 
-    //cout << "Engine initialized in " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
-
     // Add shapes to game level
-    levelController->updateCurrentLevelShapes();
     shapes.clear();
-<<<<<<< HEAD
     shapes.insert(shapes.begin(), game->getCurrentLevelShapes()->begin(), game->getCurrentLevelShapes()->end());
 
 	//cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
 
 	reloadAllShapes(&verts, &color, &norms, &shapes);
-=======
-    shapes.insert(shapes.begin(), levelController->getCurrentLevelShapes()->begin(), levelController->getCurrentLevelShapes()->end());
-
-    //cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
-
-    reloadAllShapes(&verts, &color, &norms, &shapes);
->>>>>>> origin/component
 
     glutMainLoop();
 
-	// Clean-up -- NEED TO ADD THE REST OF THIS
+	// Clean-up
     if(shader) delete shader;
+	if(fileIO) delete fileIO;
+	if(gameIO) delete gameIO;
+	if(game) delete game;
 
 	return 0;
 }

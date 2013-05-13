@@ -1,8 +1,8 @@
-#include "component_VBO.h"
+#include "VBO.h"
 
 VBO::VBO(){
 
-    this->name = "NONE";
+    this->name = NONE;
     this->type = cVBO_T;
 
 };

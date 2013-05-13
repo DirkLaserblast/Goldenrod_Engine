@@ -2,26 +2,24 @@
 #define SYSTEM_H
 
 #include <vector>
-#include <string>
-#include <iostream>
 
-using std::vector;
-using std::string;
-using std::cerr;
-using std::cout;
+#include "gameobject.h"
+#include "entity.h"
 
-enum SYSTEM_TYPE { sNONE_T, sRENDERER_T, sFILEIO_T, sGAMEIO_T, sLEVEL_CONTROLLER_T, sPHYSICS_T, sSHADER_MANAGER_T };
-const string systemTypes[] = { "NONE", "sRENDERER_T", "sFILEIO_T", "sGAMEIO_T", "sLEVEL_CONTROLLER_T", "sPHYSICS_T", "sSHADER_MANAGER_T" };
+using namespace std;
 
-class System{
+enum SYSTEM_TYPE { sNONE_T, sRENDERER_T, sFILEIO_T, sGAMEIO_T, sGAME_T, sPHYSICS_T, sSHADER_MANAGER_T };
+const string systemTypes[] = { NONE, "sRENDERER_T", "sFILEIO_T", "sGAMEIO_T", "sGAME_T", "sPHYSICS_T", "sSHADER_MANAGER_T" };
+
+class System: public GameObject{
 
 public:    
     virtual void update();
     virtual void printInfo();
 
 protected:
-    string name; // Assigned name for system
     SYSTEM_TYPE type; // System type tag for object   
+    vector<Entity*> entities; // Vector of pointers to assigned entities
 
 };
 
