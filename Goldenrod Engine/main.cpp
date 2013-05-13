@@ -89,22 +89,11 @@ GLUI_Spinner *angleSpinner;
 GLUI_Spinner *powerSpinner;
 GLUI_Button *fireButton;
 
-//Replace fakeBallPosition with actual ball position!
-vec3 fakeBallPosition = vec3(1, 0, 1);
-vec3 fakePreviousPosition = vec3(0, 0, 0);
-vec3 fakeBallDirection = vec3(1, 0 , 0);
 float oldYRotation;
 
 //Updates the camera position
-void updateCamera()
+void updateCamera(vec3 ballPosition, vec3 ballDirection)
 {
-	//Testing code, don't leave this in, updates fake ball direction
-	fakeBallDirection =  normalize(fakePreviousPosition - fakeBallPosition);
-	fakePreviousPosition = fakeBallPosition;
-
-	vec3 ballPosition = fakeBallPosition;
-	vec2 ballDirection = fakeBallDirection.xz;
-
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
 	if (cameraRotate[1] > 2) cameraRotate[1] = 2;
 	if (cameraZoom[0] < 2) cameraZoom[0] = 2; //Prevent zooming through the ground
@@ -132,7 +121,7 @@ void updateCamera()
 		//Set rotation based on direction ball is moving
 		//If ball has changed direction, start to turn in that direction
 		oldYRotation = yRotation;
-		yRotation = atan2(ballDirection.y, ballDirection.x);
+		yRotation = atan2(ballDirection.z, ballDirection.x);
 
 		if(oldYRotation - yRotation < -0.1)
 		{
@@ -142,7 +131,8 @@ void updateCamera()
 		{
 			yRotation = oldYRotation - 0.1;
 		}
-		else yRotation = atan2(ballDirection.y, ballDirection.x);
+		else yRotation = atan2(ballDirection.z, ballDirection.x);
+		
 
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(ballPosition + viewPos, ballPosition, vec3(0, 1, 0));
@@ -161,29 +151,24 @@ void updateCamera()
 	}
 }
 
-bool positiveAdd = true;
-float fakeX;
-float fakeZ;
-
 //Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
-	//Move fake ball for camera testing
-	if (positiveAdd)
+	//Replace this with actual ball position
+	vec3 position = shapes[shapes.size() - 1].vertices()[0].xyz;
+
+	//If controls are enabled (ball not yet launched), then make ball direction equals launchVector
+	if (angleSpinner->enabled)
 	{
-		fakeX += 0.1;
-		fakeZ -= 0.1;
+		float launchAngleRadians = launchAngle * (PI/180);
+		launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
+		updateCamera(position, launchVector);
 	}
 	else
 	{
-		fakeX -= 0.1;
-		fakeZ += 0.1;
+		//Replace launchVector here with actual ball direction
+		updateCamera(position, launchVector);
 	}
-	if (fakeX > 2 * 3.141592 || fakeX < 2 * -3.141592) positiveAdd = !positiveAdd;
-	fakeBallPosition = vec3(cos(fakeX), 0.0, sin(fakeX));
-
-
-	updateCamera();
 	glutTimerFunc(tickSpeed, tick, 0);
 }
 
@@ -425,8 +410,6 @@ void launchBall(int in)
 	powerSpinner->disable();
 	fireButton->disable();
 
-	float launchAngleRadians = launchAngle * (PI/180);
-	launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 }
 
 //do some GLUT initialization, also set up GLUI
@@ -473,7 +456,7 @@ void setupGLUT(char* programName)
 
 	angleSpinner = gluiWindowLeft->add_spinner("Angle", GLUI_SPINNER_INT, &launchAngle);
 	angleSpinner->set_int_limits(0, 359, GLUI_LIMIT_WRAP);
-	angleSpinner->set_speed(0.5);
+	angleSpinner->set_speed(0.01);
 	angleSpinner->set_int_val(launchAngle);
 
 	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
