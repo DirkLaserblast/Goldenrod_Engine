@@ -97,7 +97,9 @@ void updateCamera()
 		camRotateTrans->enable();
 		camZoomTrans->enable();
 		yRotation = cameraRotate[0];
+		if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
 		height = cameraRotate[1];
+		if (cameraZoom[0] < 2) cameraZoom[0] = 2;
 		zoom = cameraZoom[0];
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
@@ -106,8 +108,9 @@ void updateCamera()
 		break;
 	case 2:
 		camRotateTrans->disable();
-		camZoomTrans->disable();
-		viewPos = vec3(0, 4, 0);
+		if (cameraZoom[0] < 2) cameraZoom[0] = 2;
+		camZoomTrans->set_float_val(2.0);
+		viewPos = vec3(0, cameraZoom[0], 0);
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(-1, 0, 0));
 		//camera = rotate(camera, cameraRotate[0], vec3(0, 1, 0));
 		break;
@@ -556,6 +559,8 @@ int main(int argc, char **argv)
     //cout << "Delta " << float(gameTime->delta()) / CLOCKS_PER_SEC << " seconds.\n";
 
     reloadAllShapes(&verts, &color, &norms, &shapes);
+
+	cout << "Distance = " << shapes[0].distanceToPlane(vec3(0, 0, 0)) << "\n";
 
     glutMainLoop();
 

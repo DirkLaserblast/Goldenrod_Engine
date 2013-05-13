@@ -21,7 +21,7 @@ Shape::Shape(vector<vec3> vertices, vec4 color)
 
 	shapeNormals = vector<vec3>(vertices.size(), normal);
 
-
+	
 }
 
 void Shape::transform(mat4 matrix)
@@ -124,6 +124,17 @@ void Shape::reload()
 		normsPointer->at(pos+1) = newNorm.y;
 		normsPointer->at(pos+2) = newNorm.z;
 	}
+}
+
+//Calculates distance between 
+float Shape::distanceToPlane(vec3 point)
+{
+	vec3 planeNormal, planePoint, originVector; //Originvector is the vector from the original point to the plane's point
+	planePoint = this->vertices().at(0);
+	planeNormal = this->normals().at(0);
+	originVector = planePoint - point;
+
+	return dot(originVector, planeNormal);
 }
 
 //Create the three vectors needed to render, using a list of shapes

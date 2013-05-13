@@ -35,6 +35,7 @@ public:
 	vector<float> rawNormals();
 	//Number of vertices in the shape
 	int numVertices();
+	float distanceToPlane(vec3 point); //Find the distance from a point to a shape, for collision detection with the ball
 	
 	//Stores the shape's starting position in the main vertex array and normal array
 	int startIndex;
@@ -47,6 +48,7 @@ public:
 	vector<vec3> shapeVertices;
 	vector<vec4> shapeColors;
 	vector<vec3> shapeNormals;
+	vec3 center;
 };
 
 //Erase and populate the rendering arrays
