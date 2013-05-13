@@ -79,8 +79,6 @@ int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
 vec3 launchVector = vec3(0.0, 0.0, 1.0); //Vector representing same angle
 int launchPower; //How hard to "hit" the ball, between 1 and 100
 
-vec3 fakeBallPosition = vec3(1, 0, 1);
-
 //GLUI variables
 GLUI *gluiWindow;
 GLUI_Translation *camRotateTrans;
@@ -90,36 +88,71 @@ GLUI_Spinner *powerSpinner;
 GLUI_Button *fireButton;
 
 //Replace fakeBallPosition with actual ball position!
+vec3 fakeBallPosition = vec3(1, 0, 1);
+vec3 fakePreviousPosition = vec3(0, 0, 0);
+vec3 fakeBallDirection = vec3(1, 0 , 0);
+float oldYRotation;
+
 //Updates the camera position
 void updateCamera()
 {
+	//Testing code, don't leave this in, updates fake ball direction
+	fakeBallDirection =  normalize(fakePreviousPosition - fakeBallPosition);
+	fakePreviousPosition = fakeBallPosition;
+
+	vec3 ballPosition = fakeBallPosition;
+	vec2 ballDirection = fakeBallDirection.xz;
+
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
-	yRotation = cameraRotate[0];
-	height = cameraRotate[1];
-	zoom = cameraZoom[0];
+	if (cameraRotate[1] > 2) cameraRotate[1] = 2;
+	if (cameraZoom[0] < 2) cameraZoom[0] = 2; //Prevent zooming through the ground
 
 	switch(cameraMode)
 	{
-	case 0:
+	case 0: //Free look
 		camRotateTrans->enable();
 		camZoomTrans->enable();
 
-		if (cameraRotate[1] > 2) cameraRotate[1] = 2;
-		if (cameraZoom[0] < 2) cameraZoom[0] = 2; //Prevent zooming through the ground
+		yRotation = cameraRotate[0];
+		height = cameraRotate[1];
+		zoom = cameraZoom[0];
 
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
 		break;
-	case 1:
-		camRotateTrans->enable();
-		camZoomTrans->enable();
+	case 1: //Third person
+		camRotateTrans->disable(); //Disable camera controls
+		camZoomTrans->disable();
+
+		height = 1;
+		zoom = 2;
+
+		//Set rotation based on direction ball is moving
+		//If ball has changed direction, start to turn in that direction
+		oldYRotation = yRotation;
+		yRotation = atan2(ballDirection.y, ballDirection.x);
+
+		if(oldYRotation - yRotation < -0.1)
+		{
+			yRotation = oldYRotation + 0.1;
+		}
+		else if (oldYRotation - yRotation > 0.1)
+		{
+			yRotation = oldYRotation - 0.1;
+		}
+		else yRotation = atan2(ballDirection.y, ballDirection.x);
+
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
-		camera = lookAt(fakeBallPosition + viewPos, fakeBallPosition, vec3(0, 1, 0));
+		camera = lookAt(ballPosition + viewPos, ballPosition, vec3(0, 1, 0));
 		break;
-	case 2:
+	case 2: //Top down
 		camRotateTrans->disable();
 		camZoomTrans->enable();
-		camZoomTrans->set_float_val(2.0);
+
+		yRotation = cameraRotate[0];
+		height = cameraRotate[1];
+		zoom = cameraZoom[0];
+
 		viewPos = vec3(0, cameraZoom[0], 0);
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(-1, 0, 0));
 		break;
@@ -127,14 +160,26 @@ void updateCamera()
 }
 
 bool positiveAdd = true;
+float fakeX;
+float fakeZ;
 
 //Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
 	//Move fake ball for camera testing
-	//if (positiveAdd) fakeBallPosition += vec3(0.1, 0.0, 0.1);
-	//else fakeBallPosition -= vec3(0.1, 0.0, 0.1);
-	//if (fakeBallPosition.x > 1 || fakeBallPosition.x < -1) positiveAdd = !positiveAdd;
+	if (positiveAdd)
+	{
+		fakeX += 0.1;
+		fakeZ -= 0.1;
+	}
+	else
+	{
+		fakeX -= 0.1;
+		fakeZ += 0.1;
+	}
+	if (fakeX > 2 * 3.141592 || fakeX < 2 * -3.141592) positiveAdd = !positiveAdd;
+	fakeBallPosition = vec3(cos(fakeX), 0.0, sin(fakeX));
+
 
 	updateCamera();
 	glutTimerFunc(tickSpeed, tick, 0);
