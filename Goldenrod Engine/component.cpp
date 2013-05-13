@@ -6,11 +6,11 @@ void  Component::update(){
 
 void Component::printInfo(){
 
-    // Print name from super class
-    this->GameObject::printInfo();
+    // Print component name
+    cout << endl << "COMPONENT NAME: " << this->name << endl;
 
     // Print system type
-    cout << "COMPONENT TYPE: " << componentTypes[this->type] << endl;
+    cout << "TYPE: " << componentTypes[this->type] << endl;
 
 };
 

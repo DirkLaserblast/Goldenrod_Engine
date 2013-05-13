@@ -62,44 +62,69 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="component.cpp" />
-    <ClCompile Include="cup.cpp" />
+    <ClCompile Include="component_ball.cpp" />
+    <ClCompile Include="component_border.cpp" />
+    <ClCompile Include="component_collision.cpp" />
+    <ClCompile Include="component_cup.cpp" />
+    <ClCompile Include="component_shapes.cpp" />
+    <ClCompile Include="component_tee.cpp" />
+    <ClCompile Include="component_tile.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="fileiocontroller.cpp" />
-    <ClCompile Include="gamecontroller.cpp" />
-    <ClCompile Include="gameiocontroller.cpp" />
-    <ClCompile Include="gameobject.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="shape.cpp" />
     <ClCompile Include="level.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="processedinputline.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shape.cpp" />
     <ClCompile Include="system.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="tee.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="tileborder.cpp" />
+=======
+    <ClCompile Include="system_levelcontroller.cpp" />
+>>>>>>> origin/component
     <ClCompile Include="time.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
-    <ClCompile Include="VBO.cpp" />
+    <ClCompile Include="component_VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ball.h" />
     <ClInclude Include="component.h" />
-    <ClInclude Include="cup.h" />
+    <ClInclude Include="component_ball.h" />
+    <ClInclude Include="component_border.h" />
+    <ClInclude Include="component_collision.h" />
+    <ClInclude Include="component_cup.h" />
+    <ClInclude Include="component_physc.h" />
+    <ClInclude Include="component_shapes.h" />
+    <ClInclude Include="component_tee.h" />
+    <ClInclude Include="component_tile.h" />
+    <ClInclude Include="component_VAO.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="fileiocontroller.h" />
+<<<<<<< HEAD
     <ClInclude Include="gamecontroller.h" />
     <ClInclude Include="gameiocontroller.h" />
     <ClInclude Include="gameobject.h" />
     <ClInclude Include="physics.h" />
     <ClInclude Include="shape.h" />
+=======
+>>>>>>> origin/component
     <ClInclude Include="level.h" />
+    <ClInclude Include="processedinputline.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="shape.h" />
     <ClInclude Include="system.h" />
+<<<<<<< HEAD
     <ClInclude Include="tee.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="tileborder.h" />
+=======
+    <ClInclude Include="system_levelcontroller.h" />
+>>>>>>> origin/component
     <ClInclude Include="time.h" />
     <ClInclude Include="Tokenizer.h" />
-    <ClInclude Include="VBO.h" />
+    <ClInclude Include="component_VBO.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db" />
