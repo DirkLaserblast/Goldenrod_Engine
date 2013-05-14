@@ -141,13 +141,9 @@ void ballStopped(){
 
 };
 
-//Replace ballPosition with actual ball position!
 //Updates the camera position
-void updateCamera()
+void updateCamera(vec3 ballPosition, vec3 ballDirection)
 {
-    ballPosition = ball->publicPhysics->getPosition();
-    ballDirection = ball->publicPhysics->getDirection();
-
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
 	if (cameraRotate[1] > 2) cameraRotate[1] = 2;
 	if (cameraZoom[0] < 2) cameraZoom[0] = 2; //Prevent zooming through the ground
@@ -186,7 +182,7 @@ void updateCamera()
 			yRotation = oldYRotation - 0.1;
 		}
 		else yRotation = atan2(ballDirection.z, ballDirection.x);
-		
+
 
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(ballPosition + viewPos, ballPosition, vec3(0, 1, 0));
@@ -237,7 +233,19 @@ void tick(int in)
         }
     }
 
-	updateCamera();
+	//If controls are enabled (ball not yet launched), then make ball direction equals launchVector
+	if (angleSpinner->enabled)
+	{
+		float launchAngleRadians = launchAngle * (PI/180);
+		launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
+		updateCamera(shapes[shapes.size() - 1].vertices()[0], launchVector);
+	}
+	else
+	{
+		//Replace launchVector here with actual ball direction
+		updateCamera(shapes[shapes.size() - 1].vertices()[0], ball->publicPhysics->getDirection());
+	}
+
 	glutTimerFunc(tickSpeed, tick, 0);
 }
 
