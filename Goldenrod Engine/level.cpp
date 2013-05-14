@@ -78,8 +78,12 @@ void Level::addTile(ProcessedInputLine& inLine){
     // Setup public components since real components not working yet
     newTile->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
     newTile->publicShapes->addWedgeShapes(inLine.getVerts(), TILE_COLOR, TILE_DEPTH);
+
     newTile->publicPhysics = new Physc();
     newTile->publicPhysics->setPosition(calculateCenter(inLine.getVerts()));
+
+    newTile->publicCollision = new Collision();
+    newTile->publicCollision->setCurrentTileID(inLine.getID());
 
     // Add corresponding border entity
     if(TILE_USE_BORDER){
@@ -179,8 +183,8 @@ void Level::addBall(ProcessedInputLine& inLine){
     newBall->publicPhysics = new Physc();
     newBall->publicPhysics->setPosition(inLine.getVerts().at(0));
 
-    /*newBall->publicCollision = new Collision();
-    newBall->publicCollision->addBallCollisionShapes(ballVerts, COLLISION_SHAPE_COLOR);*/
+    newBall->publicCollision = new Collision();
+    newBall->publicCollision->setCurrentTileID(inLine.getID());
 
     this->ball = newBall;
 
@@ -245,6 +249,20 @@ void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VB
     for(int i = 0; i < tmp.size(); i++){
         this->currentLevelShapes->push_back(*(tmp[i]));
     }
+
+};
+
+vector<Entity*> Level::getTiles(){ return this->tiles; };
+
+Entity* Level::getTile(int ID){
+
+    for(int i = 0; i < this->tiles.size(); i++){
+        if(this->tiles[i]->publicCollision->getCurrentTileID() == ID){
+            return this->tiles[i];
+        }
+    }
+
+    return NULL;
 
 };
 

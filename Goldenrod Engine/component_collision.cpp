@@ -43,6 +43,10 @@ void Collision::addBallCollisionShapes(vector<glm::vec3> verts, glm::vec4 color)
 
 };
 
+int Collision::getCurrentTileID(){ return this->currentTileID; };
+
+void Collision::setCurrentTileID(int ID){ this->currentTileID = ID; };
+
 void Collision::generateBorderCollisionShapes(vector<Shape*>& shapes, vector<glm::vec3> verts, glm::vec4 color, vector<int> neighborIDs, float height, float thickness){
     
     glm::vec3 vert1,

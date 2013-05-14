@@ -24,7 +24,12 @@ public:
 
     void addBallCollisionShapes(vector<glm::vec3> verts, glm::vec4 color);
 
+    int getCurrentTileID();
+    void setCurrentTileID(int ID);
+
 private:
+    int currentTileID;
+
     vector<Shape*> collisionShapes; // WILL NEED TO CHANGE WHEN USE VBOs
 
     // Two shapes made, normals face the same direction

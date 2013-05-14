@@ -33,6 +33,8 @@ public:
     void deleteComponent(COMPONENT_TYPE type);
     void printInfo();
 
+    Component* getComponent(int index);
+
     Shapes* publicShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
 
     // Remove when actually have compoenent system working

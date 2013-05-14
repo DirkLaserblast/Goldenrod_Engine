@@ -137,6 +137,52 @@ float Shape::distanceToPlane(vec3 point)
     return abs(dot(originVector, normalize(planeNormal)));
 }
 
+bool Shape::checkIfInside(vec3 point){
+
+    float xMin=FLT_MAX, zMin=FLT_MAX, xMax=0, zMax=0;
+    // Determine max and min for rough check (ie. bounding box)
+    for(int i = 0; i < this->shapeVertices.size(); i++){
+        if(this->shapeVertices.at(i).x > xMax){
+            xMax = this->shapeVertices.at(i).x;
+        }
+        if(this->shapeVertices.at(i).x < xMin){
+            xMin = this->shapeVertices.at(i).x;
+        }
+        if(this->shapeVertices.at(i).z > zMax){
+            zMax = this->shapeVertices.at(i).z;
+        }
+        if(this->shapeVertices.at(i).z < zMin){
+            zMin = this->shapeVertices.at(i).z;
+        }
+    }
+
+    // Check if outside bounding box
+    if(point.x > xMax || point.x > zMax || point.x < xMin || point.z < zMin){
+        return false;
+    }
+
+    // Setup input for pnpoly
+    int i,j;
+    bool c = false;
+    vector<float> xCoords;
+    for(int i = 0; i < this->shapeVertices.size(); i++){
+        xCoords.push_back(this->shapeVertices[i].x);
+    }
+    vector<float> zCoords;
+    for(int i = 0; i < this->shapeVertices.size(); i++){
+        zCoords.push_back(this->shapeVertices[i].z);
+    }
+    // pnpoly
+    for (i = 0, j = this->numVertices()-1; i < this->numVertices(); j = i++) {
+        if ( ((zCoords[i]>point.z) != (zCoords[j]>point.z)) &&
+            (point.x < (xCoords[j]-xCoords[i]) * (point.z-zCoords[i]) / (zCoords[j]-zCoords[i]) + xCoords[i]) )
+            c = !c;
+    }
+
+    return c;
+
+};
+
 //Create the three vectors needed to render, using a list of shapes
 void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector)
 {

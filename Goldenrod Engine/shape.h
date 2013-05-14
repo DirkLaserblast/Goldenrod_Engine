@@ -36,6 +36,7 @@ public:
     //Number of vertices in the shape
     int numVertices();
     float distanceToPlane(vec3 point); //Find the distance from a point to a shape, for collision detection with the ball
+    bool checkIfInside(vec3 point); // Find out if point is inside of tile borders
 
     //Stores the shape's starting position in the main vertex array and normal array
     int startIndex;

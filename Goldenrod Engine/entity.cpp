@@ -54,3 +54,14 @@ void Entity::printInfo(){
     cerr << endl;
 
 };
+
+Component* Entity::getComponent(int index){
+
+    if(index > this->components.size()-1){
+        return NULL;
+    }
+    else{
+        return this->components.at(index);
+    }
+
+};

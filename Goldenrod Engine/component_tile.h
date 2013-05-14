@@ -22,8 +22,10 @@ public:
     float getFriction();
     void setFriction(float newFriction);
 
+    vector<int> getNeighborIDs();
+
 private:
-    int tileID;
+    int tileID; // This is not being used for the tile ID currently; using collision component
     float friction;
     vector<int>neighborIDs;
 };

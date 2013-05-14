@@ -220,16 +220,60 @@ void tick(int in)
         deltaPos.y = (ball->publicPhysics->getDirection().y * ball->publicPhysics->getSpeed());
         deltaPos.z = (ball->publicPhysics->getDirection().z * ball->publicPhysics->getSpeed());
 
+        // Update physc component
+        physics->update(TILE_FRICTION);
+
         // Update arrow pos
         arrow->translate(deltaPos);
+
+        // Update ball's current tile
+        // Get top of assumed current tile
+        Shape* tileTop = levelController->getCurrentLevel()->getTile(ball->publicCollision->getCurrentTileID())->publicShapes->getShapes().at(0);
+        // Calculate if point within tile
+        bool inTile = tileTop->checkIfInside(ball->publicPhysics->getPosition());
+        // If not in tile
+        if(!inTile){
+            //// Check neighbor tiles -- huge pain in the butt just to get the neighbors...
+            //Entity* currentTile = levelController->getCurrentLevel()->getTile(ball->publicCollision->getCurrentTileID());
+            //Tile* tileComponent = static_cast<Tile*> (currentTile->getComponent(0));
+            //vector<int> neighborIDs = tileComponent->getNeighborIDs();
+            //for(int i = 0; i < neighborIDs.size(); i++){
+            //    if(neighborIDs[i] != 0){
+            //        // Check neighbor tile
+            //        inTile = levelController->getCurrentLevel()->getTiles()[neighborIDs[i]]->publicShapes->getShapes().at(0)->checkIfInside(ball->publicPhysics->getPosition());
+            //        if(inTile){
+            //            ball->publicCollision->setCurrentTileID(neighborIDs[i]);
+            //            break;
+            //        }
+            //    }
+            //}
+            //Check all tiles to find which one we are in (tried to check only neighbors above, but had issues)          
+            for(int i =0; i < levelController->getCurrentLevel()->getTiles().size(); i++){
+                // Check tile
+                inTile = levelController->getCurrentLevel()->getTiles()[i]->publicShapes->getShapes().at(0)->checkIfInside(ball->publicPhysics->getPosition());
+                if(inTile){
+                    ball->publicCollision->setCurrentTileID(levelController->getCurrentLevel()->getTiles()[i]->publicCollision->getCurrentTileID());
+                    break;
+                }
+            }
+        }
+
+        // Collision Detection Resolution
+        // Collision with cup
+        glm::vec3 ballPos = ball->publicPhysics->getPosition();
+        glm::vec3 cupPos = levelController->getCurrentLevel()->getCup()->publicPhysics->getPosition();
+        float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
+        if(cupDist < 0.015){
+            // Win condition
+        }
+        else if(cupDist < 0.05){
+            // distort direction
+        }
 
         // Update shapes for drawing
         reloadAllShapes(&verts, &color, &norms, &shapes); 
         shapes[shapes.size() - 1].translate(deltaPos);
         shapes[shapes.size() - 1].reload();
-
-        // Update physc component
-        physics->update(TILE_FRICTION);
 
         // Check if ball stopped
         if(ball->publicPhysics->getSpeed() == 0){
@@ -701,7 +745,7 @@ int main(int argc, char **argv)
     else{
         cout << "No input file was provided." << endl;
         // Create default level since no file was specified
-        fileIO->processFile("hole.00.db"); // default level
+        fileIO->processFile("hole.01.db"); // default level
         levelController->addLevel(fileIO->getCurrentFile());
     }
 

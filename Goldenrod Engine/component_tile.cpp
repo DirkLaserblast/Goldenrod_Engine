@@ -39,3 +39,5 @@ void Tile::printInfo(){
 float Tile::getFriction(){ return this->friction; };
 
 void Tile::setFriction(float newFriction){ this->friction = newFriction; };
+
+vector<int> Tile::getNeighborIDs(){ return this->neighborIDs; };

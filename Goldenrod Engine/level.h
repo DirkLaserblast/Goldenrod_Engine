@@ -50,6 +50,8 @@ public:
 
     vector<Shape>* getCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
+    vector<Entity*> getTiles();
+    Entity* getTile(int ID);
     Entity* getCup(); // Obviously defeat the purpose...
     Entity* getTee();
     Entity* getBall();
