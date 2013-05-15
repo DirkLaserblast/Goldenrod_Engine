@@ -214,7 +214,36 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection)
 void tick(int in)
 {
 
-    // Collision Detection Resolution
+	//Collision checking
+	Entity* currentTile = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID);
+	Tile* tmpTile = static_cast<Tile*>(currentTile->getComponent(0));
+	vector<int> borderIDs = tmpTile->getNeighborIDs();
+
+	Tile* tmpTileComp = static_cast<Tile*> (currentTile->components[0]);
+	Entity* tmpBorderEntity = tmpTileComp->borders;
+	Shapes* tmpBorderShapesComp = tmpBorderEntity->publicShapes;
+	vec3 ballPosition = levelController->getCurrentLevel()->ballPosition;
+
+	vector<Shape*> borderShapes = tmpBorderShapesComp->getShapes();
+
+	//Check distance to all adjacent borders
+	for (int i = 0; i < borderShapes.size(); i++)
+	{
+		Shape *currentShape = borderShapes[i];
+		float distance = currentShape->distanceToPlane(ballPosition);
+		//cout << "Distance: " << distance << "\n";
+		if (distance <= 0.06) //Collision detected, deflect
+		{
+			//cout << "Collision!\n";
+			vec3 borderNormal = currentShape->normals()[0];
+			vec3 incoming = levelController->getCurrentLevel()->ballDirection;
+			levelController->getCurrentLevel()->ballDirection = normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming);
+			break;
+		}
+	}
+
+	//End Collision Checking
+
     // Collision with cup
     glm::vec3 ballPos = levelController->getCurrentLevel()->ballPosition;
     glm::vec3 cupPos = levelController->getCurrentLevel()->cupPosition;
@@ -675,7 +704,7 @@ void setupGLUT(char* programName)
 	angleSpinner->set_int_val(launchAngle);
 
 	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
-	powerSpinner->set_int_limits(1, 5, GLUI_LIMIT_CLAMP);
+	powerSpinner->set_int_limits(1, 15, GLUI_LIMIT_CLAMP);
 	powerSpinner->set_int_val(launchPower);
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
