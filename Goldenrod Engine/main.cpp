@@ -117,7 +117,7 @@ void launchBall(int i)
 	float prevY = levelController->getCurrentLevel()->ballDirection.y;
 	levelController->getCurrentLevel()->ballDirection = glm::vec3(launchVector.x, prevY, launchVector.z);
 	//levelController->getCurrentLevel()->ballDirection = launchVector;
-    levelController->getCurrentLevel()->ballSpeed = (launchPower/10.0f);
+    levelController->getCurrentLevel()->ballSpeed = (launchPower/100.0f);
 
 	angleSpinner->disable();
 	powerSpinner->disable();
@@ -238,12 +238,6 @@ void tick(int in)
         deltaPos.x = (ballDirection.x * ballSpeed);
         deltaPos.y = (ballDirection.y * ballSpeed);
         deltaPos.z = (ballDirection.z * ballSpeed);
-      
-        // Update ball speed
-        levelController->getCurrentLevel()->ballSpeed -= TILE_FRICTION;
-        if(levelController->getCurrentLevel()->ballSpeed < 0){
-            levelController->getCurrentLevel()->ballSpeed = 0;
-        }
 
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
@@ -285,6 +279,18 @@ void tick(int in)
 			deltaPos.z = (ballDirection.z * ballSpeed);
         } 
     }
+
+	// Update ball speed -- outside of physics calc so that modified direction takes effect
+    levelController->getCurrentLevel()->ballSpeed -= TILE_FRICTION*(levelController->getCurrentLevel()->ballSpeed*100);
+    if(levelController->getCurrentLevel()->ballSpeed <= 0.005){
+        levelController->getCurrentLevel()->ballSpeed = 0;
+    }
+	cout << endl << "ball speed:" << levelController->getCurrentLevel()->ballSpeed << endl; // debug
+	cout << endl << "ball tile ID: " << levelController->getCurrentLevel()->ballCurrentTileID << endl; // debug
+
+	Tile* tmpTileComp = static_cast<Tile*> (levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->components[0]);
+	Entity* tmpBorderEntity = tmpTileComp->borders;
+	Shapes* tmpBorderShapesComp = tmpBorderEntity->publicShapes;
 
     // Update ballPosition
     levelController->getCurrentLevel()->ballPosition += deltaPos;
@@ -637,7 +643,7 @@ void setupGLUT(char* programName)
 	angleSpinner->set_int_val(launchAngle);
 
 	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
-	powerSpinner->set_int_limits(1, 6, GLUI_LIMIT_CLAMP);
+	powerSpinner->set_int_limits(1, 5, GLUI_LIMIT_CLAMP);
 	powerSpinner->set_int_val(launchPower);
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);

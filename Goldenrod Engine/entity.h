@@ -41,11 +41,12 @@ public:
     Physc* publicPhysics;
     Collision* publicCollision;
 
+	vector<Component*> components; // Vector of pointers to attached components -- was private
+
 
 private:
     string name; // Assigned name for entity
     ENTITY_TYPE type; // Entity type tag for object   
-    vector<Component*> components; // Vector of pointers to attached components
        
 };
 

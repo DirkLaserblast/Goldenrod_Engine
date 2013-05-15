@@ -112,6 +112,10 @@ void Level::addTile(ProcessedInputLine& inLine){
         /*newBorder->publicCollision = new Collision();
         newBorder->publicCollision->addBorderCollisionShapes(inLine.getVerts(), COLLISION_SHAPE_COLOR, inLine.getNeighborIDs(), BORDER_HEIGHT, BORDER_THICKNESS);*/
 
+		// Add border pointer to tile
+		Tile* tileComp = static_cast<Tile*> (newTile->components[0]);
+		tileComp->borders = newBorder;
+
         this->borders.push_back(newBorder);
     }
 
