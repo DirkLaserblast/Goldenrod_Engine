@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 
+#include "glm/glm.hpp"
+
 #include "entity.h"
 
 #include "processedinputline.h"
@@ -18,6 +20,8 @@
 #include "component_ball.h"
 #include "component_shapes.h"
 #include "component_collision.h"
+
+#define DEFAULT_LEVEL "hole.00.db"
 
 using std::string;
 using std::cerr;
@@ -58,6 +62,28 @@ public:
 
     void updateCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
+    // Component system is broken, use below for simplicity
+
+    // Tee data
+    glm::vec3 teePosition;
+    vector<Shape*> teeShapes;
+
+    // Cup data
+    glm::vec3 cupPosition;
+    vector<Shape*> cupShapes;
+
+    // Ball data
+    glm::vec3 ballPosition;
+    vector<Shape*> ballShapes;
+    int ballCurrentTileID;
+
+    // Ball physics data
+    glm::vec3 ballDirection;
+    double ballSpeed;
+
+    // Ball data for camera movement
+    float ballOldYRotation;
+
 private:
     vector<Shape>* currentLevelShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
 
@@ -81,7 +107,7 @@ private:
     */
     vector<glm::vec3> squareFromPoint(glm::vec3 point, float width, float height, float offset);
 
-    vector<glm::vec3> circleFromPoint(glm::vec3 point, float radius, float degree, float offset);
+    vector<glm::vec3> circleFromPoint(glm::vec3 point, float radius, float offset);
 
     glm::vec3 calculateCenter(vector<glm::vec3> plane);
 

@@ -31,11 +31,19 @@ Level::Level(vector<ProcessedInputLine*>* inLines){
             this->addTile(*((*inLines)[i]));
         }
         else if(keyword == "tee"){
-            this->addTee(*((*inLines)[i]));
-            this->addBall(*((*inLines)[i]));
+            //this->addTee(*((*inLines)[i]));
+            this->teePosition = (*inLines)[i]->getVerts()[0];
+            this->teeShapes.push_back(new Shape(squareFromPoint(teePosition, TEE_WIDTH, TEE_HEIGHT, TEE_OFFSET),TEE_COLOR));
+
+            //this->addBall(*((*inLines)[i]));
+            this->ballPosition = (*inLines)[i]->getVerts()[0];
+            this->ballShapes.push_back(new Shape(circleFromPoint(ballPosition, BALL_RADIUS, BALL_OFFSET), BALL_COLOR));
+            this->ballCurrentTileID = (*inLines)[i]->getID();
         }
         else if(keyword == "cup"){
-            this->addCup(*((*inLines)[i]));
+            //this->addCup(*((*inLines)[i]));
+            this->cupPosition = (*inLines)[i]->getVerts()[0];
+            this->cupShapes.push_back(new Shape(squareFromPoint(cupPosition, CUP_WIDTH, CUP_HEIGHT, CUP_OFFSET),CUP_COLOR));
         }
         else{
             cerr << endl << "Invalid keyword in processed file." << endl;
@@ -176,7 +184,7 @@ void Level::addBall(ProcessedInputLine& inLine){
     newBall->attachComponent(new Ball(inLine.getID()));
 
     // Setup public components since real components not working yet
-    vector<glm::vec3> ballVerts = circleFromPoint(inLine.getVerts().at(0),BALL_RADIUS, BALL_DEGREE, BALL_OFFSET);  
+    vector<glm::vec3> ballVerts = circleFromPoint(inLine.getVerts().at(0),BALL_RADIUS, BALL_OFFSET);  
     newBall->publicShapes = new Shapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
     newBall->publicShapes->addWedgeShapes(ballVerts, BALL_COLOR, BALL_DEPTH);
 
@@ -233,19 +241,22 @@ void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VB
     }
 
     // Get tee shapes
-    tmp = this->tee->publicShapes->getShapes();
+    //tmp = this->tee->publicShapes->getShapes();
+    tmp = this->teeShapes;
     for(int i = 0; i < tmp.size(); i++){
         this->currentLevelShapes->push_back(*(tmp[i]));
     }
 
     // Get cup shapes
-    tmp = this->cup->publicShapes->getShapes();
+    //tmp = this->cup->publicShapes->getShapes();
+    tmp = this->cupShapes;
     for(int i = 0; i < tmp.size(); i++){
         this->currentLevelShapes->push_back(*(tmp[i]));
     }
 
     // Get ball shapes
-    tmp = this->ball->publicShapes->getShapes();
+    //tmp = this->ball->publicShapes->getShapes();
+    tmp = this->ballShapes;
     for(int i = 0; i < tmp.size(); i++){
         this->currentLevelShapes->push_back(*(tmp[i]));
     }
@@ -270,30 +281,19 @@ vector<glm::vec3> Level::squareFromPoint(glm::vec3 point, float width, float hei
     
     vector<glm::vec3> squareVerts;
 
-    squareVerts.push_back(glm::vec3(point.x - width, point.y + offset, point.z + height));
-    squareVerts.push_back(glm::vec3(point.x + width, point.y + offset, point.z + height));
-    squareVerts.push_back(glm::vec3(point.x + width, point.y + offset, point.z - height));
-    squareVerts.push_back(glm::vec3(point.x - width, point.y + offset, point.z - height));
+    squareVerts.push_back(glm::vec3(point.x - (width/2), point.y + offset, point.z + (height/2)));
+    squareVerts.push_back(glm::vec3(point.x + (width/2), point.y + offset, point.z + (height/2)));
+    squareVerts.push_back(glm::vec3(point.x + (width/2), point.y + offset, point.z - (height/2)));
+    squareVerts.push_back(glm::vec3(point.x - (width/2), point.y + offset, point.z - (height/2)));
 
     return squareVerts;
 
 };
 
-vector<glm::vec3> Level::circleFromPoint(glm::vec3 point, float radius, float degree, float offset){
+vector<glm::vec3> Level::circleFromPoint(glm::vec3 point, float radius, float offset){
 
     vector<glm::vec3> circleVerts;
-    float newX,
-          newY,
-          newZ;
 
-    // Add verts for circle
-    //for(float i = 0; i <= 360; i += degree){
-    //    newX = (radius*sin(i)) + point.x;
-    //    newY = point.y + offset;
-    //    newZ = (radius*cos(i)) + point.z;
-
-    //    circleVerts.push_back(glm::vec3(newX,newY,newZ));
-    //}
     circleVerts.push_back(glm::vec3(point.x, point.y + offset, point.z + radius));
     circleVerts.push_back(glm::vec3(point.x + 0.7*radius, point.y + offset, point.z + 0.7*radius));
     circleVerts.push_back(glm::vec3(point.x + radius, point.y + offset, point.z));

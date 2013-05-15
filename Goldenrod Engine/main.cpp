@@ -107,13 +107,6 @@ float launchAngleRadians = 0;
 int launchPower; //How hard to "hit" the ball, between 1 and 7 (for now)
 bool ballMoving = false;
 
-// Ball
-Entity* ball = NULL;
-vec3 ballPosition = vec3(1, 0, 1);
-vec3 ballDirection = vec3(1, 0, 1);
-vec3 testBallPosition = vec3(0, 0, 0);
-float oldYRotation;
-
 //Start the ball moving using direction and power from GLUI input
 void launchBall(int i)
 {
@@ -122,8 +115,8 @@ void launchBall(int i)
     launchAngleRadians = launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
-    ball->publicPhysics->setDirection(launchVector);
-    ball->publicPhysics->setSpeed(launchPower/10.0f);
+    levelController->getCurrentLevel()->ballDirection = launchVector;
+    levelController->getCurrentLevel()->ballSpeed = (launchPower/10.0f);
 
 	angleSpinner->disable();
 	powerSpinner->disable();
@@ -142,7 +135,7 @@ void ballStopped(){
 };
 
 //Updates the camera position
-void updateCamera(vec3 testBallPosition, vec3 ballDirection)
+void updateCamera(vec3 ballPosition, vec3 ballDirection)
 {
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
 	if (cameraRotate[1] > 2) cameraRotate[1] = 2;
@@ -170,22 +163,22 @@ void updateCamera(vec3 testBallPosition, vec3 ballDirection)
 
 		//Set rotation based on direction ball is moving
 		//If ball has changed direction, start to turn in that direction
-		oldYRotation = yRotation;
-		yRotation = atan2(ballDirection.z, ballDirection.x);
+        levelController->getCurrentLevel()->ballOldYRotation = yRotation;
+		yRotation = atan2(-ballDirection.z, -ballDirection.x);
 
-		if(oldYRotation - yRotation < -0.1)
+		if(levelController->getCurrentLevel()->ballOldYRotation - yRotation < -0.1)
 		{
-			yRotation = oldYRotation + 0.1;
+			yRotation = levelController->getCurrentLevel()->ballOldYRotation + 0.1;
 		}
-		else if (oldYRotation - yRotation > 0.1)
+		else if (levelController->getCurrentLevel()->ballOldYRotation - yRotation > 0.1)
 		{
-			yRotation = oldYRotation - 0.1;
+			yRotation = levelController->getCurrentLevel()->ballOldYRotation - 0.1;
 		}
-		else yRotation = atan2(ballDirection.z, ballDirection.x);
+		else yRotation = atan2(-ballDirection.z, -ballDirection.x);
 
 
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
-		camera = lookAt(testBallPosition + viewPos, testBallPosition, vec3(0, 1, 0));
+		camera = lookAt(ballPosition + viewPos, ballPosition, vec3(0, 1, 0));
 		break;
 	case 2: //Top down
 		camRotateTrans->disable();
@@ -204,97 +197,105 @@ void updateCamera(vec3 testBallPosition, vec3 ballDirection)
 //Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
-	//Move fake ball for camera testing
-	//if (positiveAdd) ballPosition += vec3(0.1, 0.0, 0.1);
-	//else ballPosition -= vec3(0.1, 0.0, 0.1);
-	//if (ballPosition.x > 1 || ballPosition.x < -1) positiveAdd = !positiveAdd;
 
+    // Collision Detection Resolution
+    // Collision with cup
+    glm::vec3 ballPos = levelController->getCurrentLevel()->ballPosition;
+    glm::vec3 cupPos = levelController->getCurrentLevel()->cupPosition;
+    float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
+    cout << endl << cupDist << endl; // debug
+    if(cupDist < (BALL_RADIUS)){
+        // Win condition -- ball collides with tee
+        // Translate ball and arrow to origin
+        shapes[shapes.size() - 1].translate(-ballPos);
+        arrow->translate(-ballPos);
+
+        // Set ball position to tee position
+        levelController->getCurrentLevel()->ballPosition = levelController->getCurrentLevel()->teePosition;
+
+        // Translate ball and arrow to tee position (ballPosition)
+        shapes[shapes.size() - 1].translate(levelController->getCurrentLevel()->ballPosition);
+        arrow->translate(levelController->getCurrentLevel()->ballPosition);
+
+        // Reload ball shape
+        shapes[shapes.size() - 1].reload();
+
+        // Reset ball physics
+        levelController->getCurrentLevel()->ballDirection = glm::vec3();
+        levelController->getCurrentLevel()->ballSpeed = 0;          
+            
+        // Set ballMoving flag to false
+        ballStopped();
+
+        return; // break out
+    }
+
+    // Physics calculations
+    glm::vec3 deltaPos = glm::vec3(); // modify if moving
     if(ballMoving){
         // Calculate new delt pos and move ball shapes
-        glm::vec3 deltaPos; // Needed to pull out from physics_component
-        deltaPos.x = (ball->publicPhysics->getDirection().x * ball->publicPhysics->getSpeed());
-        deltaPos.y = (ball->publicPhysics->getDirection().y * ball->publicPhysics->getSpeed());
-        deltaPos.z = (ball->publicPhysics->getDirection().z * ball->publicPhysics->getSpeed());
-
-        // Update testBallPosition -- physics component seems buggy
-        testBallPosition += deltaPos;
-
-        // Update physc component
-        physics->update(TILE_FRICTION);
-
-        // Update arrow pos
-        arrow->translate(deltaPos);
+        glm::vec3 ballDirection = levelController->getCurrentLevel()->ballDirection;
+        double ballSpeed = levelController->getCurrentLevel()->ballSpeed;
+        deltaPos.x = (ballDirection.x * ballSpeed);
+        deltaPos.y = (ballDirection.y * ballSpeed);
+        deltaPos.z = (ballDirection.z * ballSpeed);
+      
+        // Update ball speed
+        levelController->getCurrentLevel()->ballSpeed -= TILE_FRICTION;
+        if(levelController->getCurrentLevel()->ballSpeed < 0){
+            levelController->getCurrentLevel()->ballSpeed = 0;
+        }
 
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
-        Shape* tileTop = levelController->getCurrentLevel()->getTile(ball->publicCollision->getCurrentTileID())->publicShapes->getShapes().at(0);
+        Shape* tileTop = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes().at(0);
         // Calculate if point within tile
-        bool inTile = tileTop->checkIfInside(testBallPosition);
+        bool inTile = tileTop->checkIfInside(levelController->getCurrentLevel()->ballPosition);
         // If not in tile
-        if(!inTile){
-            //// Check neighbor tiles -- huge pain in the butt just to get the neighbors...
-            //Entity* currentTile = levelController->getCurrentLevel()->getTile(ball->publicCollision->getCurrentTileID());
-            //Tile* tileComponent = static_cast<Tile*> (currentTile->getComponent(0));
-            //vector<int> neighborIDs = tileComponent->getNeighborIDs();
-            //for(int i = 0; i < neighborIDs.size(); i++){
-            //    if(neighborIDs[i] != 0){
-            //        // Check neighbor tile
-            //        inTile = levelController->getCurrentLevel()->getTiles()[neighborIDs[i]]->publicShapes->getShapes().at(0)->checkIfInside(testBallPosition);
-            //        if(inTile){
-            //            ball->publicCollision->setCurrentTileID(neighborIDs[i]);
-            //            break;
-            //        }
-            //    }
-            //}
+        if(!inTile){           
             //Check all tiles to find which one we are in (tried to check only neighbors above, but had issues)          
             for(int i =0; i < levelController->getCurrentLevel()->getTiles().size(); i++){
                 // Check tile
-                inTile = levelController->getCurrentLevel()->getTiles()[i]->publicShapes->getShapes().at(0)->checkIfInside(testBallPosition);
+                inTile = levelController->getCurrentLevel()->getTiles()[i]->publicShapes->getShapes().at(0)->checkIfInside(levelController->getCurrentLevel()->ballPosition);
                 if(inTile){
-                    ball->publicCollision->setCurrentTileID(levelController->getCurrentLevel()->getTiles()[i]->publicCollision->getCurrentTileID());
+                    levelController->getCurrentLevel()->ballCurrentTileID = levelController->getCurrentLevel()->getTiles()[i]->publicCollision->getCurrentTileID();
 
                     // Update direction
                     // If new tile is flat make sure no y-component
-                    if(levelController->getCurrentLevel()->getTile(ball->publicCollision->getCurrentTileID())->publicShapes->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
-                        ball->publicPhysics->setDirection(glm::vec3(ball->publicPhysics->getDirection().x, 0.0, ball->publicPhysics->getDirection().z));
+                    if(levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
+                        levelController->getCurrentLevel()->ballDirection = glm::vec3(levelController->getCurrentLevel()->ballDirection.x, 0.0, levelController->getCurrentLevel()->ballDirection.z);
                     }
                     // If new tile is not flat add y-component
                     else{
-                        glm::vec3 oldDirection = ball->publicPhysics->getDirection();
+                        glm::vec3 oldDirection = levelController->getCurrentLevel()->ballDirection;
                         glm::vec3 upVector = glm::vec3(0.0,1.0,0.0);
                         // Get current tile normal
-                        glm::vec3 tileNormal = levelController->getCurrentLevel()->getTile(ball->publicCollision->getCurrentTileID())->publicShapes->getShapes()[0]->normals()[0];
+                        glm::vec3 tileNormal = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes()[0]->normals()[0];
                         glm::vec3 xVector = glm::cross(oldDirection, upVector);
                         glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
-                        ball->publicPhysics->setDirection(newDirection);
+                       levelController->getCurrentLevel()->ballDirection = newDirection;
                     }
 
                     break;
                 }
             }
-        }
+        }       
+    }
 
-        // Collision Detection Resolution
-        // Collision with cup
-        glm::vec3 ballPos = testBallPosition;
-        glm::vec3 cupPos = levelController->getCurrentLevel()->getCup()->publicPhysics->getPosition();
-        float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
-        if(cupDist < 0.015){
-            // Win condition
-        }
-        else if(cupDist < 0.05){
-            // distort direction
-        }
+    // Update ballPosition
+    levelController->getCurrentLevel()->ballPosition += deltaPos;
 
-        // Update shapes for drawing
-        reloadAllShapes(&verts, &color, &norms, &shapes); 
-        shapes[shapes.size() - 1].translate(deltaPos);
-        shapes[shapes.size() - 1].reload();
+    // Update drawing
+    // Update shapes for drawing
+    shapes[shapes.size() - 1].translate(deltaPos);
+    shapes[shapes.size() - 1].reload();
 
-        // Check if ball stopped
-        if(ball->publicPhysics->getSpeed() == 0){
-            ballStopped();
-        }
+    // Update arrow pos for drawing
+    arrow->translate(deltaPos);
+
+    // Check if ball stopped
+    if(levelController->getCurrentLevel()->ballSpeed == 0){
+        ballStopped();
     }
 
 	//If controls are enabled (ball not yet launched), then make ball direction equals launchVector
@@ -302,12 +303,12 @@ void tick(int in)
 	{
 		float launchAngleRadians = launchAngle * (PI/180);
 		launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
-		updateCamera(testBallPosition, launchVector);
+		updateCamera(levelController->getCurrentLevel()->ballPosition, launchVector);
 	}
 	else
 	{
 		//Replace launchVector here with actual ball direction
-		updateCamera(testBallPosition, ball->publicPhysics->getDirection());
+		updateCamera(levelController->getCurrentLevel()->ballPosition, levelController->getCurrentLevel()->ballDirection);
 	}
 
 	glutTimerFunc(tickSpeed, tick, 0);
@@ -484,14 +485,6 @@ void display()
     }
 
     //------------------------------------------------------------------//
-
- //   //update animation variables.
- //   //have time oscillate between 0.0 and 1.0.
- //   if ((animTime >= 1.0 && deltaT > 0.0) ||
- //           (animTime <= 0.0 && deltaT < 0.0))
-	//{
- //       deltaT = -deltaT;
- //   }
 
     glutSwapBuffers();
 
@@ -771,20 +764,12 @@ int main(int argc, char **argv)
     else{
         cout << "No input file was provided." << endl;
         // Create default level since no file was specified
-        fileIO->processFile("hole.01.db"); // default level
+        fileIO->processFile(DEFAULT_LEVEL); // default level
         levelController->addLevel(fileIO->getCurrentFile());
     }
 
-    // Add ball entity to physics
-    physics->addEntity(levelController->getCurrentLevel()->getBall());
-    ball = levelController->getCurrentLevel()->getBall();
-    ballPosition = ball->publicPhysics->getPosition();
-    ballDirection = ball->publicPhysics->getDirection();
-
-    testBallPosition += levelController->getCurrentLevel()->getTee()->publicPhysics->getPosition();
-
     // Move arrow to ball's starting position
-    arrow->translate(ball->publicPhysics->getPosition());
+    arrow->translate(levelController->getCurrentLevel()->ballPosition);
     arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
