@@ -139,27 +139,27 @@ float Shape::distanceToPlane(vec3 point)
 
 bool Shape::checkIfInside(vec3 point){
 
-    float xMin=FLT_MAX, zMin=FLT_MAX, xMax=0, zMax=0;
-    // Determine max and min for rough check (ie. bounding box)
-    for(int i = 0; i < this->shapeVertices.size(); i++){
-        if(this->shapeVertices.at(i).x > xMax){
-            xMax = this->shapeVertices.at(i).x;
-        }
-        if(this->shapeVertices.at(i).x < xMin){
-            xMin = this->shapeVertices.at(i).x;
-        }
-        if(this->shapeVertices.at(i).z > zMax){
-            zMax = this->shapeVertices.at(i).z;
-        }
-        if(this->shapeVertices.at(i).z < zMin){
-            zMin = this->shapeVertices.at(i).z;
-        }
-    }
+    //float xMin=FLT_MAX, zMin=FLT_MAX, xMax=0, zMax=0;
+    //// Determine max and min for rough check (ie. bounding box)
+    //for(int i = 0; i < this->shapeVertices.size(); i++){
+    //    if(this->shapeVertices.at(i).x > xMax){
+    //        xMax = this->shapeVertices.at(i).x;
+    //    }
+    //    if(this->shapeVertices.at(i).x < xMin){
+    //        xMin = this->shapeVertices.at(i).x;
+    //    }
+    //    if(this->shapeVertices.at(i).z > zMax){
+    //        zMax = this->shapeVertices.at(i).z;
+    //    }
+    //    if(this->shapeVertices.at(i).z < zMin){
+    //        zMin = this->shapeVertices.at(i).z;
+    //    }
+    //}
 
-    // Check if outside bounding box
-    if(point.x > xMax || point.x > zMax || point.x < xMin || point.z < zMin){
-        return false;
-    }
+    //// Check if outside bounding box
+    //if(point.x > xMax || point.x > zMax || point.x < xMin || point.z < zMin){
+    //    return false;
+    //}
 
     // Setup input for pnpoly
     int i,j;

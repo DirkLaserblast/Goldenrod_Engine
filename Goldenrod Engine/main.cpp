@@ -116,7 +116,22 @@ void launchBall(int i)
 
 	float prevY = levelController->getCurrentLevel()->ballDirection.y;
 	levelController->getCurrentLevel()->ballDirection = glm::vec3(launchVector.x, prevY, launchVector.z);
-	//levelController->getCurrentLevel()->ballDirection = launchVector;
+
+	// If new tile is flat make sure no y-component
+    if(levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
+        levelController->getCurrentLevel()->ballDirection = glm::vec3(levelController->getCurrentLevel()->ballDirection.x, 0.0, levelController->getCurrentLevel()->ballDirection.z);
+    }
+    // If new tile is not flat add y-component
+    else{
+        glm::vec3 oldDirection = levelController->getCurrentLevel()->ballDirection;
+        glm::vec3 upVector = glm::vec3(0.0,1.0,0.0);
+        // Get current tile normal
+        glm::vec3 tileNormal = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes()[0]->normals()[0];
+        glm::vec3 xVector = glm::cross(oldDirection, upVector);
+        glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
+        levelController->getCurrentLevel()->ballDirection = newDirection;
+    }
+
     levelController->getCurrentLevel()->ballSpeed = (launchPower/100.0f);
 
 	angleSpinner->disable();
@@ -235,9 +250,9 @@ void tick(int in)
         // Calculate current delta pos
         glm::vec3 ballDirection = levelController->getCurrentLevel()->ballDirection;
         double ballSpeed = levelController->getCurrentLevel()->ballSpeed;
-        deltaPos.x = (ballDirection.x * ballSpeed);
-        deltaPos.y = (ballDirection.y * ballSpeed);
-        deltaPos.z = (ballDirection.z * ballSpeed);
+        //deltaPos.x = (ballDirection.x * ballSpeed);
+        //deltaPos.y = (ballDirection.y * ballSpeed);
+        //deltaPos.z = (ballDirection.z * ballSpeed);
 
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
@@ -245,7 +260,7 @@ void tick(int in)
         // Calculate if point will be within its current tile after it is moved
         bool inTile = tileTop->checkIfInside(levelController->getCurrentLevel()->ballPosition + deltaPos);
         // If not in tile
-        if(!inTile){           
+        if(inTile == false){           
             //Check all tiles to find which one we are in (tried to check only neighbors above, but had issues)          
             for(int i =0; i < levelController->getCurrentLevel()->getTiles().size(); i++){
                 // Check tile
@@ -271,13 +286,34 @@ void tick(int in)
 
                     break;
                 }
-            }
-			// Calculate new deltaPos
-			ballDirection = levelController->getCurrentLevel()->ballDirection;
-			deltaPos.x = (ballDirection.x * ballSpeed);
-			deltaPos.y = (ballDirection.y * ballSpeed);
-			deltaPos.z = (ballDirection.z * ballSpeed);
+            }			
         } 
+		//// Modify direction based on gravity and update direction again
+		//if(levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes().at(0)->normals()[0] != glm::vec3(0.0,1.0,0.0)){
+		//	// Calculate R direction
+		//	glm::vec3 oldDirection = levelController->getCurrentLevel()->ballDirection;
+  //          glm::vec3 upVector = glm::vec3(0.0,1.0,0.0);
+  //          // Get current tile normal
+  //          glm::vec3 tileNormal = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes()[0]->normals()[0];
+  //          glm::vec3 xVector = glm::cross(upVector, tileNormal);
+  //          glm::vec3 rDirection = glm::normalize(glm::cross(xVector, tileNormal));
+
+		//	levelController->getCurrentLevel()->ballDirection = glm::vec3(oldDirection + rDirection);
+
+		//	// Update direction
+		//	oldDirection = levelController->getCurrentLevel()->ballDirection;
+		//	xVector = glm::cross(oldDirection, upVector);
+		//	glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
+
+		//	levelController->getCurrentLevel()->ballDirection = newDirection;
+		//}
+
+		// Calculate deltaPos
+		ballDirection = levelController->getCurrentLevel()->ballDirection;
+		deltaPos.x = (ballDirection.x * ballSpeed);
+		deltaPos.y = (ballDirection.y * ballSpeed);
+		deltaPos.z = (ballDirection.z * ballSpeed);
+
     }
 
 	// Update ball speed -- outside of physics calc so that modified direction takes effect
@@ -287,10 +323,6 @@ void tick(int in)
     }
 	cout << endl << "ball speed:" << levelController->getCurrentLevel()->ballSpeed << endl; // debug
 	cout << endl << "ball tile ID: " << levelController->getCurrentLevel()->ballCurrentTileID << endl; // debug
-
-	Tile* tmpTileComp = static_cast<Tile*> (levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->components[0]);
-	Entity* tmpBorderEntity = tmpTileComp->borders;
-	Shapes* tmpBorderShapesComp = tmpBorderEntity->publicShapes;
 
     // Update ballPosition
     levelController->getCurrentLevel()->ballPosition += deltaPos;
