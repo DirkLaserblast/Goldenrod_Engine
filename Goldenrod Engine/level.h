@@ -53,8 +53,10 @@ public:
     int getLevelCount();
 
     vector<Shape>* getCurrentLevelShapes(); // REMOVE THIS AFTER CONVERT TO USING VBOs
+	vector<Shape>* getCurrentLevelBorderShapes();
 
     vector<Entity*> getTiles();
+	vector<Entity*> getBorders();
     Entity* getTile(int ID);
     Entity* getCup(); // Obviously defeat the purpose...
     Entity* getTee();
@@ -86,6 +88,7 @@ public:
 
 private:
     vector<Shape>* currentLevelShapes; // REMOVE THIS AFTER CONVERT TO USING VBOs
+	vector<Shape>* currentLevelBorderShapes;
 
     static int levelCount; // Total level objects
 

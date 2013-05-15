@@ -10,6 +10,7 @@ Level::Level(){
     this->ID = (Level::levelCount)++;
 
     this->currentLevelShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
+	this->currentLevelBorderShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
 };
 
@@ -21,6 +22,7 @@ Level::Level(vector<ProcessedInputLine*>* inLines){
     this->ID = (Level::levelCount)++;
 
     this->currentLevelShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
+	this->currentLevelBorderShapes = new vector<Shape> (); // REMOVE THIS AFTER CONVERT TO USING VBOs
 
     string keyword;
 
@@ -210,6 +212,12 @@ vector<Shape>* Level::getCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO U
 
 };
 
+vector<Shape>* Level::getCurrentLevelBorderShapes(){ // REMOVE THIS AFTER CONVERT TO USING VBOs
+
+    return this->currentLevelBorderShapes;
+
+};
+
 Entity* Level::getCup(){ return this->cup; };
 
 Entity* Level::getTee(){ return this->tee; };
@@ -237,6 +245,7 @@ void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VB
         tmp = this->borders.at(i)->publicShapes->getShapes();
         for(int ii = 0; ii < tmp.size(); ii++){ // Add (copy of?) each shape
             this->currentLevelShapes->push_back(*(tmp[ii]));
+			this->currentLevelBorderShapes->push_back(*(tmp[ii]));
         }
     }
 
@@ -264,6 +273,8 @@ void Level::updateCurrentLevelShapes(){ // REMOVE THIS AFTER CONVERT TO USING VB
 };
 
 vector<Entity*> Level::getTiles(){ return this->tiles; };
+
+vector<Entity*> Level::getBorders(){ return this->borders; };
 
 Entity* Level::getTile(int ID){
 
