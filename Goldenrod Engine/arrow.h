@@ -18,7 +18,7 @@ using std::vector;
 class Arrow{
 
 public:
-    Arrow();
+    Arrow(glm::vec4 color = ARROW_COLOR);
     ~Arrow();
 
     vector<glm::vec3> getVerts();

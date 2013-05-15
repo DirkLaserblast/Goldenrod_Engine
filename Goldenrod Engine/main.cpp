@@ -36,10 +36,11 @@
 #include "GL\glui.h"
 
 #define PI 3.14159L
+#define DRAW_BALL_VELOCITY true
+#define BALL_VELOCITY_COLOR glm::vec4(255,62,150,1.0)
 
 // Initialize systems and other controllers -- These have to be global for the time being...
 LevelController* levelController = new LevelController();
-Physics* physics = new Physics();
 
 FileIOController* fileIO = new FileIOController();
 
@@ -68,8 +69,6 @@ float zoom;
 float modelRotate[2];
 float modelTranslateXZ[2];
 float modelTranslateY[1];
-
-float animTime = 0.0f, deltaT = 0.0001f; //variables for animation
 
 vector<Shape> shapes; //Stores all the currently rendered shapes
 
@@ -115,7 +114,9 @@ void launchBall(int i)
     launchAngleRadians = launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
-    levelController->getCurrentLevel()->ballDirection = launchVector;
+	float prevY = levelController->getCurrentLevel()->ballDirection.y;
+	levelController->getCurrentLevel()->ballDirection = glm::vec3(launchVector.x, prevY, launchVector.z);
+	//levelController->getCurrentLevel()->ballDirection = launchVector;
     levelController->getCurrentLevel()->ballSpeed = (launchPower/10.0f);
 
 	angleSpinner->disable();
@@ -221,19 +222,17 @@ void tick(int in)
         shapes[shapes.size() - 1].reload();
 
         // Reset ball physics
-        levelController->getCurrentLevel()->ballDirection = glm::vec3();
+        //levelController->getCurrentLevel()->ballDirection = glm::vec3();
         levelController->getCurrentLevel()->ballSpeed = 0;          
             
         // Set ballMoving flag to false
         ballStopped();
-
-        return; // break out
     }
 
     // Physics calculations
     glm::vec3 deltaPos = glm::vec3(); // modify if moving
     if(ballMoving){
-        // Calculate new delt pos and move ball shapes
+        // Calculate current delta pos
         glm::vec3 ballDirection = levelController->getCurrentLevel()->ballDirection;
         double ballSpeed = levelController->getCurrentLevel()->ballSpeed;
         deltaPos.x = (ballDirection.x * ballSpeed);
@@ -249,14 +248,14 @@ void tick(int in)
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
         Shape* tileTop = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes().at(0);
-        // Calculate if point within tile
-        bool inTile = tileTop->checkIfInside(levelController->getCurrentLevel()->ballPosition);
+        // Calculate if point will be within its current tile after it is moved
+        bool inTile = tileTop->checkIfInside(levelController->getCurrentLevel()->ballPosition + deltaPos);
         // If not in tile
         if(!inTile){           
             //Check all tiles to find which one we are in (tried to check only neighbors above, but had issues)          
             for(int i =0; i < levelController->getCurrentLevel()->getTiles().size(); i++){
                 // Check tile
-                inTile = levelController->getCurrentLevel()->getTiles()[i]->publicShapes->getShapes().at(0)->checkIfInside(levelController->getCurrentLevel()->ballPosition);
+                inTile = levelController->getCurrentLevel()->getTiles()[i]->publicShapes->getShapes().at(0)->checkIfInside(levelController->getCurrentLevel()->ballPosition + deltaPos);
                 if(inTile){
                     levelController->getCurrentLevel()->ballCurrentTileID = levelController->getCurrentLevel()->getTiles()[i]->publicCollision->getCurrentTileID();
 
@@ -273,13 +272,18 @@ void tick(int in)
                         glm::vec3 tileNormal = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes()[0]->normals()[0];
                         glm::vec3 xVector = glm::cross(oldDirection, upVector);
                         glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
-                       levelController->getCurrentLevel()->ballDirection = newDirection;
+                        levelController->getCurrentLevel()->ballDirection = newDirection;
                     }
 
                     break;
                 }
             }
-        }       
+			// Calculate new deltaPos
+			ballDirection = levelController->getCurrentLevel()->ballDirection;
+			deltaPos.x = (ballDirection.x * ballSpeed);
+			deltaPos.y = (ballDirection.y * ballSpeed);
+			deltaPos.z = (ballDirection.z * ballSpeed);
+        } 
     }
 
     // Update ballPosition
@@ -369,7 +373,6 @@ void display()
             value_ptr(projection));
     glUniformMatrix3fv(shader->normalMatrixLoc, 1, GL_FALSE,
             value_ptr(normalMatrix));
-    glUniform1f(shader->timeLoc, animTime);
     glUniform3fv(shader->lightPosLoc, 1, value_ptr(lightPos));
     glUniform3fv(shader->viewPosLoc, 1, value_ptr(viewPos));
 
@@ -483,8 +486,6 @@ void display()
         glDrawArrays(GL_LINES, 0, 6);
 
     }
-
-    //------------------------------------------------------------------//
 
     glutSwapBuffers();
 
@@ -768,7 +769,7 @@ int main(int argc, char **argv)
         levelController->addLevel(fileIO->getCurrentFile());
     }
 
-    // Move arrow to ball's starting position
+    // Move arrows to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->ballPosition);
     arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
 

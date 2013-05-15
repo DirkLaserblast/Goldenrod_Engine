@@ -1,6 +1,6 @@
 #include "arrow.h"
 
-Arrow::Arrow(){
+Arrow::Arrow(glm::vec4 color){
 
     // Setup arrow pointing along z-axis
     this->verts.push_back(glm::vec3(0.0,0.0,0.0));
@@ -14,7 +14,7 @@ Arrow::Arrow(){
 
     // Setup vertColors
     for(int i = 0; i < 6; i++){
-        this->vertColors.push_back(ARROW_COLOR);
+        this->vertColors.push_back(color);
     }
 
     // Set blank transformation matrix
@@ -42,7 +42,7 @@ glm::mat4 Arrow::getModelTransformMatrix(){
 void Arrow::rotate(float angle){
 
     this->modelRotMatrix = glm::mat4(); // reset matrix
-    this->modelRotMatrix = modelRotMatrix*(glm::rotate(glm::mat4(), angle, glm::vec3(0, 1, 0)));
+    this->modelRotMatrix = glm::rotate(glm::mat4(), angle, glm::vec3(0, 1, 0));
 
 };
 

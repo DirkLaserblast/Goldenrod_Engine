@@ -21,7 +21,7 @@
 #include "component_shapes.h"
 #include "component_collision.h"
 
-#define DEFAULT_LEVEL "hole.00.db"
+#define DEFAULT_LEVEL "hole.01.db"
 
 using std::string;
 using std::cerr;
