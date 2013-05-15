@@ -151,7 +151,7 @@ void ballStopped(){
 };
 
 //Updates the camera position
-void updateCamera(vec3 ballPosition, vec3 ballDirection)
+void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 {
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
 	if (cameraRotate[1] > 2) cameraRotate[1] = 2;
@@ -178,15 +178,15 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection)
 		zoom = 2;
 
 		//Set rotation based on direction ball is moving
-		//If ball has changed direction, start to turn in that direction
+		//If ball has changed direction, start to turn in that direction, if smoothMotion is on
         levelController->getCurrentLevel()->ballOldYRotation = yRotation;
 		yRotation = atan2(-ballDirection.z, -ballDirection.x);
 
-		if(levelController->getCurrentLevel()->ballOldYRotation - yRotation < -0.1)
+		if(levelController->getCurrentLevel()->ballOldYRotation - yRotation < -0.1 && smoothMotion)
 		{
 			yRotation = levelController->getCurrentLevel()->ballOldYRotation + 0.1;
 		}
-		else if (levelController->getCurrentLevel()->ballOldYRotation - yRotation > 0.1)
+		else if (levelController->getCurrentLevel()->ballOldYRotation - yRotation > 0.1 && smoothMotion)
 		{
 			yRotation = levelController->getCurrentLevel()->ballOldYRotation - 0.1;
 		}
@@ -374,12 +374,12 @@ void tick(int in)
 	{
 		float launchAngleRadians = launchAngle * (PI/180);
 		launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
-		updateCamera(levelController->getCurrentLevel()->ballPosition, launchVector);
+		updateCamera(levelController->getCurrentLevel()->ballPosition, launchVector, false);
 	}
 	else
 	{
 		//Replace launchVector here with actual ball direction
-		updateCamera(levelController->getCurrentLevel()->ballPosition, levelController->getCurrentLevel()->ballDirection);
+		updateCamera(levelController->getCurrentLevel()->ballPosition, levelController->getCurrentLevel()->ballDirection, true);
 	}
 
 	glutTimerFunc(tickSpeed, tick, 0);
@@ -706,6 +706,7 @@ void setupGLUT(char* programName)
 	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
 	powerSpinner->set_int_limits(1, 15, GLUI_LIMIT_CLAMP);
 	powerSpinner->set_int_val(launchPower);
+	powerSpinner->set_speed(0.1);
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
 
