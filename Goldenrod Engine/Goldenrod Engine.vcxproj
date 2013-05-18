@@ -88,6 +88,7 @@
     <ClCompile Include="component_VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="border.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="arrow.h" />
     <ClInclude Include="component_ball.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="component_VAO.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="fileiocontroller.h" />
+    <ClInclude Include="geometry.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="processedinputline.h" />
     <ClInclude Include="shader.h" />
@@ -113,6 +115,7 @@
     <ClInclude Include="time.h" />
     <ClInclude Include="Tokenizer.h" />
     <ClInclude Include="component_VBO.h" />
+    <ClInclude Include="transformation.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="hole.00.db" />

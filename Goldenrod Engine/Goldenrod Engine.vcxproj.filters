@@ -88,6 +88,12 @@
     <Filter Include="Source Files\Arrow">
       <UniqueIdentifier>{2fac1b15-68e4-4bda-b72b-d111dadbdd2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files Refactor">
+      <UniqueIdentifier>{f47baea0-187c-496b-b374-ea5ceb0e6665}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source File Refactor">
+      <UniqueIdentifier>{fc271c32-418a-4133-aa1d-451e1642d548}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp">
@@ -241,6 +247,15 @@
     </ClInclude>
     <ClInclude Include="system_physics.h">
       <Filter>Header Files\System\Derived Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry.h">
+      <Filter>Header Files Refactor</Filter>
+    </ClInclude>
+    <ClInclude Include="border.h">
+      <Filter>Header Files Refactor</Filter>
+    </ClInclude>
+    <ClInclude Include="transformation.h">
+      <Filter>Header Files Refactor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
