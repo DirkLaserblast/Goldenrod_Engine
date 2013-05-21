@@ -248,7 +248,7 @@ void tick(int in)
     glm::vec3 ballPos = levelController->getCurrentLevel()->ballPosition;
     glm::vec3 cupPos = levelController->getCurrentLevel()->cupPosition;
     float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
-    cout << endl << cupDist << endl; // debug
+    //cout << endl << cupDist << endl; // debug
     if(cupDist < (BALL_RADIUS)){
         // Win condition -- ball collides with tee
         // Translate ball and arrow to origin
@@ -350,8 +350,8 @@ void tick(int in)
     if(levelController->getCurrentLevel()->ballSpeed <= 0.005){
         levelController->getCurrentLevel()->ballSpeed = 0;
     }
-	cout << endl << "ball speed:" << levelController->getCurrentLevel()->ballSpeed << endl; // debug
-	cout << endl << "ball tile ID: " << levelController->getCurrentLevel()->ballCurrentTileID << endl; // debug
+	//cout << endl << "ball speed:" << levelController->getCurrentLevel()->ballSpeed << endl; // debug
+	//cout << endl << "ball tile ID: " << levelController->getCurrentLevel()->ballCurrentTileID << endl; // debug
 
     // Update ballPosition
     levelController->getCurrentLevel()->ballPosition += deltaPos;
@@ -736,7 +736,7 @@ void setupGL()
 void setupShaders()
 {
     //create the shader program from a vertex and fragment shader
-    shader = new Shader("shaders/vertex.vert", "shaders/fragment.frag");
+    shader = new Shader("shaders/light.vert", "shaders/light.frag");
 
     //Here's where we setup handles to each variable that is used in the shader
     //program. See the shader source code for more detail on what the difference
@@ -831,7 +831,7 @@ int main(int argc, char **argv)
         }
     }
     else{
-        cout << "No input file was provided." << endl;
+        //cout << "No input file was provided." << endl;
         // Create default level since no file was specified
         fileIO->processFile(DEFAULT_LEVEL); // default level
         levelController->addLevel(fileIO->getCurrentFile());
