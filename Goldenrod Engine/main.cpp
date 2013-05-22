@@ -103,8 +103,6 @@ GLUI_StaticText *currentHole;
 GLUI_StaticText *totalNumHoles;
 GLUI_StaticText *numStrokes;
 GLUI_StaticText *par;
-GLUI_EditText *nameInput;
-GLUI_Button *acceptName;
 GLUI_StaticText *highScores[5];
 string name;
 
@@ -120,7 +118,7 @@ void launchBall(int i)
 {
     ballMoving = true;
 
-    launchAngleRadians = launchAngle * (PI/180);
+    launchAngleRadians = (float) launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
 	float prevY = levelController->getCurrentLevel()->ballDirection.y;
@@ -222,7 +220,6 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 //Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
-
 	//Collision checking
 	Entity* currentTile = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID);
 	Tile* tmpTile = static_cast<Tile*>(currentTile->getComponent(0));
@@ -390,6 +387,13 @@ void tick(int in)
 		//Replace launchVector here with actual ball direction
 		updateCamera(levelController->getCurrentLevel()->ballPosition, levelController->getCurrentLevel()->ballDirection, true);
 	}
+
+	//Update HUD
+	userName->set_text(string("Player: " + name).c_str());
+	currentHole;
+	totalNumHoles;
+	numStrokes;
+	par;
 
 	glutTimerFunc(tickSpeed, tick, 0);
 }
@@ -707,9 +711,6 @@ void setupGLUT(char* programName)
 
 	GLUI *gluiWindowLeft = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_LEFT);
 
-
-	//nameInput = gluiWindowLeft->add_edittext("Name", GLUI_EDITTEXT_TEXT, &name);
-
 	angleSpinner = gluiWindowLeft->add_spinner("Angle", GLUI_SPINNER_INT, &launchAngle);
 	angleSpinner->set_int_limits(0, 359, GLUI_LIMIT_WRAP);
 	angleSpinner->set_speed(0.2);
@@ -723,11 +724,11 @@ void setupGLUT(char* programName)
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
 
 	GLUI_Panel *holePanel = gluiWindowLeft->add_panel("Status");
-	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "Name");
-	currentHole = gluiWindowLeft->add_statictext_to_panel(holePanel, "Hole");
-	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes");
-	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke");
-	par = gluiWindowLeft->add_statictext_to_panel(holePanel, "Par");
+	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "PLayer: ");
+	currentHole = gluiWindowLeft->add_statictext_to_panel(holePanel, "Hole: ");
+	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes: ");
+	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke: ");
+	par = gluiWindowLeft->add_statictext_to_panel(holePanel, "Par: ");
 
 	GLUI_Panel *scoresPanel = gluiWindowLeft->add_panel("High Scores");
 	highScores[0] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "No high scores");
@@ -845,7 +846,6 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
 
 int main(int argc, char **argv)
 {	
-
     // Check if input file was given, if not use default
     if(argc > 1){
         fileIO->processFile(argv[1]);
@@ -860,6 +860,11 @@ int main(int argc, char **argv)
         fileIO->processFile(DEFAULT_LEVEL); // default level
         levelController->addLevel(fileIO->getCurrentFile());
     }
+
+	//Get name from user
+	cout << "Player name: ";
+	cin >> name;
+	cout << "\n";
 
     // Move arrows to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->ballPosition);
