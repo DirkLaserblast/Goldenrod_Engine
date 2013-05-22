@@ -98,6 +98,15 @@ GLUI_Translation *camZoomTrans;
 GLUI_Spinner *angleSpinner;
 GLUI_Spinner *powerSpinner;
 GLUI_Button *fireButton;
+GLUI_StaticText *userName;
+GLUI_StaticText *currentHole;
+GLUI_StaticText *totalNumHoles;
+GLUI_StaticText *numStrokes;
+GLUI_StaticText *par;
+GLUI_EditText *nameInput;
+GLUI_Button *acceptName;
+GLUI_StaticText *highScores[5];
+string name;
 
 //Variables for gameplay controls
 int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
@@ -698,6 +707,9 @@ void setupGLUT(char* programName)
 
 	GLUI *gluiWindowLeft = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_LEFT);
 
+
+	//nameInput = gluiWindowLeft->add_edittext("Name", GLUI_EDITTEXT_TEXT, &name);
+
 	angleSpinner = gluiWindowLeft->add_spinner("Angle", GLUI_SPINNER_INT, &launchAngle);
 	angleSpinner->set_int_limits(0, 359, GLUI_LIMIT_WRAP);
 	angleSpinner->set_speed(0.2);
@@ -710,8 +722,20 @@ void setupGLUT(char* programName)
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
 
+	GLUI_Panel *holePanel = gluiWindowLeft->add_panel("Status");
+	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "Name");
+	currentHole = gluiWindowLeft->add_statictext_to_panel(holePanel, "Hole");
+	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes");
+	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke");
+	par = gluiWindowLeft->add_statictext_to_panel(holePanel, "Par");
 
-	//GLUI_Master.auto_set_viewport();
+	GLUI_Panel *scoresPanel = gluiWindowLeft->add_panel("High Scores");
+	highScores[0] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "No high scores");
+	highScores[1] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	highScores[2] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	highScores[3] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	highScores[4] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	GLUI_Master.auto_set_viewport();
 
 	gluiWindow->set_main_gfx_window(mainWindow);
 	GLUI_Master.set_glutIdleFunc(idle);
