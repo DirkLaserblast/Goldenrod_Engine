@@ -7,8 +7,6 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/matrix_access.hpp"
 
-#include "component_ball.h"
-
 #define ARROW_COLOR glm::vec4(0.0,0.0,0.0,1.0) // BLACK
 #define ARROW_LENGTH 0.3f
 #define ARROW_HEAD_LENGTH 0.05f // sbutracted from ARROW_LENGTH for x-pos

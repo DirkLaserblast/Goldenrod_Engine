@@ -10,7 +10,6 @@
 //#include "geometry.h"
 //#include "transformation.h"
 #include "shape.h" // use instead of VBOs right now
-#include "physics.h"
 #include "border.h"
 
 // Tile macros
@@ -39,7 +38,7 @@ public:
 	int getID();
     double getFriction();
 	vector<int> getNeighborIDs();
-	vector<Shape*>* getShapes(); // Returns pointer to shapes vector
+	vector<Shape*> getShapes(); // Returns pointer to shapes vector
 	Border* getBorders();
 
 	void setID(int newID);

@@ -21,12 +21,24 @@ class FileIOController{
 public:
     FileIOController();
     ~FileIOController();
-    void processFile(string fileName);
-    vector<ProcessedInputLine*>* getCurrentFile();
+
+    int getNumHoles();
+    vector<ProcessedInputLine*> getCurrentHole();
+	vector<ProcessedInputLine*> getHole(int index);
+
+	void processFile(string fileName);
+	bool nextHole();
+    bool prevHole();
+    bool goToHole(int index);
 
 private:
-    vector<ProcessedInputLine*>* currentFile;
+	int currentHoleIndex;
+    vector<ProcessedInputLine*> currentHole;
+	vector<vector<ProcessedInputLine*>> parsedHoles;
     
+    // Make new input line and push onto current level vector
+	void createInputLine(string keyword, Tokenizer& str);
+
 };
 
 #endif

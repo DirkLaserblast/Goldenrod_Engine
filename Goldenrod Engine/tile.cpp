@@ -5,19 +5,25 @@ Tile::Tile(ProcessedInputLine* inLine){
 
     this->tileID = inLine->getID();
     this->friction = TILE_DEFAULT_FRICTION;
-    this->neighborIDs.insert(this->neighborIDs.begin(), inLine->getNeighborIDs().begin(), inLine->getNeighborIDs().end());
+    this->neighborIDs = inLine->getNeighborIDs();
     this->addTileShapes(inLine->getVerts());
-    this->borders = new Border(inLine->getVerts(), inLine->getNeighborIDs());
+
+    if(TILE_USE_BORDER){
+        this->borders = new Border(inLine);
+    }
+    else{
+        this->borders = NULL;
+    }
 
 };
 
 Tile::~Tile(){
 
     this->neighborIDs.clear();
-    for(int i = (this->shapes.size() - 1); i >= 0; i--){ // not sure if doing this correctly
-        delete *(this->shapes.end());
-        this->shapes.pop_back();
+    for(int i = 0; i < this->shapes.size(); i++){
+        delete this->shapes.at(i);
     }
+    this->shapes.clear();
     delete this->borders;
 
 };
@@ -34,11 +40,16 @@ double Tile::getFriction(){ return this->friction; };
 
 vector<int> Tile::getNeighborIDs(){ return this->neighborIDs; };
 
-vector<Shape*>* Tile::getShapes(){ return &(this->shapes); };
+vector<Shape*> Tile::getShapes(){ return this->shapes; };
 
 Border* Tile::getBorders(){ return this->borders; };
 
-void Tile::setID(int newID){ this->tileID = newID; };
+void Tile::setID(int newID){ 
+
+    this->tileID = newID;
+    this->borders->setID(newID);
+
+};
 
 void Tile::setFriction(double newFriction){ this->friction = newFriction; };
 

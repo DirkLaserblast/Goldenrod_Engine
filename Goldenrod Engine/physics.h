@@ -20,7 +20,7 @@ using glm::normalize;
 class Physics{
 
 public:
-    Physics(double speed = 0, vec3 pos = PHYSICS_DEFAULT_POSITION, vec3 dir = PHYSICS_DEFAULT_DIRECTION);
+    Physics(vec3 pos = PHYSICS_DEFAULT_POSITION, vec3 dir = PHYSICS_DEFAULT_DIRECTION, double speed = 0);
     ~Physics();
 
 	// Print info

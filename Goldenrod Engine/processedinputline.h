@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "glm/glm.hpp"
 
@@ -23,13 +24,21 @@ public:
     
     ProcessedInputLine();
     ~ProcessedInputLine();
-    void clear();    
+
+    void clear();
+
+    void setCourse(Tokenizer &str);
+	void setHoleName(Tokenizer &str);
+	void setHolePar(Tokenizer &str);
     void setTileData(Tokenizer &str);
     void setTeeData(Tokenizer &str);
     void setCupData(Tokenizer &str);
 
     string getKeyword();
+	string getName();
     int getID();
+	int getPar();
+    int getNumHoles();
     int getNumEdges();
     int getNumNeighbors();
     vector<glm::vec3> getVerts();
@@ -37,7 +46,10 @@ public:
 
 private:
     string keyword;
+	string name;
     int ID;
+	int par;
+    int numHoles;
     int numEdges;
     int numNeighbors;
     vector<glm::vec3> verts;

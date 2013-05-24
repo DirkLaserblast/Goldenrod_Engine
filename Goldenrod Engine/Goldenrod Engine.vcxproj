@@ -61,70 +61,47 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="component.cpp" />
+    <ClCompile Include="ball.cpp" />
+    <ClCompile Include="border.cpp" />
     <ClCompile Include="arrow.cpp" />
-    <ClCompile Include="component_ball.cpp" />
-    <ClCompile Include="component_border.cpp" />
-    <ClCompile Include="component_collision.cpp" />
-    <ClCompile Include="component_cup.cpp" />
-    <ClCompile Include="component_physc.cpp" />
-    <ClCompile Include="component_shapes.cpp" />
-    <ClCompile Include="component_tee.cpp" />
-    <ClCompile Include="component_test.cpp" />
-    <ClCompile Include="component_tile.cpp" />
-    <ClCompile Include="entity.cpp" />
+    <ClCompile Include="cup.cpp" />
     <ClCompile Include="fileiocontroller.cpp" />
-    <ClCompile Include="level.cpp" />
+    <ClCompile Include="levelcontroller.cpp" />
+    <ClCompile Include="level_refactor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="physics.cpp" />
     <ClCompile Include="processedinputline.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shape.cpp" />
-    <ClCompile Include="system.cpp" />
-    <ClCompile Include="system_levelcontroller.cpp" />
-    <ClCompile Include="system_physics.cpp" />
-    <ClCompile Include="system_test.cpp" />
+    <ClCompile Include="tee.cpp" />
+    <ClCompile Include="tile.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
-    <ClCompile Include="component_VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ball.h" />
     <ClInclude Include="border.h" />
-    <ClInclude Include="component.h" />
     <ClInclude Include="arrow.h" />
-    <ClInclude Include="component_ball.h" />
-    <ClInclude Include="component_border.h" />
-    <ClInclude Include="component_collision.h" />
-    <ClInclude Include="component_cup.h" />
-    <ClInclude Include="component_physc.h" />
-    <ClInclude Include="component_shapes.h" />
-    <ClInclude Include="component_tee.h" />
-    <ClInclude Include="component_test.h" />
-    <ClInclude Include="component_tile.h" />
-    <ClInclude Include="component_VAO.h" />
-    <ClInclude Include="entity.h" />
+    <ClInclude Include="cup.h" />
     <ClInclude Include="fileiocontroller.h" />
-    <ClInclude Include="geometry.h" />
-    <ClInclude Include="level.h" />
+    <ClInclude Include="levelcontroller.h" />
+    <ClInclude Include="level_refactor.h" />
+    <ClInclude Include="physics.h" />
     <ClInclude Include="processedinputline.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
-    <ClInclude Include="system.h" />
-    <ClInclude Include="system_levelcontroller.h" />
-    <ClInclude Include="system_physics.h" />
-    <ClInclude Include="system_test.h" />
+    <ClInclude Include="tee.h" />
+    <ClInclude Include="tile.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="Tokenizer.h" />
-    <ClInclude Include="component_VBO.h" />
-    <ClInclude Include="transformation.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="course.db" />
     <None Include="hole.00.db" />
     <None Include="hole.01.db" />
     <None Include="hole.02.db" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\fragment.frag" />
-    <None Include="shaders\vertex.vert" />
+    <None Include="shaders\light.frag" />
+    <None Include="shaders\light.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

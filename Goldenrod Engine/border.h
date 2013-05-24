@@ -6,6 +6,7 @@
 
 #include "glm/glm.hpp"
 
+#include "processedinputline.h"
 //#include "geometry.h"
 //#include "transformation.h"
 #include "shape.h" // use instead of VBOs right now
@@ -22,21 +23,26 @@ using glm::vec3;
 class Border{
 
 public:
-    Border();
-	Border(vector<vec3> verts, vector<int> neighborIDs);
+    // Constructors/Destructor
+	Border(ProcessedInputLine* inLine);
     ~Border();
 
+    // Print info
     void printInfo();
 
 	// Access methods
 	int getID();
-	vector<Shape*>* getShapes(); // Returns pointer to shapes vector
+	vector<Shape*> getShapes(); // Returns pointer to shapes vector
+
+    void setID(int newID);
 
 private:
     int tileID;
     //Geometry* geometry;
     //Transformation* transform;
-	vector<Shape*> shapes;
+	vector<Shape*> shapes; // first shape should be used for collision (inward facing normal)
+
+    void addBorderShapes(vector<vec3> verts, vector<int> neighborIDs, vec4 color = BORDER_COLOR, float height = BORDER_HEIGHT, float thickness = BORDER_THICKNESS);
 };
 
 #endif

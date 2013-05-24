@@ -59,7 +59,7 @@ void Tokenizer::setString(const std::string& str)
 void Tokenizer::setDelimiter(const std::string& delimiter)
 {
     this->delimiter = delimiter;
-    this->currPos = buffer.begin();
+    //this->currPos = buffer.begin(); // turned this off to allow for switching delimiter mid-way through
 }
 
 
@@ -120,6 +120,15 @@ void Tokenizer::skipDelimiter()
         ++currPos;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+// skip delimiters
+///////////////////////////////////////////////////////////////////////////////
+void Tokenizer::publicSkipDelimiter()
+{
+    while(currPos != buffer.end() && isDelimiter(*currPos))
+        ++currPos;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

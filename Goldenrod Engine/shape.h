@@ -53,7 +53,7 @@ private:
 };
 
 //Erase and populate the rendering arrays
-void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector);
+void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape*> shapesVector);
 
 //Remove a shape from the rendering arrays, leaving the rest intact
 void deleteShape(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, Shape * shape);

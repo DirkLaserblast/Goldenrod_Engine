@@ -42,6 +42,9 @@ public:
 
     std::vector<std::string> split();                   // return array of tokens from current cursor
 
+    // added to allow for skipping delimiter
+    void publicSkipDelimiter();
+
 protected:
 
 

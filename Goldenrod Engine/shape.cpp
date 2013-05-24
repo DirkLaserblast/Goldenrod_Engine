@@ -184,24 +184,24 @@ bool Shape::checkIfInside(vec3 point){
 };
 
 //Create the three vectors needed to render, using a list of shapes
-void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape> * shapesVector)
+void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, vector<float> * normsVector, vector<Shape*> shapesVector)
 {
     vertsVector->clear();
     colorsVector->clear();
     normsVector->clear();
 
-    for(int i = 0; i < shapesVector->size(); i++)
+    for(int i = 0; i < shapesVector.size(); i++)
     {
-        shapesVector->at(i).startIndex = vertsVector->size(); //Stores the current position in the verts vector into the current shape
-        shapesVector->at(i).colorStartIndex = colorsVector->size();
-        shapesVector->at(i).vertsPointer = vertsVector;
-        shapesVector->at(i).colorsPointer = colorsVector;
-        shapesVector->at(i).normsPointer = normsVector;
+        shapesVector.at(i)->startIndex = vertsVector->size(); //Stores the current position in the verts vector into the current shape
+        shapesVector.at(i)->colorStartIndex = colorsVector->size();
+        shapesVector.at(i)->vertsPointer = vertsVector;
+        shapesVector.at(i)->colorsPointer = colorsVector;
+        shapesVector.at(i)->normsPointer = normsVector;
 
-        Shape currentShape = shapesVector->at(i);
-        vector<float> currentVerts = currentShape.rawVerts();
-        vector<float> currentColors = currentShape.rawColors();
-        vector<float> currentNormals = currentShape.rawNormals();
+        Shape* currentShape = shapesVector.at(i);
+        vector<float> currentVerts = currentShape->rawVerts();
+        vector<float> currentColors = currentShape->rawColors();
+        vector<float> currentNormals = currentShape->rawNormals();
 
 
         vertsVector->insert(vertsVector->end(), currentVerts.begin(), currentVerts.end());

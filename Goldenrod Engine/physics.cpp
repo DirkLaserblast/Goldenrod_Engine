@@ -1,15 +1,15 @@
 #include "physics.h"
 
 // Constructors/Destructor
-Physics::Physics(double speed, vec3 pos, vec3 dir){
+Physics::Physics(vec3 pos, vec3 dir, double speed){
 
-    // Set initial values for speed, position, and direction
-    this->speed = speed;
-    this->initialSpeed = speed;
+    // Set initial values for speed, position, and direction    
     this->position = pos;
     this->initialPosition = pos;
     this->direction = dir;
     this->initialDirection = dir;
+    this->speed = speed;
+    this->initialSpeed = speed;
 
 };
 
