@@ -42,10 +42,14 @@ public:
 	//void setID(int newID);
     void setCurrentTileID(int newID);
 
+    // Reset ball
+    void reset();
+
 private:
     // Tile data
     //int ballID;
     int currentTileID;
+    int initialTileID;
 	vector<Shape*> shapes;
     Physics* physics;
 

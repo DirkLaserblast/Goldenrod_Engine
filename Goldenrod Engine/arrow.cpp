@@ -51,3 +51,10 @@ void Arrow::translate(glm::vec3 newPos){
     this->modelTransMatrix = glm::translate(modelTransMatrix, glm::vec3(newPos.x, newPos.y, newPos.z));
 
 };
+
+void Arrow::resetTransformationMatrix(){
+
+    this->modelRotMatrix = glm::mat4();
+    this->modelTransMatrix = glm::mat4();
+
+};

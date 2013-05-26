@@ -25,6 +25,7 @@ public:
 
     void rotate(float angle);
     void translate(glm::vec3 newPos);
+    void resetTransformationMatrix();
 
 private:
     vector<glm::vec3> verts;

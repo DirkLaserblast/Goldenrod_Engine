@@ -12,17 +12,6 @@
 // Arrow for aiming
 #include "arrow.h"
 
-//// Components
-//#include "physics.h"
-//#include "shape.h"
-
-//// Entities
-//#include "ball.h"
-//#include "border.h"
-//#include "cup.h"
-//#include "tee.h"
-//#include "tile.h"
-
 // File IO
 #include "fileiocontroller.h"
 
@@ -42,8 +31,6 @@
 //------------------------Macros------------------------//
 
 #define PI 3.14159L
-//#define DRAW_BALL_VELOCITY true
-//#define BALL_VELOCITY_COLOR glm::vec4(255,62,150,1.0)
 
 //------------------------Initialization------------------------//
 
@@ -282,13 +269,11 @@ void tick(int in)
         ////levelController->getCurrentLevel()->ballDirection = glm::vec3();
         //levelController->getCurrentLevel()->ballSpeed = 0;          
             
-        // Reset level
-        levelController->loadCurrentLevel(fileIO);
-
-        // Reload shapes
-        reloadAllShapes(&verts, &color, &norms, levelController->getCurrentLevel()->getLevelShapes());
+        // Reset Ball
+        levelController->getCurrentLevel()->getBall()->reset();
 
         // Reset arrow position
+        arrow->resetTransformationMatrix();
         arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
 
         // Set ballMoving flag to false

@@ -4,8 +4,13 @@
 Ball::Ball(ProcessedInputLine* inLine){
 
     this->currentTileID = inLine->getID();
+    this->initialTileID = inLine->getID();
     this->addBallShapes(inLine->getVerts()[0]);
-    this->physics = new Physics(inLine->getVerts()[0]);
+
+    // Correct for ball offset
+    vec3 tmpVerts = inLine->getVerts()[0];
+    tmpVerts = vec3(tmpVerts.x, tmpVerts.y + BALL_OFFSET, tmpVerts.z);
+    this->physics = new Physics(tmpVerts);
 
 };
 
@@ -36,6 +41,25 @@ Physics* Ball::getPhysics(){ return this->physics; };
 //void Ball::setID(int newID){ this->ballID = newID; };
 
 void Ball::setCurrentTileID(int newID){ this->currentTileID = newID; };
+
+void Ball::reset(){
+
+    // Translate shape back to origin
+    this->shapes[0]->translate(-(this->physics->getPosition()));
+
+    // Reset physics
+    this->physics->reset();
+
+    // Translate shape to initial position
+    this->shapes[0]->translate(this->physics->getPosition());
+
+    // Reload ball shape
+    this->shapes[0]->reload();
+
+    // Reset current tile
+    this->currentTileID = this->initialTileID;
+
+};
 
 // Private methods
 void Ball::addBallShapes(vec3 point, vec4 color, float radius, float offset){
