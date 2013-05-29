@@ -80,7 +80,6 @@ private:
 
     vector<Shape*> levelShapes;
 
-	
 };
 
 #endif
