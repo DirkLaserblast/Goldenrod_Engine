@@ -249,26 +249,7 @@ void tick(int in)
     glm::vec3 cupPos = levelController->getCurrentLevel()->getCup()->getPhysics()->getPosition();
     float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-    if(cupDist < (BALL_RADIUS)){
-        // Win condition -- ball collides with tee
-        //// Translate ball and arrow to origin
-        //shapes[shapes.size() - 1].translate(-ballPos);
-        //arrow->translate(-ballPos);
-
-        //// Set ball position to tee position
-        //levelController->getCurrentLevel()->getBall()->getPhysics()->setPosition(levelController->getCurrentLevel()->getTee()->getPhysics()->getPosition());
-
-        //// Translate ball and arrow to tee position (ballPosition)
-        //shapes[shapes.size() - 1].translate(levelController->getCurrentLevel()->ballPosition);
-        //arrow->translate(levelController->getCurrentLevel()->ballPosition);
-
-        //// Reload ball shape
-        //shapes[shapes.size() - 1].reload();
-
-        //// Reset ball physics
-        ////levelController->getCurrentLevel()->ballDirection = glm::vec3();
-        //levelController->getCurrentLevel()->ballSpeed = 0;          
-            
+    if(cupDist < (BALL_RADIUS)){                      
         // Reset Ball
         levelController->getCurrentLevel()->getBall()->reset();
 
@@ -280,18 +261,8 @@ void tick(int in)
         ballStopped();
     }
 
-    // Physics calculations
-    glm::vec3 deltaPos = glm::vec3(); // modify if moving
-    glm::vec3 ballDirection = levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection();
-    double ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
+    // Physics calculations   
     if(ballMoving){
-        //// Calculate current delta pos -- is this bit still being used?
-        //glm::vec3 ballDirection = levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection();
-        //double ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
-        ////deltaPos.x = (ballDirection.x * ballSpeed);
-        ////deltaPos.y = (ballDirection.y * ballSpeed);
-        ////deltaPos.z = (ballDirection.z * ballSpeed);
-
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
         Shape* tileTop = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID())->getShapes().at(0);
@@ -346,16 +317,10 @@ void tick(int in)
 
 		//	levelController->getCurrentLevel()->ballDirection = newDirection;
 		//}
-
-		// Calculate deltaPos        
-        ballDirection = levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection();
-		deltaPos.x = (ballDirection.x * ballSpeed);
-		deltaPos.y = (ballDirection.y * ballSpeed);
-		deltaPos.z = (ballDirection.z * ballSpeed);
-
     }
 
 	// Update ball speed -- outside of physics calc so that modified direction takes effect
+    double ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
     levelController->getCurrentLevel()->getBall()->getPhysics()->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION*(ballSpeed*100));
     ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
     if(ballSpeed <= 0.005){
@@ -370,11 +335,11 @@ void tick(int in)
     // Update drawing
     // Update shapes for drawing
     Shape* ballShape = levelController->getCurrentLevel()->getBall()->getShapes().at(0);
-    ballShape->translate(deltaPos);
+    ballShape->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getVelocity());
     ballShape->reload();
 
-    // Update arrow pos for drawing
-    arrow->translate(deltaPos);
+    // Update arrow pos for drawing -- this should be moved to when the ball stops
+    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getVelocity());
 
     // Check if ball stopped
     if(ballSpeed == 0){
@@ -873,7 +838,7 @@ int main(int argc, char **argv)
 	cout << "\n";
 
     // Move arrows to ball's starting position
-    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getInitialPosition());
+    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
     arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
 
 	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);

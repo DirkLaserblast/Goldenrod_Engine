@@ -35,17 +35,17 @@ public:
     void printInfo();
 
 	// Access methods
-	int getID();
+	//int getID();
     int getCurrentTileID();
 	vector<Shape*> getShapes(); // Returns pointer to shapes vector
     Physics* getPhysics();
 
-	void setID(int newID);
+	//void setID(int newID);
     void setCurrentTileID(int newID);
 
 private:
     // Tile data
-    int teeID;
+    //int teeID;
     int currentTileID;
 	vector<Shape*> shapes;
     Physics* physics;

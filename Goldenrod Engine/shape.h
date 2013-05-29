@@ -43,13 +43,16 @@ public:
     int colorStartIndex;
     vector<float> * vertsPointer, * colorsPointer, * normsPointer;
 
+    vec3 getCenter(); // debug
+
 private:
     vector<float> convert(vector<vec3> in);
     vector<float> convert(vector<vec4> in);
     vector<vec3> shapeVertices;
     vector<vec4> shapeColors;
     vector<vec3> shapeNormals;
-    vec3 center;
+
+    vec3 center; // debug
 };
 
 //Erase and populate the rendering arrays

@@ -21,6 +21,18 @@ Shape::Shape(vector<vec3> vertices, vec4 color)
 
     shapeNormals = vector<vec3>(vertices.size(), normal);
 
+    // Calculate center -- debug
+    float x = 0,y = 0,z = 0;
+    for(int i = 0; i < this->shapeVertices.size(); i++){
+        x += this->shapeVertices.at(i).x;
+        y += this->shapeVertices.at(i).y;
+        z += this->shapeVertices.at(i).z;
+    }
+    x = x / this->shapeVertices.size();
+    y = y / this->shapeVertices.size();
+    z = z / this->shapeVertices.size();
+    this->center = vec3(x,y,z);
+
 
 }
 
@@ -39,6 +51,9 @@ void Shape::translate(vec3 deltaPos)
     {
         shapeVertices[i] += deltaPos;
     }
+
+    // Update center -- debug
+    center += deltaPos;
 }
 
 void Shape::changeColor(vec4 color)
@@ -211,3 +226,5 @@ void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, 
 
 
 }
+
+vec3 Shape::getCenter(){ return this->center; };

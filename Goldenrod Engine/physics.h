@@ -11,6 +11,7 @@
 // Physics macros
 #define PHYSICS_DEFAULT_POSITION glm::vec3(0.0,0.0,0.0)
 #define PHYSICS_DEFAULT_DIRECTION glm::vec3(0.0,0.0,0.0)
+#define PHYSICS_DEFAULT_SPEED 0.0f
 
 // Using
 using std::vector;
@@ -20,7 +21,7 @@ using glm::normalize;
 class Physics{
 
 public:
-    Physics(vec3 pos = PHYSICS_DEFAULT_POSITION, vec3 dir = PHYSICS_DEFAULT_DIRECTION, double speed = 0);
+    Physics(vec3 pos = PHYSICS_DEFAULT_POSITION, vec3 dir = PHYSICS_DEFAULT_DIRECTION, double speed = PHYSICS_DEFAULT_SPEED);
     ~Physics();
 
 	// Print info

@@ -36,6 +36,7 @@ public:
 	// Access methods
 	//int getID();
     int getCurrentTileID();
+    int getInitialTileID();
 	vector<Shape*> getShapes(); // Returns pointer to shapes vector
     Physics* getPhysics();
 

@@ -3,7 +3,8 @@
 // Constructors/Destructor
 Tee::Tee(ProcessedInputLine* inLine){
 
-    this->teeID = inLine->getID();
+    //this->teeID = inLine->getID();
+    this->currentTileID = inLine->getID();
     this->addRectangleShapes(inLine->getVerts()[0]);
     this->physics = new Physics(inLine->getVerts()[0]);
 
@@ -25,7 +26,7 @@ void Tee::printInfo(){
 };
 
 // Access methods
-int Tee::getID(){ return this->teeID; };
+//int Tee::getID(){ return this->teeID; };
 
 int Tee::getCurrentTileID(){ return this->currentTileID; };
 
@@ -33,7 +34,7 @@ vector<Shape*> Tee::getShapes(){ return this->shapes; };
 
 Physics* Tee::getPhysics(){ return this->physics; };
 
-void Tee::setID(int newID){ this->teeID = newID; };
+//void Tee::setID(int newID){ this->teeID = newID; };
 
 void Tee::setCurrentTileID(int newID){ this->currentTileID = newID; };
 

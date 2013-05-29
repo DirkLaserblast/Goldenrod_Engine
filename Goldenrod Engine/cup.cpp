@@ -3,7 +3,8 @@
 // Constructors/Destructor
 Cup::Cup(ProcessedInputLine* inLine){
 
-    this->cupID = inLine->getID();
+    //this->cupID = inLine->getID();
+    this->currentTileID = inLine->getID();
     this->addRectangleShapes(inLine->getVerts()[0]);
     this->physics = new Physics(inLine->getVerts()[0]);
 
@@ -25,7 +26,7 @@ void Cup::printInfo(){
 };
 
 // Access methods
-int Cup::getID(){ return this->cupID; };
+//int Cup::getID(){ return this->cupID; };
 
 int Cup::getCurrentTileID(){ return this->currentTileID; };
 
@@ -33,7 +34,7 @@ vector<Shape*> Cup::getShapes(){ return this->shapes; };
 
 Physics* Cup::getPhysics(){ return this->physics; };
 
-void Cup::setID(int newID){ this->cupID = newID; };
+//void Cup::setID(int newID){ this->cupID = newID; };
 
 void Cup::setCurrentTileID(int newID){ this->currentTileID = newID; };
 

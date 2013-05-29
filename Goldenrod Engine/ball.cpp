@@ -34,6 +34,8 @@ void Ball::printInfo(){
 
 int Ball::getCurrentTileID(){ return this->currentTileID; };
 
+int Ball::getInitialTileID(){ return this->initialTileID; };
+
 vector<Shape*> Ball::getShapes(){ return this->shapes; };
 
 Physics* Ball::getPhysics(){ return this->physics; };
