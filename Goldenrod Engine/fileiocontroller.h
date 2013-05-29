@@ -31,6 +31,8 @@ public:
     bool prevHole();
     bool goToHole(int index);
 
+    int getCurrentHoleID();
+
 private:
 	int currentHoleIndex;
     vector<ProcessedInputLine*> currentHole;

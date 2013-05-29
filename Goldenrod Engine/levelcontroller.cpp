@@ -19,7 +19,7 @@ void LevelController::loadCurrentLevel(FileIOController* fileIO){
     // Load/reload current level
     cerr << endl << "Loading/reloading current level." << endl;
     delete this->currentLevel;
-    this->currentLevel = new Level(fileIO->getCurrentHole());
+    this->currentLevel = new Level(fileIO->getCurrentHole(), fileIO->getCurrentHoleID());
 
 };
 
@@ -32,7 +32,7 @@ void LevelController::loadNextLevel(FileIOController* fileIO){
         delete this->currentLevel;
 
         // Load next level
-        this->currentLevel = new Level(fileIO->getCurrentHole());
+        this->currentLevel = new Level(fileIO->getCurrentHole(), fileIO->getCurrentHoleID());
 	}
     else{
         cerr << "Cannot load level at next index: Index out of bounds." << endl;
@@ -49,7 +49,7 @@ void LevelController::loadPrevLevel(FileIOController* fileIO){
         delete this->currentLevel;
 
         // Load prev level
-        this->currentLevel = new Level(fileIO->getCurrentHole());
+        this->currentLevel = new Level(fileIO->getCurrentHole(), fileIO->getCurrentHoleID());
 	}
     else{
         cerr << "Cannot load level at previous: Index out of bounds." << endl;
@@ -66,7 +66,7 @@ void LevelController::loadLevel(FileIOController* fileIO, int levelIndex){
         delete this->currentLevel;
 
         // Load next level
-        this->currentLevel = new Level(fileIO->getCurrentHole());
+        this->currentLevel = new Level(fileIO->getCurrentHole(), fileIO->getCurrentHoleID());
     }
     else{
         cerr <<"Cannot load level at index " << levelIndex << ": Index out of bounds." << endl;

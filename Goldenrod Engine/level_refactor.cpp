@@ -4,10 +4,13 @@
 int Level::levelCount = 0;
 
 // Constructors/Destructor
-Level::Level(vector<ProcessedInputLine*> inLines){
+Level::Level(vector<ProcessedInputLine*> inLines, int ID){
 
     // Increment level count
-	this->levelID = Level::levelCount++;
+    Level::levelCount++;
+
+    // Set levelID
+    this->levelID = ID;
 
     // Pull level information
     string keyword; // store current input line keyword

@@ -29,7 +29,7 @@ class Level{
 
 public:
     // Constructors/Destructor
-    Level(vector<ProcessedInputLine*> inLines);
+    Level(vector<ProcessedInputLine*> inLines, int ID);
     ~Level();
 
     // Print info

@@ -79,12 +79,8 @@ int upMouseYPos;
 int downMouseYPos;
 int mousePosDiff;
 int mouseYPosDiff;
-bool d_down = false;
-bool r_down = false;
-bool s_down = false;
-bool x_down = false;
-bool y_down = false;
-bool z_down = false;
+bool m_down = false;
+bool n_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
@@ -149,15 +145,83 @@ void launchBall(int i)
 // Ball stopped moving
 void ballStopped(){
 
-    ballMoving = false;    
+    // Set ballMoving to false
+    ballMoving = false; 
 
+    // Move arrow to ball's position
+    arrow->resetTransformationMatrix();
+    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
+
+    // Re-enable GLUI
     angleSpinner->enable();
 	powerSpinner->enable();
 	fireButton->enable();
 
 };
 
-//Updates the camera position
+// Move to the next hole
+void nextHole(){
+
+    // Load next hole
+    if(fileIO->getNumHoles() - 1 == levelController->getCurrentLevel()->getLevelID()){
+        // Load first level if on final level
+        levelController->loadLevel(fileIO, 0);
+    }
+    else{
+        // Load next level
+        levelController->loadNextLevel(fileIO);
+    }
+
+    // Update scores
+    // ADD CODE
+
+    // Move arrow to ball's starting position
+    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
+    arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
+
+    // Reload shapes
+    shapes.clear();
+    shapes = levelController->getCurrentLevel()->getLevelShapes();
+    reloadAllShapes(&verts, &color, &norms, shapes);
+
+    // Set flags
+    m_down = false;
+    ballStopped();
+
+};
+
+// Move to the previous hole
+void prevHole(){
+
+    // Load prev hole
+    if(levelController->getCurrentLevel()->getLevelID() == 0){
+        // Load last level if on first level
+        levelController->loadLevel(fileIO, (fileIO->getNumHoles() - 1));
+    }
+    else{
+        // Load prev level
+        levelController->loadPrevLevel(fileIO);
+    }
+
+    // Update scores
+    // ADD CODE
+
+    // Move arrow to ball's starting position
+    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
+    arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
+
+    // Reload shapes
+    shapes.clear();
+    shapes = levelController->getCurrentLevel()->getLevelShapes();
+    reloadAllShapes(&verts, &color, &norms, shapes);
+
+    // Set flags
+    n_down = false;
+    ballStopped();
+
+};
+
+// Updates the camera position
 void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 {
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
@@ -217,7 +281,7 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
-//Run by GLUT every [tickspeed] miliseconds
+// Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
 	//Wall collision checking
@@ -249,16 +313,20 @@ void tick(int in)
     glm::vec3 cupPos = levelController->getCurrentLevel()->getCup()->getPhysics()->getPosition();
     float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-    if(cupDist < (BALL_RADIUS)){                      
-        // Reset Ball
-        levelController->getCurrentLevel()->getBall()->reset();
+    if(cupDist < (BALL_RADIUS)){ 
+        ////----------------RESET BALL TO LEVEL STARTING POSITION----------------//
+        //// Reset Ball
+        //levelController->getCurrentLevel()->getBall()->reset();
 
-        // Reset arrow position
-        arrow->resetTransformationMatrix();
-        arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
+        //// Reset arrow position
+        //arrow->resetTransformationMatrix();
+        //arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
 
-        // Set ballMoving flag to false
-        ballStopped();
+        //// Set ballMoving flag to false
+        //ballStopped();
+
+        //----------------CHANGE TO NEXT HOLE----------------//
+        nextHole();
     }
 
     // Physics calculations   
@@ -319,7 +387,7 @@ void tick(int in)
 		//}
     }
 
-	// Update ball speed -- outside of physics calc so that modified direction takes effect
+	// Update ball speed
     double ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
     levelController->getCurrentLevel()->getBall()->getPhysics()->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION*(ballSpeed*100));
     ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
@@ -332,14 +400,10 @@ void tick(int in)
     // Update ballPosition
     levelController->getCurrentLevel()->getBall()->getPhysics()->updatePosition();
 
-    // Update drawing
     // Update shapes for drawing
     Shape* ballShape = levelController->getCurrentLevel()->getBall()->getShapes().at(0);
     ballShape->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getVelocity());
     ballShape->reload();
-
-    // Update arrow pos for drawing -- this should be moved to when the ball stops
-    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getVelocity());
 
     // Check if ball stopped
     if(ballSpeed == 0){
@@ -369,7 +433,7 @@ void tick(int in)
 	glutTimerFunc(tickSpeed, tick, 0);
 }
 
-//reshape function for GLUT
+// Reshape function for GLUT
 void reshape(int w, int h)
 {
 	GLUI_Master.auto_set_viewport();
@@ -383,103 +447,56 @@ void reshape(int w, int h)
     );
 }
 
-//display function for GLUT
+// Display function for GLUT
 void display()
 {
 
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Resets all transformation matrices.
-    if (r_down == true)
-    {
-    	modelView = glm::mat4();
-    	mTrans = glm::mat4();
-        r_down = false;
-    }
-
-    //camera = crTrans * csTrans * ctTrans * camera;
+    // camera = crTrans * csTrans * ctTrans * camera;
 	
     mat4 modelCam = camera * modelView;
 
-    //grab the normal matrix from the modelview matrix (upper 3x3 entries of
-    //modelview).
+    // Grab the normal matrix from the modelview matrix (upper 3x3 entries of
+    // modelview).
     mat3 normalMatrix(modelCam);
     normalMatrix = inverse(normalMatrix);
     normalMatrix = transpose(normalMatrix);
 
-    //Tell OpenGL which shader program we want to use. In this case, we are only
-    //using one, but in general we might have many shader programs.
+    // Tell OpenGL which shader program we want to use. In this case, we are only
+    // using one, but in general we might have many shader programs.
     glUseProgram(shader->program);
 
-    //Pass the matrices and animation time to GPU
-    glUniformMatrix4fv(
-            shader->modelViewLoc, //handle to variable in the shader program
-            1, //how many matrices we want to send
-            GL_FALSE, //transpose the matrix
-            value_ptr(modelCam) //a pointer to an array containing the entries for
-              //the matrix
-            );
-    glUniformMatrix4fv(shader->projectionLoc, 1, GL_FALSE,
-            value_ptr(projection));
-    glUniformMatrix3fv(shader->normalMatrixLoc, 1, GL_FALSE,
-            value_ptr(normalMatrix));
+    // Pass the matrices and animation time to GPU
+    glUniformMatrix4fv(shader->modelViewLoc, 1, GL_FALSE, value_ptr(modelCam));
+    glUniformMatrix4fv(shader->projectionLoc, 1, GL_FALSE, value_ptr(projection));
+    glUniformMatrix3fv(shader->normalMatrixLoc, 1, GL_FALSE, value_ptr(normalMatrix));
     glUniform3fv(shader->lightPosLoc, 1, value_ptr(lightPos));
     glUniform3fv(shader->viewPosLoc, 1, value_ptr(viewPos));
 
-    glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer); //which buffer we want
-      //to use
-    glBufferData(
-                GL_ARRAY_BUFFER, //what kind of buffer (an array)
-                verts.size() * sizeof(float), //size of the buffer in bytes
-                verts.data(), //pointer to data we want to fill the buffer with
-                GL_DYNAMIC_DRAW //how we intend to use the buffer
-                );
-    glEnableVertexAttribArray(shader->vertexLoc); //enable the attribute
-    glVertexAttribPointer(
-            shader->vertexLoc, //handle to variable in shader program
-            3, //vector size (e.g. for texture coordinates this could be 2).
-            GL_FLOAT, //what type of data is (e.g. GL_FLOAT, GL_INT, etc.)
-            GL_FALSE, //normalize the data?
-            0, //stride of data (e.g. offset in bytes). Most of the time leaving
-              //this at 0 (assumes data is in one, contiguous array) is fine
-              //unless we're doing something really complex.
-            NULL //since our stride will be 0 in general, leaving this NULL is
-              //also fine in general
-            );
+    // Buffer vertex data
+    glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float), verts.data(), GL_DYNAMIC_DRAW);
+    // Enable vertex array
+    glEnableVertexAttribArray(shader->vertexLoc);
+    glVertexAttribPointer(shader->vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    glBindBuffer(GL_ARRAY_BUFFER, shader->normalBuffer); //which buffer we want
-      //to use
-    glBufferData(
-                GL_ARRAY_BUFFER, //what kind of buffer (an array)
-                norms.size() * sizeof(float), //size of the buffer in bytes
-                norms.data(), //pointer to data we want to fill the buffer with
-                GL_DYNAMIC_DRAW //how we intend to use the buffer
-                );
-    glEnableVertexAttribArray(shader->normalLoc); //enable the attribute
-    glVertexAttribPointer(
-            shader->normalLoc, //handle to variable in shader program
-            3, //vector size (e.g. for texture coordinates this could be 2).
-            GL_FLOAT, //what type of data is (e.g. GL_FLOAT, GL_INT, etc.)
-            GL_FALSE, //normalize the data?
-            0, //stride of data (e.g. offset in bytes). Most of the time leaving
-              //this at 0 (assumes data is in one, contiguous array) is fine
-              //unless we're doing something really complex.
-            NULL //since our stride will be 0 in general, leaving this NULL is
-              //also fine in general
-            );
+    // Buffer normal data
+    glBindBuffer(GL_ARRAY_BUFFER, shader->normalBuffer);
+    glBufferData(GL_ARRAY_BUFFER, norms.size() * sizeof(float), norms.data(), GL_DYNAMIC_DRAW);
+    // Enable normal array
+    glEnableVertexAttribArray(shader->normalLoc);
+    glVertexAttribPointer(shader->normalLoc, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+    // Buffer color data
     glBindBuffer(GL_ARRAY_BUFFER, shader->colorBuffer);
-        glBufferData(
-                GL_ARRAY_BUFFER,
-                color.size() * sizeof(float),
-                color.data(),
-                GL_DYNAMIC_DRAW
-                );
+    glBufferData(GL_ARRAY_BUFFER, color.size() * sizeof(float), color.data(), GL_DYNAMIC_DRAW);
+    // Enable color array
     glEnableVertexAttribArray(shader->colorLoc);
     glVertexAttribPointer(shader->colorLoc, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    //draw the vertices/normals we just specified.
+    //Bind element buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shader->indexBuffer);
 
 	for (int i = 0; i < (int) shapes.size(); i++)
@@ -495,42 +512,22 @@ void display()
         modelCam = camera * arrow->getModelTransformMatrix();
 
         //Pass the matrix
-        glUniformMatrix4fv(
-                shader->modelViewLoc, //handle to variable in the shader program
-                1, //how many matrices we want to send
-                GL_FALSE, //transpose the matrix
-                value_ptr(modelCam) //a pointer to an array containing the entries for
-                  //the matrix
-                );
+        glUniformMatrix4fv(shader->modelViewLoc, 1, GL_FALSE, value_ptr(modelCam));
 
-        glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer); //which buffer we want
-          //to use
-        glBufferData(
-                    GL_ARRAY_BUFFER, //what kind of buffer (an array)
-                    arrow->getVerts().size() * sizeof(glm::vec3), //size of the buffer in bytes
-                    arrow->getVerts().data(), //pointer to data we want to fill the buffer with
-                    GL_DYNAMIC_DRAW //how we intend to use the buffer
-                    );
-        glEnableVertexAttribArray(shader->vertexLoc); //enable the attribute
-        glVertexAttribPointer(
-                shader->vertexLoc, //handle to variable in shader program
-                3, //vector size (e.g. for texture coordinates this could be 2).
-                GL_FLOAT, //what type of data is (e.g. GL_FLOAT, GL_INT, etc.)
-                GL_FALSE, //normalize the data?
-                0, //stride of data (e.g. offset in bytes). Most of the time leaving
-                  //this at 0 (assumes data is in one, contiguous array) is fine
-                  //unless we're doing something really complex.
-                NULL //since our stride will be 0 in general, leaving this NULL is
-                  //also fine in general
-                );
+        // Buffer vertex data
+        glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, arrow->getVerts().size() * sizeof(glm::vec3), arrow->getVerts().data(), GL_DYNAMIC_DRAW);
+        // Enable vertex array
+        glEnableVertexAttribArray(shader->vertexLoc);
+        glVertexAttribPointer(shader->vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+        // Disable normal array
+        glDisableVertexAttribArray(shader->normalLoc);
+
+        // Buffer color data
         glBindBuffer(GL_ARRAY_BUFFER, shader->colorBuffer);
-            glBufferData(
-                    GL_ARRAY_BUFFER,
-                    arrow->getVertColors().size() * sizeof(glm::vec4),
-                    arrow->getVertColors().data(),
-                    GL_DYNAMIC_DRAW
-                    );
+        glBufferData(GL_ARRAY_BUFFER, arrow->getVertColors().size() * sizeof(glm::vec4), arrow->getVertColors().data(), GL_DYNAMIC_DRAW);
+        // Enable color array
         glEnableVertexAttribArray(shader->colorLoc);
         glVertexAttribPointer(shader->colorLoc, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 
@@ -542,7 +539,7 @@ void display()
 
 }
 
-//idle function for GLUT
+// Idle function for GLUT
 void idle()
 {
 	if(glutGetWindow() != mainWindow){
@@ -552,26 +549,20 @@ void idle()
     glutPostRedisplay();
 }
 
-//captures keyboard input for GLUT
-//Sets variables for doing transforms
+// Captures keyboard input for GLUT
+// Sets variables for doing transforms
 void keyboard(unsigned char key, int x, int y)
 {
 	if (key == 27)
 		exit(0);
-	if (key == 'r')
-		r_down = true;
-	if (key == 's')
-		s_down = true;
-    if (key == 'x')
-    	x_down = true;
-    if (key == 'y')
-    	y_down = true;
-    if (key == 'z')
-    	z_down = true;
+    if (key == 'm')
+        nextHole();
+    if (key == 'n')
+        prevHole();
 }
 
-//Callback for mouse button events.
-//Sets variables for position and button state.
+// Callback for mouse button events.
+// Sets variables for position and button state.
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
@@ -601,9 +592,10 @@ void mouse(int button, int state, int x, int y)
 }
 
 
-//Callback for mouse movement while a button is down.
-//Also applies transformations, as doing so in Display was causing the
-//    transforms to slide, rather than just move.
+/* Callback for mouse movement while a button is down.
+ * Also applies transformations, as doing so in Display was causing the
+ * transforms to slide, rather than just move.
+ */
 void mouseMove(int x, int y)
 {
     downMouseXPos = x;
@@ -614,33 +606,12 @@ void mouseMove(int x, int y)
     upMouseYPos = downMouseYPos;
 
     modelView = glm::mat4();
-
-
-    if (x_down == true && leftbDown == true)
-        mTrans = glm::translate(mTrans, glm::vec3((static_cast<float>(mousePosDiff) / -10),0,0));
-    else if (y_down == true && leftbDown == true)
-        mTrans = glm::translate(mTrans, glm::vec3(0,(static_cast<float>(mousePosDiff) / 10),0));
-    else if (z_down == true && leftbDown == true)
-        mTrans = glm::translate(mTrans, glm::vec3(0,0,(static_cast<float>(mousePosDiff) / -10)));
-    else if (s_down == true && leftbDown == true)
-        mTrans = glm::scale(mTrans, glm::vec3(pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff)))));
-    else if (x_down == true && rightbDown == true)
-        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(1,0,0));
-    else if (y_down == true && rightbDown == true)
-        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,1,0));
-    else if (z_down == true && rightbDown == true)
-        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,0,1));
-
-
     modelView = modelView * mTrans;
-    s_down = false;
-    x_down = false;
-    y_down = false;
-    z_down = false;
+
     glutPostRedisplay();
 }
 
-//do some GLUT initialization, also set up GLUI
+// Do some GLUT initialization, also set up GLUI
 void setupGLUT(char* programName)
 {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_RGBA | GLUT_DOUBLE);
@@ -714,7 +685,7 @@ void setupGLUT(char* programName)
 	GLUI_Master.sync_live_all();
 }
 
-//initialize OpenGL background color and vertex/normal arrays
+// Initialize OpenGL background color and vertex/normal arrays
 void setupGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -728,10 +699,10 @@ void setupGL()
     );
 }
 
-//setup the shader program
+// Setup the shader program
 void setupShaders()
 {
-    //create the shader program from a vertex and fragment shader
+    //Create the shader program from a vertex and fragment shader
     shader = new Shader("shaders/light.vert", "shaders/light.frag");
 
     //Here's where we setup handles to each variable that is used in the shader
@@ -745,7 +716,7 @@ void setupShaders()
     shader->viewPosLoc = glGetUniformLocation(shader->program, "E");
     shader->lBlockLoc = glGetUniformLocation(shader->program, "lBlock");
 
-    //notice that, since the vertex attribute norm is not used in the shader
+    //Notice that, since the vertex attribute norm is not used in the shader
     //program, shader->normalLoc = -1. If we access norm in the shader program,
     //then this value will be >= 0.
     shader->vertexLoc = glGetAttribLocation(shader->program, "pos");
@@ -837,19 +808,16 @@ int main(int argc, char **argv)
 	cin >> name;
 	cout << "\n";
 
-    // Move arrows to ball's starting position
+    // Move arrow to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
     arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
 
-	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
-
     // Add shapes to game level
-    levelController->getCurrentLevel()->updateLevelShapes();
     shapes.clear();
-    //shapes.insert(shapes.begin(), levelController->getCurrentLevel()->getLevelShapes().begin(), levelController->getCurrentLevel()->getLevelShapes().end());
     shapes = levelController->getCurrentLevel()->getLevelShapes();
-
     reloadAllShapes(&verts, &color, &norms, shapes);
+
+	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);   
 
     glutMainLoop();
 
@@ -861,4 +829,3 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-

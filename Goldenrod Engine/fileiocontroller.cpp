@@ -192,6 +192,8 @@ bool FileIOController::goToHole(int index){
 
 }
 
+int FileIOController::getCurrentHoleID(){ return this->currentHoleIndex; };
+
 // Priavte methods
 void FileIOController::createInputLine(string keyword, Tokenizer& str){
 
