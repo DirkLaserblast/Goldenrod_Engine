@@ -38,8 +38,8 @@
 FileIOController* fileIO = new FileIOController();
 LevelController* levelController = new LevelController();
 
-Timer* gameTime = new Timer();
-int tickSpeed = 30; //Speed of timer function in milliseconds -- this really should be in the timer class...
+//Timer* gameTime = new Timer();
+int tickSpeed = 10; //Speed of timer function in milliseconds -- this really should be in the timer class... <- the timer class doesn't do anything and is unused
 
 Shader *shader = NULL;
 
@@ -79,8 +79,12 @@ int upMouseYPos;
 int downMouseYPos;
 int mousePosDiff;
 int mouseYPosDiff;
-bool m_down = false;
-bool n_down = false;
+bool d_down = false;
+bool r_down = false;
+bool s_down = false;
+bool x_down = false;
+bool y_down = false;
+bool z_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
@@ -106,6 +110,8 @@ float launchAngleRadians = 0;
 int launchPower; //How hard to "hit" the ball, between 1 and 7 (for now)
 bool ballMoving = false;
 
+const int MAX_SPEED = 100; //The fastest the ball can be hit
+
 //------------------------Game Functions------------------------//
 
 //Start the ball moving using direction and power from GLUI input
@@ -116,23 +122,27 @@ void launchBall(int i)
     launchAngleRadians = (float) launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
-    float prevY = levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection().y;
-    levelController->getCurrentLevel()->getBall()->getPhysics()->setDirection(glm::vec3(launchVector.x, prevY, launchVector.z));
+	Level *currentLevel = levelController->getCurrentLevel();
+	Ball *ball = currentLevel->getBall();
+	Physics *physics = ball->getPhysics();
+
+    float prevY = physics->getDirection().y;
+    physics->setDirection(glm::vec3(launchVector.x, prevY, launchVector.z));
 
 	// If new tile is flat make sure no y-component
-    if(levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID())->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
-        levelController->getCurrentLevel()->getBall()->getPhysics()->setDirection(
-            glm::vec3(levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection().x, 0.0, levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection().z));
+    if(currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
+        physics->setDirection(
+            glm::vec3(physics->getDirection().x, 0.0, physics->getDirection().z));
     }
     // If new tile is not flat add y-component
     else{
-        glm::vec3 oldDirection = levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection();
+        glm::vec3 oldDirection = physics->getDirection();
         glm::vec3 upVector = glm::vec3(0.0,1.0,0.0);
         // Get current tile normal
-        glm::vec3 tileNormal = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID())->getShapes().at(0)->normals()[0];
+        glm::vec3 tileNormal = currentLevel->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID())->getShapes().at(0)->normals()[0];
         glm::vec3 xVector = glm::cross(oldDirection, upVector);
         glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
-        levelController->getCurrentLevel()->getBall()->getPhysics()->setDirection(newDirection);
+        physics->setDirection(newDirection);
     }
 
     levelController->getCurrentLevel()->getBall()->getPhysics()->setSpeed(launchPower/100.0f);
@@ -145,83 +155,15 @@ void launchBall(int i)
 // Ball stopped moving
 void ballStopped(){
 
-    // Set ballMoving to false
-    ballMoving = false; 
+    ballMoving = false;    
 
-    // Move arrow to ball's position
-    arrow->resetTransformationMatrix();
-    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
-
-    // Re-enable GLUI
     angleSpinner->enable();
 	powerSpinner->enable();
 	fireButton->enable();
 
 };
 
-// Move to the next hole
-void nextHole(){
-
-    // Load next hole
-    if(fileIO->getNumHoles() - 1 == levelController->getCurrentLevel()->getLevelID()){
-        // Load first level if on final level
-        levelController->loadLevel(fileIO, 0);
-    }
-    else{
-        // Load next level
-        levelController->loadNextLevel(fileIO);
-    }
-
-    // Update scores
-    // ADD CODE
-
-    // Move arrow to ball's starting position
-    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
-    arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
-
-    // Reload shapes
-    shapes.clear();
-    shapes = levelController->getCurrentLevel()->getLevelShapes();
-    reloadAllShapes(&verts, &color, &norms, shapes);
-
-    // Set flags
-    m_down = false;
-    ballStopped();
-
-};
-
-// Move to the previous hole
-void prevHole(){
-
-    // Load prev hole
-    if(levelController->getCurrentLevel()->getLevelID() == 0){
-        // Load last level if on first level
-        levelController->loadLevel(fileIO, (fileIO->getNumHoles() - 1));
-    }
-    else{
-        // Load prev level
-        levelController->loadPrevLevel(fileIO);
-    }
-
-    // Update scores
-    // ADD CODE
-
-    // Move arrow to ball's starting position
-    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
-    arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
-
-    // Reload shapes
-    shapes.clear();
-    shapes = levelController->getCurrentLevel()->getLevelShapes();
-    reloadAllShapes(&verts, &color, &norms, shapes);
-
-    // Set flags
-    n_down = false;
-    ballStopped();
-
-};
-
-// Updates the camera position
+//Updates the camera position
 void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 {
 	if (cameraRotate[1] < 0.01) cameraRotate[1] = 0.01; //Prevent camera from flipping over vertically
@@ -281,14 +223,27 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
-// Run by GLUT every [tickspeed] miliseconds
+//Updates the values in the "Status" and "High Scores" GLUI panel
+void updateHUD(int currentHole, int totalHoles, int currentStroke, int par, string highScores[5])
+{
+
+}
+
+//Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
+
 	//Wall collision checking
-	Tile* currentTile = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID());
+	Level *currentLevel = levelController->getCurrentLevel();
+	Ball *ball = currentLevel->getBall();
+	Physics *physics = ball->getPhysics();
+	Tile* currentTile = currentLevel->getTile(ball->getCurrentTileID());
+
+	//printf("Current tile: %i\n", ball->getCurrentTileID());
+
     vector<int> borderIDs = currentTile->getNeighborIDs();
     vector<Shape*> borderShapes = currentTile->getBorders()->getShapes();
-    vec3 ballPosition = levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition();
+    vec3 ballPosition = physics->getPosition();
 
 	//Check distance to all adjacent borders
 	for (int i = 0; i < borderShapes.size(); i++)
@@ -296,75 +251,85 @@ void tick(int in)
 		Shape *currentShape = borderShapes[i];
 		float distance = currentShape->distanceToPlane(ballPosition);
 		//cout << "Distance: " << distance << "\n";
-		if (distance <= 0.06) //Collision detected, deflect
+		if (distance <= physics->getSpeed()) //Collision detected, deflect
 		{
-			//cout << "Collision!\n";
 			vec3 borderNormal = currentShape->normals()[0];
-            vec3 incoming = levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection();
-            levelController->getCurrentLevel()->getBall()->getPhysics()->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
-			break;
+            vec3 incoming = physics->getDirection();
+			//Make sure wall is in front of the ball
+			if (abs(acos(dot(borderNormal, incoming))) > PI/2)
+			{
+				//cout << acos(dot(borderNormal, incoming)) << "\n";
+				//Move ball forward to collision point
+				//physics->setPosition(physics->getPosition() + (incoming * distance));
+				physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+				break;
+			}
+			//else cout << "Ignoring wall\n";
 		}
 	}
 
 	//End wall collision checking
 
     // Collision with cup
-    glm::vec3 ballPos = levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition();
-    glm::vec3 cupPos = levelController->getCurrentLevel()->getCup()->getPhysics()->getPosition();
+    glm::vec3 ballPos = physics->getPosition();
+    glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
     float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-    if(cupDist < (BALL_RADIUS)){ 
-        ////----------------RESET BALL TO LEVEL STARTING POSITION----------------//
-        //// Reset Ball
-        //levelController->getCurrentLevel()->getBall()->reset();
+    if(cupDist < (BALL_RADIUS)){                      
+        // Reset Ball
+        ball->reset();
 
-        //// Reset arrow position
-        //arrow->resetTransformationMatrix();
-        //arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
+        // Reset arrow position
+        arrow->resetTransformationMatrix();
+        arrow->translate(physics->getPosition());
 
-        //// Set ballMoving flag to false
-        //ballStopped();
-
-        //----------------CHANGE TO NEXT HOLE----------------//
-        nextHole();
+        // Set ballMoving flag to false
+        ballStopped();
     }
 
     // Physics calculations   
     if(ballMoving){
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
-        Shape* tileTop = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID())->getShapes().at(0);
+        Shape* tileTop = currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0);
         // Calculate if point will be within its current tile after it is moved
-        bool inTile = tileTop->checkIfInside(levelController->getCurrentLevel()->getBall()->getPhysics()->getNextPosition());
+        bool inTile = tileTop->checkIfInside(physics->getNextPosition());
         // If not in tile
         if(inTile == false){           
             //Check all tiles to find which one we are in (tried to check only neighbors above, but had issues)          
-            for(int i =0; i < levelController->getCurrentLevel()->getTiles().size(); i++){
+            for(int i =0; i < currentLevel->getTiles().size(); i++)
+			{
                 // Check tile
-                inTile = levelController->getCurrentLevel()->getTiles()[i]->getShapes().at(0)->checkIfInside(levelController->getCurrentLevel()->getBall()->getPhysics()->getNextPosition());
-                if(inTile){
-                    levelController->getCurrentLevel()->getBall()->setCurrentTileID(levelController->getCurrentLevel()->getTiles()[i]->getID());
+                inTile = currentLevel->getTiles()[i]->getShapes().at(0)->checkIfInside(physics->getNextPosition());
+                if(inTile)
+				{
+                    ball->setCurrentTileID(levelController->getCurrentLevel()->getTiles()[i]->getID());
 
                     // Update direction
                     // If new tile is flat make sure no y-component
-                    if(levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID())->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
-                        levelController->getCurrentLevel()->getBall()->getPhysics()->setDirection(
-                            glm::vec3(levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection().x, 0.0, levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection().z));
+                    if(currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
+                        physics->setDirection(
+                            glm::vec3(physics->getDirection().x, 0.0, physics->getDirection().z));
                     }
                     // If new tile is not flat add y-component
                     else{
-                        glm::vec3 oldDirection = levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection();
+                        glm::vec3 oldDirection = physics->getDirection();
                         glm::vec3 upVector = glm::vec3(0.0,1.0,0.0);
                         // Get current tile normal
-                        glm::vec3 tileNormal = levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->getBall()->getCurrentTileID())->getShapes().at(0)->normals()[0];
+                        glm::vec3 tileNormal = currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0];
                         glm::vec3 xVector = glm::cross(oldDirection, upVector);
                         glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
-                        levelController->getCurrentLevel()->getBall()->getPhysics()->setDirection(newDirection);
+                        physics->setDirection(newDirection);
                     }
 
                     break;
                 }
-            }			
+				
+				
+            }
+			//Not in a tile at all
+			physics->setDirection(-physics->getDirection());
+			
         } 
 		//// Modify direction based on gravity and update direction again
 		//if(levelController->getCurrentLevel()->getTile(levelController->getCurrentLevel()->ballCurrentTileID)->publicShapes->getShapes().at(0)->normals()[0] != glm::vec3(0.0,1.0,0.0)){
@@ -387,23 +352,27 @@ void tick(int in)
 		//}
     }
 
-	// Update ball speed
-    double ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
-    levelController->getCurrentLevel()->getBall()->getPhysics()->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION*(ballSpeed*100));
-    ballSpeed = levelController->getCurrentLevel()->getBall()->getPhysics()->getSpeed();
+	// Update ball speed -- outside of physics calc so that modified direction takes effect
+    double ballSpeed = physics->getSpeed();
+    physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION*(ballSpeed*100));
+    ballSpeed = physics->getSpeed();
     if(ballSpeed <= 0.005){
-        levelController->getCurrentLevel()->getBall()->getPhysics()->setSpeed(0.0);
+        physics->setSpeed(0.0);
     }
 	//cout << endl << "ball speed:" << levelController->getCurrentLevel()->ballSpeed << endl; // debug
 	//cout << endl << "ball tile ID: " << levelController->getCurrentLevel()->ballCurrentTileID << endl; // debug
 
     // Update ballPosition
-    levelController->getCurrentLevel()->getBall()->getPhysics()->updatePosition();
+    physics->updatePosition();
 
+    // Update drawing
     // Update shapes for drawing
-    Shape* ballShape = levelController->getCurrentLevel()->getBall()->getShapes().at(0);
-    ballShape->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getVelocity());
+    Shape* ballShape = ball->getShapes().at(0);
+    ballShape->translate(physics->getVelocity());
     ballShape->reload();
+
+    // Update arrow pos for drawing -- this should be moved to when the ball stops
+    arrow->translate(physics->getVelocity());
 
     // Check if ball stopped
     if(ballSpeed == 0){
@@ -415,12 +384,12 @@ void tick(int in)
 	{
 		float launchAngleRadians = launchAngle * (PI/180);
 		launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
-        updateCamera(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition(), launchVector, false);
+        updateCamera(physics->getPosition(), launchVector, false);
 	}
 	else
 	{
 		//Replace launchVector here with actual ball direction
-		updateCamera(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition(), levelController->getCurrentLevel()->getBall()->getPhysics()->getDirection(), true);
+		updateCamera(physics->getPosition(), physics->getDirection(), true);
 	}
 
 	//Update HUD
@@ -433,7 +402,7 @@ void tick(int in)
 	glutTimerFunc(tickSpeed, tick, 0);
 }
 
-// Reshape function for GLUT
+//reshape function for GLUT
 void reshape(int w, int h)
 {
 	GLUI_Master.auto_set_viewport();
@@ -447,56 +416,103 @@ void reshape(int w, int h)
     );
 }
 
-// Display function for GLUT
+//display function for GLUT
 void display()
 {
 
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // camera = crTrans * csTrans * ctTrans * camera;
+	//Resets all transformation matrices.
+    if (r_down == true)
+    {
+    	modelView = glm::mat4();
+    	mTrans = glm::mat4();
+        r_down = false;
+    }
+
+    //camera = crTrans * csTrans * ctTrans * camera;
 	
     mat4 modelCam = camera * modelView;
 
-    // Grab the normal matrix from the modelview matrix (upper 3x3 entries of
-    // modelview).
+    //grab the normal matrix from the modelview matrix (upper 3x3 entries of
+    //modelview).
     mat3 normalMatrix(modelCam);
     normalMatrix = inverse(normalMatrix);
     normalMatrix = transpose(normalMatrix);
 
-    // Tell OpenGL which shader program we want to use. In this case, we are only
-    // using one, but in general we might have many shader programs.
+    //Tell OpenGL which shader program we want to use. In this case, we are only
+    //using one, but in general we might have many shader programs.
     glUseProgram(shader->program);
 
-    // Pass the matrices and animation time to GPU
-    glUniformMatrix4fv(shader->modelViewLoc, 1, GL_FALSE, value_ptr(modelCam));
-    glUniformMatrix4fv(shader->projectionLoc, 1, GL_FALSE, value_ptr(projection));
-    glUniformMatrix3fv(shader->normalMatrixLoc, 1, GL_FALSE, value_ptr(normalMatrix));
+    //Pass the matrices and animation time to GPU
+    glUniformMatrix4fv(
+            shader->modelViewLoc, //handle to variable in the shader program
+            1, //how many matrices we want to send
+            GL_FALSE, //transpose the matrix
+            value_ptr(modelCam) //a pointer to an array containing the entries for
+              //the matrix
+            );
+    glUniformMatrix4fv(shader->projectionLoc, 1, GL_FALSE,
+            value_ptr(projection));
+    glUniformMatrix3fv(shader->normalMatrixLoc, 1, GL_FALSE,
+            value_ptr(normalMatrix));
     glUniform3fv(shader->lightPosLoc, 1, value_ptr(lightPos));
     glUniform3fv(shader->viewPosLoc, 1, value_ptr(viewPos));
 
-    // Buffer vertex data
-    glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float), verts.data(), GL_DYNAMIC_DRAW);
-    // Enable vertex array
-    glEnableVertexAttribArray(shader->vertexLoc);
-    glVertexAttribPointer(shader->vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer); //which buffer we want
+      //to use
+    glBufferData(
+                GL_ARRAY_BUFFER, //what kind of buffer (an array)
+                verts.size() * sizeof(float), //size of the buffer in bytes
+                verts.data(), //pointer to data we want to fill the buffer with
+                GL_DYNAMIC_DRAW //how we intend to use the buffer
+                );
+    glEnableVertexAttribArray(shader->vertexLoc); //enable the attribute
+    glVertexAttribPointer(
+            shader->vertexLoc, //handle to variable in shader program
+            3, //vector size (e.g. for texture coordinates this could be 2).
+            GL_FLOAT, //what type of data is (e.g. GL_FLOAT, GL_INT, etc.)
+            GL_FALSE, //normalize the data?
+            0, //stride of data (e.g. offset in bytes). Most of the time leaving
+              //this at 0 (assumes data is in one, contiguous array) is fine
+              //unless we're doing something really complex.
+            NULL //since our stride will be 0 in general, leaving this NULL is
+              //also fine in general
+            );
 
-    // Buffer normal data
-    glBindBuffer(GL_ARRAY_BUFFER, shader->normalBuffer);
-    glBufferData(GL_ARRAY_BUFFER, norms.size() * sizeof(float), norms.data(), GL_DYNAMIC_DRAW);
-    // Enable normal array
-    glEnableVertexAttribArray(shader->normalLoc);
-    glVertexAttribPointer(shader->normalLoc, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glBindBuffer(GL_ARRAY_BUFFER, shader->normalBuffer); //which buffer we want
+      //to use
+    glBufferData(
+                GL_ARRAY_BUFFER, //what kind of buffer (an array)
+                norms.size() * sizeof(float), //size of the buffer in bytes
+                norms.data(), //pointer to data we want to fill the buffer with
+                GL_DYNAMIC_DRAW //how we intend to use the buffer
+                );
+    glEnableVertexAttribArray(shader->normalLoc); //enable the attribute
+    glVertexAttribPointer(
+            shader->normalLoc, //handle to variable in shader program
+            3, //vector size (e.g. for texture coordinates this could be 2).
+            GL_FLOAT, //what type of data is (e.g. GL_FLOAT, GL_INT, etc.)
+            GL_FALSE, //normalize the data?
+            0, //stride of data (e.g. offset in bytes). Most of the time leaving
+              //this at 0 (assumes data is in one, contiguous array) is fine
+              //unless we're doing something really complex.
+            NULL //since our stride will be 0 in general, leaving this NULL is
+              //also fine in general
+            );
 
-    // Buffer color data
     glBindBuffer(GL_ARRAY_BUFFER, shader->colorBuffer);
-    glBufferData(GL_ARRAY_BUFFER, color.size() * sizeof(float), color.data(), GL_DYNAMIC_DRAW);
-    // Enable color array
+        glBufferData(
+                GL_ARRAY_BUFFER,
+                color.size() * sizeof(float),
+                color.data(),
+                GL_DYNAMIC_DRAW
+                );
     glEnableVertexAttribArray(shader->colorLoc);
     glVertexAttribPointer(shader->colorLoc, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    //Bind element buffer
+    //draw the vertices/normals we just specified.
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shader->indexBuffer);
 
 	for (int i = 0; i < (int) shapes.size(); i++)
@@ -512,22 +528,42 @@ void display()
         modelCam = camera * arrow->getModelTransformMatrix();
 
         //Pass the matrix
-        glUniformMatrix4fv(shader->modelViewLoc, 1, GL_FALSE, value_ptr(modelCam));
+        glUniformMatrix4fv(
+                shader->modelViewLoc, //handle to variable in the shader program
+                1, //how many matrices we want to send
+                GL_FALSE, //transpose the matrix
+                value_ptr(modelCam) //a pointer to an array containing the entries for
+                  //the matrix
+                );
 
-        // Buffer vertex data
-        glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, arrow->getVerts().size() * sizeof(glm::vec3), arrow->getVerts().data(), GL_DYNAMIC_DRAW);
-        // Enable vertex array
-        glEnableVertexAttribArray(shader->vertexLoc);
-        glVertexAttribPointer(shader->vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glBindBuffer(GL_ARRAY_BUFFER, shader->vertexBuffer); //which buffer we want
+          //to use
+        glBufferData(
+                    GL_ARRAY_BUFFER, //what kind of buffer (an array)
+                    arrow->getVerts().size() * sizeof(glm::vec3), //size of the buffer in bytes
+                    arrow->getVerts().data(), //pointer to data we want to fill the buffer with
+                    GL_DYNAMIC_DRAW //how we intend to use the buffer
+                    );
+        glEnableVertexAttribArray(shader->vertexLoc); //enable the attribute
+        glVertexAttribPointer(
+                shader->vertexLoc, //handle to variable in shader program
+                3, //vector size (e.g. for texture coordinates this could be 2).
+                GL_FLOAT, //what type of data is (e.g. GL_FLOAT, GL_INT, etc.)
+                GL_FALSE, //normalize the data?
+                0, //stride of data (e.g. offset in bytes). Most of the time leaving
+                  //this at 0 (assumes data is in one, contiguous array) is fine
+                  //unless we're doing something really complex.
+                NULL //since our stride will be 0 in general, leaving this NULL is
+                  //also fine in general
+                );
 
-        // Disable normal array
-        glDisableVertexAttribArray(shader->normalLoc);
-
-        // Buffer color data
         glBindBuffer(GL_ARRAY_BUFFER, shader->colorBuffer);
-        glBufferData(GL_ARRAY_BUFFER, arrow->getVertColors().size() * sizeof(glm::vec4), arrow->getVertColors().data(), GL_DYNAMIC_DRAW);
-        // Enable color array
+            glBufferData(
+                    GL_ARRAY_BUFFER,
+                    arrow->getVertColors().size() * sizeof(glm::vec4),
+                    arrow->getVertColors().data(),
+                    GL_DYNAMIC_DRAW
+                    );
         glEnableVertexAttribArray(shader->colorLoc);
         glVertexAttribPointer(shader->colorLoc, 4, GL_FLOAT, GL_FALSE, 0, NULL);
 
@@ -539,7 +575,7 @@ void display()
 
 }
 
-// Idle function for GLUT
+//idle function for GLUT
 void idle()
 {
 	if(glutGetWindow() != mainWindow){
@@ -549,20 +585,26 @@ void idle()
     glutPostRedisplay();
 }
 
-// Captures keyboard input for GLUT
-// Sets variables for doing transforms
+//captures keyboard input for GLUT
+//Sets variables for doing transforms
 void keyboard(unsigned char key, int x, int y)
 {
 	if (key == 27)
 		exit(0);
-    if (key == 'm')
-        nextHole();
-    if (key == 'n')
-        prevHole();
+	if (key == 'r')
+		r_down = true;
+	if (key == 's')
+		s_down = true;
+    if (key == 'x')
+    	x_down = true;
+    if (key == 'y')
+    	y_down = true;
+    if (key == 'z')
+    	z_down = true;
 }
 
-// Callback for mouse button events.
-// Sets variables for position and button state.
+//Callback for mouse button events.
+//Sets variables for position and button state.
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
@@ -592,10 +634,9 @@ void mouse(int button, int state, int x, int y)
 }
 
 
-/* Callback for mouse movement while a button is down.
- * Also applies transformations, as doing so in Display was causing the
- * transforms to slide, rather than just move.
- */
+//Callback for mouse movement while a button is down.
+//Also applies transformations, as doing so in Display was causing the
+//    transforms to slide, rather than just move.
 void mouseMove(int x, int y)
 {
     downMouseXPos = x;
@@ -606,12 +647,33 @@ void mouseMove(int x, int y)
     upMouseYPos = downMouseYPos;
 
     modelView = glm::mat4();
-    modelView = modelView * mTrans;
 
+
+    if (x_down == true && leftbDown == true)
+        mTrans = glm::translate(mTrans, glm::vec3((static_cast<float>(mousePosDiff) / -10),0,0));
+    else if (y_down == true && leftbDown == true)
+        mTrans = glm::translate(mTrans, glm::vec3(0,(static_cast<float>(mousePosDiff) / 10),0));
+    else if (z_down == true && leftbDown == true)
+        mTrans = glm::translate(mTrans, glm::vec3(0,0,(static_cast<float>(mousePosDiff) / -10)));
+    else if (s_down == true && leftbDown == true)
+        mTrans = glm::scale(mTrans, glm::vec3(pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff)))));
+    else if (x_down == true && rightbDown == true)
+        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(1,0,0));
+    else if (y_down == true && rightbDown == true)
+        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,1,0));
+    else if (z_down == true && rightbDown == true)
+        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,0,1));
+
+
+    modelView = modelView * mTrans;
+    s_down = false;
+    x_down = false;
+    y_down = false;
+    z_down = false;
     glutPostRedisplay();
 }
 
-// Do some GLUT initialization, also set up GLUI
+//do some GLUT initialization, also set up GLUI
 void setupGLUT(char* programName)
 {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_RGBA | GLUT_DOUBLE);
@@ -659,14 +721,14 @@ void setupGLUT(char* programName)
 	angleSpinner->set_int_val(launchAngle);
 
 	powerSpinner = gluiWindowLeft->add_spinner("Power", GLUI_SPINNER_INT, &launchPower);
-	powerSpinner->set_int_limits(1, 15, GLUI_LIMIT_CLAMP);
+	powerSpinner->set_int_limits(1, MAX_SPEED, GLUI_LIMIT_CLAMP);
 	powerSpinner->set_int_val(launchPower);
 	powerSpinner->set_speed(0.1);
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
 
 	GLUI_Panel *holePanel = gluiWindowLeft->add_panel("Status");
-	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "PLayer: ");
+	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "Player: ");
 	currentHole = gluiWindowLeft->add_statictext_to_panel(holePanel, "Hole: ");
 	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes: ");
 	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke: ");
@@ -685,7 +747,7 @@ void setupGLUT(char* programName)
 	GLUI_Master.sync_live_all();
 }
 
-// Initialize OpenGL background color and vertex/normal arrays
+//initialize OpenGL background color and vertex/normal arrays
 void setupGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -699,10 +761,10 @@ void setupGL()
     );
 }
 
-// Setup the shader program
+//setup the shader program
 void setupShaders()
 {
-    //Create the shader program from a vertex and fragment shader
+    //create the shader program from a vertex and fragment shader
     shader = new Shader("shaders/light.vert", "shaders/light.frag");
 
     //Here's where we setup handles to each variable that is used in the shader
@@ -716,7 +778,7 @@ void setupShaders()
     shader->viewPosLoc = glGetUniformLocation(shader->program, "E");
     shader->lBlockLoc = glGetUniformLocation(shader->program, "lBlock");
 
-    //Notice that, since the vertex attribute norm is not used in the shader
+    //notice that, since the vertex attribute norm is not used in the shader
     //program, shader->normalLoc = -1. If we access norm in the shader program,
     //then this value will be >= 0.
     shader->vertexLoc = glGetAttribLocation(shader->program, "pos");
@@ -800,7 +862,7 @@ int main(int argc, char **argv)
         cout << "No input file was provided." << endl;
         // Create default level since no file was specified
         fileIO->processFile(DEFAULT_COURSE);
-        levelController->loadLevel(fileIO, 7);
+        levelController->loadLevel(fileIO, 0);
     }
 
 	//Get name from user
@@ -808,16 +870,19 @@ int main(int argc, char **argv)
 	cin >> name;
 	cout << "\n";
 
-    // Move arrow to ball's starting position
+    // Move arrows to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
     arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
 
-    // Add shapes to game level
-    shapes.clear();
-    shapes = levelController->getCurrentLevel()->getLevelShapes();
-    reloadAllShapes(&verts, &color, &norms, shapes);
+	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
-	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);   
+    // Add shapes to game level
+    levelController->getCurrentLevel()->updateLevelShapes();
+    shapes.clear();
+    //shapes.insert(shapes.begin(), levelController->getCurrentLevel()->getLevelShapes().begin(), levelController->getCurrentLevel()->getLevelShapes().end());
+    shapes = levelController->getCurrentLevel()->getLevelShapes();
+
+    reloadAllShapes(&verts, &color, &norms, shapes);
 
     glutMainLoop();
 
@@ -829,3 +894,4 @@ int main(int argc, char **argv)
 
 	return 0;
 }
+
