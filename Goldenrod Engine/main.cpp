@@ -79,12 +79,8 @@ int upMouseYPos;
 int downMouseYPos;
 int mousePosDiff;
 int mouseYPosDiff;
-bool d_down = false;
-bool r_down = false;
-bool s_down = false;
-bool x_down = false;
-bool y_down = false;
-bool z_down = false;
+bool m_down = false;
+bool n_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
@@ -163,6 +159,68 @@ void ballStopped(){
 
 };
 
+// Move to the next hole
+void nextHole(){
+
+    // Load next hole
+    if(fileIO->getNumHoles() - 1 == levelController->getCurrentLevel()->getLevelID()){
+        // Load first level if on final level
+        levelController->loadLevel(fileIO, 0);
+    }
+    else{
+        // Load next level
+        levelController->loadNextLevel(fileIO);
+    }
+
+    // Update scores
+    // ADD CODE
+
+    // Move arrow to ball's starting position
+    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
+    arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
+
+    // Reload shapes
+    shapes.clear();
+    shapes = levelController->getCurrentLevel()->getLevelShapes();
+    reloadAllShapes(&verts, &color, &norms, shapes);
+
+    // Set flags
+    m_down = false;
+    ballStopped();
+
+};
+
+// Move to the previous hole
+void prevHole(){
+
+    // Load prev hole
+    if(levelController->getCurrentLevel()->getLevelID() == 0){
+        // Load last level if on first level
+        levelController->loadLevel(fileIO, (fileIO->getNumHoles() - 1));
+    }
+    else{
+        // Load prev level
+        levelController->loadPrevLevel(fileIO);
+    }
+
+    // Update scores
+    // ADD CODE
+
+    // Move arrow to ball's starting position
+    arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
+    arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
+
+    // Reload shapes
+    shapes.clear();
+    shapes = levelController->getCurrentLevel()->getLevelShapes();
+    reloadAllShapes(&verts, &color, &norms, shapes);
+
+    // Set flags
+    n_down = false;
+    ballStopped();
+
+};
+
 //Updates the camera position
 void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 {
@@ -224,20 +282,29 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 }
 
 //Updates the values in the "Status" and "High Scores" GLUI panel
-void updateHUD(int currentHole, int totalHoles, int currentStroke, int par, string highScores[5])
+void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar, string highScores[5])
 {
-
+	string buff = "Hole: " + to_string((long double)hole);
+	currentHole->set_text(("Hole: " + to_string((long double)hole)).c_str());
+	totalNumHoles->set_text(("Total Holes: " + to_string((long double)totalHoles)).c_str());
+	numStrokes->set_text(("Stroke: " + to_string((long double)currentStroke)).c_str());
+	par->set_text(("Par: " + to_string((long double)levelPar)).c_str());
+	highScores[5];
 }
 
 //Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
 
-	//Wall collision checking
+	
 	Level *currentLevel = levelController->getCurrentLevel();
 	Ball *ball = currentLevel->getBall();
 	Physics *physics = ball->getPhysics();
 	Tile* currentTile = currentLevel->getTile(ball->getCurrentTileID());
+
+	updateHUD(currentLevel->getLevelID(), currentLevel->getLevelCount(), 1, currentLevel->getPar(), NULL);
+
+	//Wall collision checking
 
 	//printf("Current tile: %i\n", ball->getCurrentTileID());
 
@@ -275,8 +342,10 @@ void tick(int in)
     glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
     float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-    if(cupDist < (BALL_RADIUS)){                      
-        // Reset Ball
+    if(cupDist < (BALL_RADIUS))
+	{                      
+        ////----------------RESET BALL TO LEVEL STARTING POSITION----------------//
+        //// Reset Ball
         ball->reset();
 
         // Reset arrow position
@@ -284,7 +353,10 @@ void tick(int in)
         arrow->translate(physics->getPosition());
 
         // Set ballMoving flag to false
-        ballStopped();
+        //ballStopped();
+
+		//----------------CHANGE TO NEXT HOLE----------------//
+        nextHole();
     }
 
     // Physics calculations   
@@ -328,7 +400,7 @@ void tick(int in)
 				
             }
 			//Not in a tile at all
-			physics->setDirection(-physics->getDirection());
+			//physics->setDirection(-physics->getDirection());
 			
         } 
 		//// Modify direction based on gravity and update direction again
@@ -423,13 +495,6 @@ void display()
     glViewport(0,0,WIN_WIDTH,WIN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//Resets all transformation matrices.
-    if (r_down == true)
-    {
-    	modelView = glm::mat4();
-    	mTrans = glm::mat4();
-        r_down = false;
-    }
 
     //camera = crTrans * csTrans * ctTrans * camera;
 	
@@ -501,9 +566,14 @@ void display()
             NULL //since our stride will be 0 in general, leaving this NULL is
               //also fine in general
             );
+	// Disable normal array
+        //glDisableVertexAttribArray(shader->normalLoc);
 
+        // Buffer color data
     glBindBuffer(GL_ARRAY_BUFFER, shader->colorBuffer);
-        glBufferData(
+	glBufferData(GL_ARRAY_BUFFER, arrow->getVertColors().size() * sizeof(glm::vec4), arrow->getVertColors().data(), GL_DYNAMIC_DRAW);
+        // Enable color array
+    glBufferData(
                 GL_ARRAY_BUFFER,
                 color.size() * sizeof(float),
                 color.data(),
@@ -589,18 +659,10 @@ void idle()
 //Sets variables for doing transforms
 void keyboard(unsigned char key, int x, int y)
 {
-	if (key == 27)
-		exit(0);
-	if (key == 'r')
-		r_down = true;
-	if (key == 's')
-		s_down = true;
-    if (key == 'x')
-    	x_down = true;
-    if (key == 'y')
-    	y_down = true;
-    if (key == 'z')
-    	z_down = true;
+    if (key == 'm')
+        nextHole();
+    if (key == 'n')
+        prevHole();
 }
 
 //Callback for mouse button events.
@@ -647,29 +709,8 @@ void mouseMove(int x, int y)
     upMouseYPos = downMouseYPos;
 
     modelView = glm::mat4();
+	modelView = modelView * mTrans;
 
-
-    if (x_down == true && leftbDown == true)
-        mTrans = glm::translate(mTrans, glm::vec3((static_cast<float>(mousePosDiff) / -10),0,0));
-    else if (y_down == true && leftbDown == true)
-        mTrans = glm::translate(mTrans, glm::vec3(0,(static_cast<float>(mousePosDiff) / 10),0));
-    else if (z_down == true && leftbDown == true)
-        mTrans = glm::translate(mTrans, glm::vec3(0,0,(static_cast<float>(mousePosDiff) / -10)));
-    else if (s_down == true && leftbDown == true)
-        mTrans = glm::scale(mTrans, glm::vec3(pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff))),pow(1.1f, (static_cast<float>(mousePosDiff)))));
-    else if (x_down == true && rightbDown == true)
-        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(1,0,0));
-    else if (y_down == true && rightbDown == true)
-        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,1,0));
-    else if (z_down == true && rightbDown == true)
-        mTrans = glm::rotate(mTrans, static_cast<float>(mousePosDiff), glm::vec3(0,0,1));
-
-
-    modelView = modelView * mTrans;
-    s_down = false;
-    x_down = false;
-    y_down = false;
-    z_down = false;
     glutPostRedisplay();
 }
 
@@ -733,6 +774,8 @@ void setupGLUT(char* programName)
 	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes: ");
 	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke: ");
 	par = gluiWindowLeft->add_statictext_to_panel(holePanel, "Par: ");
+
+	
 
 	GLUI_Panel *scoresPanel = gluiWindowLeft->add_panel("High Scores");
 	highScores[0] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "No high scores");
@@ -870,11 +913,9 @@ int main(int argc, char **argv)
 	cin >> name;
 	cout << "\n";
 
-    // Move arrows to ball's starting position
+    // Move arrow to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
     arrow->translate(glm::vec3(0.0, BALL_OFFSET, 0.0));
-
-	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
 
     // Add shapes to game level
     levelController->getCurrentLevel()->updateLevelShapes();
@@ -882,6 +923,7 @@ int main(int argc, char **argv)
     //shapes.insert(shapes.begin(), levelController->getCurrentLevel()->getLevelShapes().begin(), levelController->getCurrentLevel()->getLevelShapes().end());
     shapes = levelController->getCurrentLevel()->getLevelShapes();
 
+	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);
     reloadAllShapes(&verts, &color, &norms, shapes);
 
     glutMainLoop();
