@@ -31,6 +31,7 @@
 //------------------------Macros------------------------//
 
 #define PI 3.14159L
+#define NUM_HIGH_SCORES 5 // must be five or less because of GLUI
 
 //------------------------Initialization------------------------//
 
@@ -79,8 +80,6 @@ int upMouseYPos;
 int downMouseYPos;
 int mousePosDiff;
 int mouseYPosDiff;
-bool m_down = false;
-bool n_down = false;
 bool leftbDown = false;
 bool rightbDown = false;
 
@@ -106,7 +105,40 @@ float launchAngleRadians = 0;
 int launchPower; //How hard to "hit" the ball, between 1 and 7 (for now)
 bool ballMoving = false;
 
+// Score
+int currentHoleScore = 0;
+int totalScore = 0;
+
 //------------------------Game Functions------------------------//
+
+void updateScore(){
+
+	totalScore += currentHoleScore;
+	currentHoleScore = 0;
+
+};
+
+void saveAndResetScore(){
+
+	int swapIndex = -1; // Index where score should be replaced
+
+	// Add score to high scores if needed
+	for(int i = 0; i < NUM_HIGH_SCORES; i++){
+		if(highScores[i]->get_int_val() < totalScore){
+			swapIndex = i;
+		}
+	}
+
+	// Update high scores
+	if(swapIndex != -1){
+
+	}
+
+	 // Reset scores
+	totalScore = 0;
+	currentHoleScore = 0;
+
+};
 
 //Start the ball moving using direction and power from GLUI input
 void launchBall(int i)
@@ -136,6 +168,9 @@ void launchBall(int i)
     }
 
     levelController->getCurrentLevel()->getBall()->getPhysics()->setSpeed(launchPower/100.0f);
+
+	// Increment current hole score
+	currentHoleScore++;
 
 	angleSpinner->disable();
 	powerSpinner->disable();
@@ -185,7 +220,6 @@ void nextHole(){
     reloadAllShapes(&verts, &color, &norms, shapes);
 
     // Set flags
-    m_down = false;
     ballStopped();
 
 };
@@ -216,7 +250,6 @@ void prevHole(){
     reloadAllShapes(&verts, &color, &norms, shapes);
 
     // Set flags
-    n_down = false;
     ballStopped();
 
 };
