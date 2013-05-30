@@ -28,6 +28,9 @@
 // Glui
 #include "GL\glui.h"
 
+//irrKlang Sound Engine
+#include "sound.h"
+
 //------------------------Macros------------------------//
 
 #define PI 3.14159L
@@ -91,6 +94,7 @@ GLUI_Translation *camZoomTrans;
 GLUI_Spinner *angleSpinner;
 GLUI_Spinner *powerSpinner;
 GLUI_Button *fireButton;
+GLUI_Button *soundButton;
 GLUI_StaticText *userName;
 GLUI_StaticText *currentHole;
 GLUI_StaticText *totalNumHoles;
@@ -98,6 +102,8 @@ GLUI_StaticText *numStrokes;
 GLUI_StaticText *par;
 GLUI_StaticText *highScores[5];
 string name;
+
+SoundEngine *sound;
 
 //Variables for gameplay controls
 int launchAngle = 0; //Angle to hit the ball, in degrees from 0 to 359
@@ -661,6 +667,12 @@ void mouseMove(int x, int y)
     glutPostRedisplay();
 }
 
+void soundTest (int i)
+{
+	sound->getEngine()->play2D("41-goldenrod-city.ogg", true);
+	soundButton->disable();
+}
+
 // Do some GLUT initialization, also set up GLUI
 void setupGLUT(char* programName)
 {
@@ -716,7 +728,7 @@ void setupGLUT(char* programName)
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
 
 	GLUI_Panel *holePanel = gluiWindowLeft->add_panel("Status");
-	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "PLayer: ");
+	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "Player: ");
 	currentHole = gluiWindowLeft->add_statictext_to_panel(holePanel, "Hole: ");
 	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes: ");
 	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke: ");
@@ -728,6 +740,9 @@ void setupGLUT(char* programName)
 	highScores[2] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
 	highScores[3] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
 	highScores[4] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	
+	soundButton = gluiWindowLeft->add_button("Sound Test!", 0, soundTest);
+	
 	GLUI_Master.auto_set_viewport();
 
 	gluiWindow->set_main_gfx_window(mainWindow);
@@ -838,6 +853,8 @@ void initializeGraphics(int argc, char** argv, char* programName, int windowWidt
 
 int main(int argc, char **argv)
 {	
+	sound = new SoundEngine();
+
     // Check if input file was given, if not use default
     if(argc > 1){
         fileIO->processFile(argv[1]);
@@ -876,6 +893,7 @@ int main(int argc, char **argv)
     if(levelController) delete levelController;
     if(fileIO) delete fileIO;
     if(arrow) delete arrow;
+	if(sound) delete sound;
 
 	return 0;
 }

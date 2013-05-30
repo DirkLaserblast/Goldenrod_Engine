@@ -56,6 +56,12 @@
     <Filter Include="Source\Time">
       <UniqueIdentifier>{23aba44a-fcf2-4e4a-8785-53fb7ab67616}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Sound">
+      <UniqueIdentifier>{ea092b47-ad4f-4598-bdb4-fffa07e79b89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Sound">
+      <UniqueIdentifier>{54bcb48c-5b1d-48bd-bc95-4bc9ced2912c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="shader.cpp">
@@ -106,6 +112,9 @@
     <ClCompile Include="time.cpp">
       <Filter>Source\Time</Filter>
     </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>Source\Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -152,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="time.h">
       <Filter>Header\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>Header\Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

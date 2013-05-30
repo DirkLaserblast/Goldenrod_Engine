@@ -73,6 +73,7 @@
     <ClCompile Include="processedinputline.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shape.cpp" />
+    <ClCompile Include="sound.cpp" />
     <ClCompile Include="tee.cpp" />
     <ClCompile Include="tile.cpp" />
     <ClCompile Include="time.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="processedinputline.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
+    <ClInclude Include="sound.h" />
     <ClInclude Include="tee.h" />
     <ClInclude Include="tile.h" />
     <ClInclude Include="time.h" />
