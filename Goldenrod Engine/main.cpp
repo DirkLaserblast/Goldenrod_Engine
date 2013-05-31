@@ -36,6 +36,11 @@
 #define PI 3.14159L
 #define NUM_HIGH_SCORES 5 // must be five or less because of GLUI
 
+//------------------------Debug Flags---------------------------//
+
+bool DEBUG_TILE_PAINT = false;
+bool DEBUG_WALL_PAINT = false;
+
 //------------------------Initialization------------------------//
 
 // Initialize systems and other controllers -- These have to be global for the time being...
@@ -325,6 +330,15 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
+void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar, string highScores[5])
+{
+	currentHole->set_text(("Hole: " + to_string((long double)hole)).c_str());
+	totalNumHoles->set_text(("Total Holes: " + to_string((long double)totalHoles)).c_str());
+	numStrokes->set_text(("Stroke: " + to_string((long double)currentStroke)).c_str());
+	par->set_text(("Par: " + to_string((long double)levelPar)).c_str());
+	highScores[5];
+}
+
 // Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
@@ -338,71 +352,75 @@ void tick(int in)
     vector<Shape*> borderShapes = currentTile->getBorders()->getShapes();
     vec3 ballPosition = physics->getPosition();
 
-
-
-	//Check distance to all adjacent borders
-	for (int i = 0; i < borderShapes.size(); i++)
+	if (DEBUG_TILE_PAINT)
 	{
-		Shape *currentShape = borderShapes[i];
-		float distance = currentShape->distanceToPlane(ballPosition);
-		//cout << "Distance: " << distance << "\n";
-		//See if distance you are about to move would move through the wall
-		vec3 predPos = physics->getPosition() + physics->getVelocity();
-		float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
-		//printf("Predicted distance = %f\n", predictedDistance);
-		if (distance <= predictedDistance) //Collision detected, deflect
-		{
-			//cout << "Collision!\n";
-			vec3 borderNormal = currentShape->normals()[0];
-            vec3 incoming = physics->getDirection();
-
-			//Make sure wall is in front of the ball
-			if (abs(acos(dot(borderNormal, incoming))) > PI/2)
-			{
-				//cout << acos(dot(borderNormal, incoming)) << "\n";
-				//Move ball forward to collision point
-				//physics->setPosition(physics->getPosition() + (incoming * distance));
-				physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
-				break;
-			}
-			//else cout << "Ignoring wall\n";
-		}
+		currentTile->getShapes()[0]->changeColor(vec4(0.5, 0.5, 0.5, 1.0));
+		currentTile->getShapes()[0]->reload();
 	}
 
-	//End wall collision checking
+
 
     // Collision with cup
     glm::vec3 ballPos = physics->getPosition();
     glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
     float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-    if(cupDist < (BALL_RADIUS)){ 
-        ////----------------RESET BALL TO LEVEL STARTING POSITION----------------//
-        //// Reset Ball
-        //ball->reset();
-
-        //// Reset arrow position
-        //arrow->resetTransformationMatrix();
-        //arrow->translate(physics->getPosition());
-
-        //// Set ballMoving flag to false
-        //ballStopped();
+    if(cupDist < (BALL_RADIUS)){
 
         //----------------CHANGE TO NEXT HOLE----------------//
         nextHole();
     }
 
     // Physics calculations   
-    if(ballMoving){
+    if(ballMoving)
+	{
+
+		//Check distance to all adjacent borders
+		for (int i = 0; i < borderShapes.size(); i++)
+		{
+
+			Shape *currentShape = borderShapes[i];
+			float distance = currentShape->distanceToPlane(ballPosition);
+			vec3 borderNormal = currentShape->normals()[0];
+			vec3 incoming = physics->getDirection();
+
+			//Make sure wall is in front of the ball
+			if (abs(acos(dot(borderNormal, incoming))) > PI/2)
+			{
+				//printf("Angle: %f\n", abs(acos(dot(borderNormal, incoming))));
+				//cout << "Distance: " << distance << "\n";
+				//See if distance you are about to move would move through the wall
+				vec3 predPos = physics->getNextPosition();
+				float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
+				//printf("Predicted distance = %f\n", predictedDistance);
+				if (distance <= physics->getSpeed()) //Collision detected, deflect
+				{
+					if (DEBUG_WALL_PAINT)
+					{
+						borderShapes[i]->changeColor(vec4(1.0));
+						borderShapes[i]->reload();
+					}
+					//cout << acos(dot(borderNormal, incoming)) << "\n";
+					physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+				}
+				//else cout << "Ignoring wall\n";
+			}
+
+		}
+
+		//End wall collision checking
+
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
         Shape* tileTop = currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0);
         // Calculate if point will be within its current tile after it is moved
         bool inTile = tileTop->checkIfInside(physics->getNextPosition());
         // If not in tile
-        if(inTile == false){           
+        if(inTile == false)
+		{
             //Check all tiles to find which one we are in (tried to check only neighbors above, but had issues)          
-            for(int i =0; i < currentLevel->getTiles().size(); i++){
+            for(int i =0; i < currentLevel->getTiles().size(); i++)
+			{
                 // Check tile
                 inTile = currentLevel->getTiles()[i]->getShapes().at(0)->checkIfInside(physics->getNextPosition());
                 if(inTile){
@@ -476,13 +494,12 @@ void tick(int in)
 	//If controls are enabled (ball not yet launched), then make ball direction equal to launchVector
 	if (angleSpinner->enabled)
 	{
-		float launchAngleRadians = launchAngle * (PI/180);
-		launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
+		//float launchAngleRadians = launchAngle * (PI/180);
+		//launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
         updateCamera(physics->getPosition(), launchVector, false);
 	}
 	else
 	{
-		//Replace launchVector here with actual ball direction
 		updateCamera(physics->getPosition(), physics->getDirection(), true);
 	}
 
