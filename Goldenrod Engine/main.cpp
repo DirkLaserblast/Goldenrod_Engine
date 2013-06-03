@@ -38,8 +38,8 @@
 
 //------------------------Debug Flags---------------------------//
 
-bool DEBUG_TILE_PAINT = false;
-bool DEBUG_WALL_PAINT = false;
+bool DEBUG_TILE_PAINT = true;
+bool DEBUG_WALL_PAINT = true;
 
 //------------------------Initialization------------------------//
 
@@ -105,9 +105,10 @@ GLUI_StaticText *currentHole;
 GLUI_StaticText *totalNumHoles;
 GLUI_StaticText *numStrokes;
 GLUI_StaticText *par;
-GLUI_StaticText *highScores[5];
+GLUI_StaticText *highScoresList[5];
 string name;
 
+// Sound
 SoundEngine *sound;
 
 //Variables for gameplay controls
@@ -120,11 +121,13 @@ bool ballMoving = false;
 // Score
 int currentHoleScore = 0;
 int totalScore = 0;
+int highScores[NUM_HIGH_SCORES] = {0};
 
 //------------------------Game Functions------------------------//
 
-void updateScore(){
+void updateTotalScore(){
 
+	// Update score vars
 	totalScore += currentHoleScore;
 	currentHoleScore = 0;
 
@@ -132,18 +135,15 @@ void updateScore(){
 
 void saveAndResetScore(){
 
-	int swapIndex = -1; // Index where score should be replaced
+	int oldScore, newScore = totalScore;
 
 	// Add score to high scores if needed
 	for(int i = 0; i < NUM_HIGH_SCORES; i++){
-		if(highScores[i]->get_int_val() < totalScore){
-			swapIndex = i;
+		oldScore = highScores[i];
+		if(oldScore > newScore || oldScore == 0){
+			highScores[i] = newScore;
+			newScore = oldScore;
 		}
-	}
-
-	// Update high scores
-	if(swapIndex != -1){
-
 	}
 
 	 // Reset scores
@@ -185,8 +185,9 @@ void launchBall(int i)
 
     physics->setSpeed(launchPower/100.0f);
 
-	// Increment current hole score
+	// Increment current hole score and update glui
 	currentHoleScore++;
+	numStrokes->set_int_val(currentHoleScore);
 
 	angleSpinner->disable();
 	powerSpinner->disable();
@@ -217,14 +218,15 @@ void nextHole(){
     if(fileIO->getNumHoles() - 1 == levelController->getCurrentLevel()->getLevelID()){
         // Load first level if on final level
         levelController->loadLevel(fileIO, 0);
+		// Update highscores
+		saveAndResetScore();
     }
     else{
         // Load next level
         levelController->loadNextLevel(fileIO);
+		// Update total score
+		updateTotalScore();
     }
-
-    // Update scores
-    // ADD CODE
 
     // Move arrow to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
@@ -252,9 +254,6 @@ void prevHole(){
         // Load prev level
         levelController->loadPrevLevel(fileIO);
     }
-
-    // Update scores
-    // ADD CODE
 
     // Move arrow to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
@@ -330,19 +329,21 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
-void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar, string highScores[5])
+void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar, int highScores[NUM_HIGH_SCORES])
 {
+
 	currentHole->set_text(("Hole: " + to_string((long double)hole)).c_str());
 	totalNumHoles->set_text(("Total Holes: " + to_string((long double)totalHoles)).c_str());
 	numStrokes->set_text(("Stroke: " + to_string((long double)currentStroke)).c_str());
 	par->set_text(("Par: " + to_string((long double)levelPar)).c_str());
-	highScores[5];
+	
 }
 
 // Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
-
+	
+	// Local handles to objects
 	Level *currentLevel = levelController->getCurrentLevel();
 	Ball *ball = currentLevel->getBall();
 	Physics *physics = ball->getPhysics();
@@ -352,20 +353,19 @@ void tick(int in)
     vector<Shape*> borderShapes = currentTile->getBorders()->getShapes();
     vec3 ballPosition = physics->getPosition();
 
+	// Debug -- Highlight current tile
 	if (DEBUG_TILE_PAINT)
 	{
-		currentTile->getShapes()[0]->changeColor(vec4(0.5, 0.5, 0.5, 1.0));
+		currentTile->getShapes()[0]->changeColor(TILE_HIGHLIGHT_COLOR);
 		currentTile->getShapes()[0]->reload();
 	}
-
-
 
     // Collision with cup
     glm::vec3 ballPos = physics->getPosition();
     glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
-    float cupDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.y - cupPos.y)*(ballPos.y - cupPos.y)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
+    float cupPlaneDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-    if(cupDist < (BALL_RADIUS)){
+    if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= BALL_OFFSET){
 
         //----------------CHANGE TO NEXT HOLE----------------//
         nextHole();
@@ -418,6 +418,13 @@ void tick(int in)
         // If not in tile
         if(inTile == false)
 		{
+			// Debug -- Stop highlighting current tile
+			if (DEBUG_TILE_PAINT)
+			{
+				currentTile->getShapes()[0]->changeColor(TILE_DEFAULT_COLOR);
+				currentTile->getShapes()[0]->reload();
+			}
+
             //Check all tiles to find which one we are in (tried to check only neighbors above, but had issues)          
             for(int i =0; i < currentLevel->getTiles().size(); i++)
 			{
@@ -466,30 +473,40 @@ void tick(int in)
 
 		//	currentLevel->ballDirection = newDirection;
 		//}
-    }
 
-	// Update ball speed
-    double ballSpeed = physics->getSpeed();
-    physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION*(ballSpeed*100));
-    ballSpeed = physics->getSpeed();
-    if(ballSpeed <= 0.005){
-        physics->setSpeed(0.0);
-    }
-	//cout << endl << "ball speed:" << currentLevel->ballSpeed << endl; // debug
-	//cout << endl << "ball tile ID: " << currentLevel->ballCurrentTileID << endl; // debug
+		// Update ball speed
+		double ballSpeed = physics->getSpeed();
+		if(ballSpeed == 0.0){
+			// Do nothing
+		}
+		else if(ballSpeed > 0.005){
+			physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION*(ballSpeed*100));
+			ballSpeed = physics->getSpeed();
+		}
+		else{
+			physics->setSpeed(0.0);
+		}
+		//cout << endl << "ball speed:" << currentLevel->ballSpeed << endl; // debug
+		//cout << endl << "ball tile ID: " << currentLevel->ballCurrentTileID << endl; // debug
 
-    // Update ballPosition
-    physics->updatePosition();
+		// Check if ball stopped
+		if(ballSpeed == 0){
+			ballStopped();
+		}
 
-    // Update shapes for drawing
-    Shape* ballShape = ball->getShapes().at(0);
-    ballShape->translate(physics->getVelocity());
-    ballShape->reload();
+		// Update ballPosition
+		physics->updatePosition();
 
-    // Check if ball stopped
-    if(ballSpeed == 0){
-        ballStopped();
-    }
+		// Update shapes for drawing
+		Shape* ballShape = ball->getShapes().at(0);
+		ballShape->translate(physics->getVelocity());
+		ballShape->reload();
+
+    }   
+    
+	// Update HUD
+	currentLevel = levelController->getCurrentLevel();
+	updateHUD(currentLevel->getLevelID(), fileIO->getNumHoles(), currentHoleScore, currentLevel->getPar(), highScores);
 
 	//If controls are enabled (ball not yet launched), then make ball direction equal to launchVector
 	if (angleSpinner->enabled)
@@ -748,15 +765,18 @@ void setupGLUT(char* programName)
 	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "Player: ");
 	currentHole = gluiWindowLeft->add_statictext_to_panel(holePanel, "Hole: ");
 	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes: ");
-	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke: ");
+	numStrokes = gluiWindowLeft->add_statictext_to_panel(holePanel, "Current Stroke: ");	
 	par = gluiWindowLeft->add_statictext_to_panel(holePanel, "Par: ");
 
+	// Set glui initial values
+	numStrokes->set_int_val(0);
+
 	GLUI_Panel *scoresPanel = gluiWindowLeft->add_panel("High Scores");
-	highScores[0] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "No high scores");
-	highScores[1] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
-	highScores[2] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
-	highScores[3] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
-	highScores[4] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	highScoresList[0] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "No high scores");
+	highScoresList[1] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	highScoresList[2] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	highScoresList[3] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
+	highScoresList[4] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
 	
 	soundButton = gluiWindowLeft->add_button("Sound Test!", 0, soundTest);
 	

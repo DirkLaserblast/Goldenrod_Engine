@@ -7,6 +7,7 @@ Tile::Tile(ProcessedInputLine* inLine){
     this->friction = TILE_DEFAULT_FRICTION;
     this->neighborIDs = inLine->getNeighborIDs();
     this->addTileShapes(inLine->getVerts());
+	this->physics = new Physics(inLine->getVerts()[0]);
 
     if(TILE_USE_BORDER){
         this->borders = new Border(inLine);
@@ -41,6 +42,8 @@ double Tile::getFriction(){ return this->friction; };
 vector<int> Tile::getNeighborIDs(){ return this->neighborIDs; };
 
 vector<Shape*> Tile::getShapes(){ return this->shapes; };
+
+Physics* Tile::getPhysics(){ return this->physics; };
 
 Border* Tile::getBorders(){ return this->borders; };
 

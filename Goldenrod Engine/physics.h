@@ -11,7 +11,7 @@
 // Physics macros
 #define PHYSICS_DEFAULT_POSITION glm::vec3(0.0,0.0,0.0)
 #define PHYSICS_DEFAULT_DIRECTION glm::vec3(0.0,0.0,0.0)
-#define PHYSICS_DEFAULT_SPEED 0.0f
+#define PHYSICS_DEFAULT_SPEED 0.0L
 
 // Using
 using std::vector;
