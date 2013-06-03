@@ -106,7 +106,7 @@ GLUI_StaticText *totalNumHoles;
 GLUI_StaticText *numStrokes;
 GLUI_StaticText *par;
 GLUI_StaticText *highScoresList[5];
-string name;
+string name; // given via command line
 
 // Sound
 SoundEngine *sound;
@@ -211,6 +211,27 @@ void ballStopped(){
 
 };
 
+void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar)
+{
+
+    userName->set_text(("Player: " + name).c_str());
+	currentHole->set_text(("Hole: " + to_string((long double)hole)).c_str());
+	totalNumHoles->set_text(("Total Holes: " + to_string((long double)totalHoles)).c_str());
+	numStrokes->set_text(("Stroke: " + to_string((long double)currentStroke)).c_str());
+	par->set_text(("Par: " + to_string((long double)levelPar)).c_str());
+	
+}
+
+void updateHighScoresList(int highScores[NUM_HIGH_SCORES]){
+
+    for(int i = 0; i < NUM_HIGH_SCORES; i++){
+        if(highScores[i] != 0){ // if not blank score
+            highScoresList[i]->set_text((name + ": " + to_string((long double)highScores[i])).c_str());
+        }
+    }
+
+};
+
 // Move to the next hole
 void nextHole(){
 
@@ -220,6 +241,12 @@ void nextHole(){
         levelController->loadLevel(fileIO, 0);
 		// Update highscores
 		saveAndResetScore();
+        updateHighScoresList(highScores);
+
+        cout << endl << "High Scores:" << endl; // debug
+        for(int i = 0; i < NUM_HIGH_SCORES; i++){
+            cout << i << ": " << highScores[i] << endl;
+        }
     }
     else{
         // Load next level
@@ -239,6 +266,8 @@ void nextHole(){
 
     // Set flags
     ballStopped();
+
+    cout << endl << "total score: " << totalScore << endl; // debug
 
 };
 
@@ -327,16 +356,6 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(-1, 0, 0));
 		break;
 	}
-}
-
-void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar, int highScores[NUM_HIGH_SCORES])
-{
-
-	currentHole->set_text(("Hole: " + to_string((long double)hole)).c_str());
-	totalNumHoles->set_text(("Total Holes: " + to_string((long double)totalHoles)).c_str());
-	numStrokes->set_text(("Stroke: " + to_string((long double)currentStroke)).c_str());
-	par->set_text(("Par: " + to_string((long double)levelPar)).c_str());
-	
 }
 
 // Run by GLUT every [tickspeed] miliseconds
@@ -432,12 +451,12 @@ void tick(int in)
                 inTile = currentLevel->getTiles()[i]->getShapes().at(0)->checkIfInside(physics->getNextPosition());
                 if(inTile){
                     ball->setCurrentTileID(currentLevel->getTiles()[i]->getID());
+                    currentTile = currentLevel->getTile(ball->getCurrentTileID()); // update handle to current tile
 
                     // Update direction
                     // If new tile is flat make sure no y-component
                     if(currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
-                        physics->setDirection(
-                            glm::vec3(physics->getDirection().x, 0.0, physics->getDirection().z));
+                        physics->setDirection(glm::vec3(physics->getDirection().x, 0.0, physics->getDirection().z));
                     }
                     // If new tile is not flat add y-component
                     else{
@@ -500,13 +519,26 @@ void tick(int in)
 		// Update shapes for drawing
 		Shape* ballShape = ball->getShapes().at(0);
 		ballShape->translate(physics->getVelocity());
-		ballShape->reload();
+
+        // Snap ball to correct y value if on flat tile -- hacky
+        if(currentTile->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
+            if(physics->getPosition().y != (currentTile->getPhysics()->getPosition().y + BALL_OFFSET)){
+                // Snap ball shape
+                ball->getShapes()[0]->translate(vec3(0.0, -(physics->getPosition().y), 0.0));
+                ball->getShapes()[0]->translate(vec3(0.0, (currentTile->getPhysics()->getPosition().y + BALL_OFFSET), 0.0));
+                // Update ball physics
+                physics->setPosition(vec3(physics->getPosition().x, (currentTile->getPhysics()->getPosition().y + BALL_OFFSET), physics->getPosition().z));
+            }
+        }
+
+        // Reload shape
+        ballShape->reload();
 
     }   
     
 	// Update HUD
 	currentLevel = levelController->getCurrentLevel();
-	updateHUD(currentLevel->getLevelID(), fileIO->getNumHoles(), currentHoleScore, currentLevel->getPar(), highScores);
+	updateHUD(currentLevel->getLevelID(), fileIO->getNumHoles(), currentHoleScore, currentLevel->getPar());
 
 	//If controls are enabled (ball not yet launched), then make ball direction equal to launchVector
 	if (angleSpinner->enabled)
