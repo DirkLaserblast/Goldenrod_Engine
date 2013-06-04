@@ -157,14 +157,15 @@ void launchBall(int i)
 {
     ballMoving = true;
 
-	sound->getEngine()->play2D("sfx/putt.ogg");
-
     launchAngleRadians = (float) launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
 	Level *currentLevel = levelController->getCurrentLevel();
 	Ball *ball = currentLevel->getBall();
 	Physics *physics = ball->getPhysics();
+
+	//Play putt SFX
+	sound->playSound3D("sfx/putt.ogg", physics->getPosition());
 
     float prevY = physics->getDirection().y;
     physics->setDirection(glm::vec3(launchVector.x, prevY, launchVector.z));
@@ -319,6 +320,7 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 
 		viewPos = vec3(zoom * cos(yRotation) * sin(height), zoom * cos(height), (zoom * sin(yRotation) * sin(height)));
 		camera = lookAt(viewPos, vec3(0, 0, 0), vec3(0,1,0));
+
 		break;
 	case 1: //Third person
 		camRotateTrans->disable(); //Disable camera controls
@@ -388,7 +390,7 @@ void tick(int in)
     //cout << endl << cupDist << endl; // debug
     if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= BALL_OFFSET){
 		//Play SFX for falling in hole
-		sound->getEngine()->play2D("sfx/cup.wav");
+		sound->playSound3D("sfx/cup.wav", physics->getPosition());
         //----------------CHANGE TO NEXT HOLE----------------//
         nextHole();
     }
@@ -428,7 +430,7 @@ void tick(int in)
 					}
 					//cout << acos(dot(borderNormal, incoming)) << "\n";
 					//Play bounce SFX
-					sound->getEngine()->play2D("sfx/bounce.wav");
+					sound->playSound3D("sfx/bounce.wav", physics->getPosition());
 					physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
 				}
 				//else cout << "Ignoring wall\n";
@@ -560,6 +562,9 @@ void tick(int in)
 	{
 		updateCamera(physics->getPosition(), physics->getDirection(), true);
 	}
+
+	//Update sound listener position to match camera view
+	sound->updateListenerPosition(viewPos, vec3(0, 0, 0), vec3(0, 1, 0));
 
 	glutTimerFunc(tickSpeed, tick, 0);
 }
@@ -744,7 +749,7 @@ void mouseMove(int x, int y)
 
 void soundTest (int i)
 {
-	sound->getEngine()->play2D("sfx/41-goldenrod-city.ogg", true);
+	sound->getEngine()->play3D("sfx/41-goldenrod-city.ogg", vec3df(0, 0, 0), true);
 	soundButton->disable();
 }
 
