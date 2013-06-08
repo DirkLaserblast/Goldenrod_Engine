@@ -157,8 +157,6 @@ void launchBall(int i)
 {
     ballMoving = true;
 
-	sound->getEngine()->play2D("sfx/putt.ogg");
-
     launchAngleRadians = (float) launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
@@ -386,26 +384,16 @@ void tick(int in)
     glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
     float cupPlaneDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-<<<<<<< HEAD
     if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= BALL_OFFSET){
 
-=======
-    if(cupDist < (BALL_RADIUS * 2)){
-		//Play SFX for falling in hole
-		sound->getEngine()->play2D("sfx/cup.wav");
->>>>>>> Basic sfx for putt / bounce / cup
         //----------------CHANGE TO NEXT HOLE----------------//
-        //nextHole(); This crashes the program!
+        nextHole();
     }
 
     // Physics calculations   
     if(ballMoving)
 	{
-		//Play rolling sound if it's not already playing
-		//if(!sound->getEngine()->isCurrentlyPlaying("sfx/roll1.wav"))
-		//{
-		//	sound->getEngine()->play2D("sfx/roll1.wav");
-		//}
+
 		//Check distance to all adjacent borders
 		for (int i = 0; i < borderShapes.size(); i++)
 		{
@@ -432,8 +420,6 @@ void tick(int in)
 						borderShapes[i]->reload();
 					}
 					//cout << acos(dot(borderNormal, incoming)) << "\n";
-					//Play bounce SFX
-					sound->getEngine()->play2D("sfx/bounce.wav");
 					physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
 				}
 				//else cout << "Ignoring wall\n";
@@ -557,8 +543,8 @@ void tick(int in)
 	//If controls are enabled (ball not yet launched), then make ball direction equal to launchVector
 	if (angleSpinner->enabled)
 	{
-		float launchAngleRadians = launchAngle * (PI/180);
-		launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
+		//float launchAngleRadians = launchAngle * (PI/180);
+		//launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
         updateCamera(physics->getPosition(), launchVector, false);
 	}
 	else
@@ -749,7 +735,7 @@ void mouseMove(int x, int y)
 
 void soundTest (int i)
 {
-	sound->getEngine()->play2D("sfx/41-goldenrod-city.ogg", true);
+	sound->getEngine()->play2D("41-goldenrod-city.ogg", true);
 	soundButton->disable();
 }
 
