@@ -386,11 +386,16 @@ void tick(int in)
     glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
     float cupPlaneDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
+<<<<<<< HEAD
     if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= BALL_OFFSET){
+
+=======
+    if(cupDist < (BALL_RADIUS * 2)){
 		//Play SFX for falling in hole
 		sound->getEngine()->play2D("sfx/cup.wav");
+>>>>>>> Basic sfx for putt / bounce / cup
         //----------------CHANGE TO NEXT HOLE----------------//
-        nextHole();
+        //nextHole(); This crashes the program!
     }
 
     // Physics calculations   
