@@ -397,8 +397,6 @@ void tick(int in)
     // Physics calculations   
     if(ballMoving)
 	{
-		//Play rolling sound
-		//rollSFX(physics->getSpeed(), sound);
 
 		for (int i = 0; i < borderShapes.size(); i++)
 		{
@@ -407,24 +405,27 @@ void tick(int in)
 			float distance = currentShape->distanceToPlane(ballPosition);
 			vec3 borderNormal = currentShape->normals()[0];
 			vec3 incoming = normalize(physics->getVelocity());
+			float planeDelta = currentShape->distanceToPlane(vec3(0.0)); //Distance from origin to plane
+
+			//Get distance to border plane along ball direction vector
+			float t = -(dot(borderNormal, physics->getPosition()) + planeDelta) / dot(borderNormal, normalize(physics->getVelocity()));
+			float distanceToPlane = t * length(normalize(physics->getVelocity()));
 
 			//Make sure wall is in front of the ball
-			if (abs(atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) > PI/2 + 0.0001)
+			if (dot(borderNormal, incoming) < 0)
 			{
-				//printf("Angle: %f\n", abs(acos(dot(borderNormal, incoming))));
-				//cout << "Distance: " << distance << "\n";
-				//See if distance you are about to move would move through the wall
 				vec3 predPos = physics->getNextPosition();
 				float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
-				//printf("Predicted distance = %f\n", predictedDistance);
-				if (distance <= physics->getSpeed()) //Collision detected, deflect
+				
+				if (distanceToPlane <= predictedDistance) //Collision detected
 				{
+					//printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
 					if (DEBUG_WALL_PAINT)
 					{
 						borderShapes[i]->changeColor(vec4(1.0));
 						borderShapes[i]->reload();
 					}
-					cout << (atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) * 180/PI << "\n";
+					//cout << (atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) * 180/PI << "\n";
 					//Play bounce SFX
 					bounceSFX(physics->getSpeed(), sound);
 
