@@ -15,7 +15,11 @@ public:
 	ISoundEngine* getEngine();
 private:
 	ISoundEngine* engine;
+	int tickTimer;
 };
 
+void puttSFX(float power, SoundEngine * s);
+void bounceSFX(float speed, SoundEngine * s);
+void rollSFX(float speed, SoundEngine * s);
 
 #endif

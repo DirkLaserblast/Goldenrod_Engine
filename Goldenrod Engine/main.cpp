@@ -157,14 +157,14 @@ void launchBall(int i)
 {
     ballMoving = true;
 
-	sound->getEngine()->play2D("sfx/putt.ogg");
-
     launchAngleRadians = (float) launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
 	Level *currentLevel = levelController->getCurrentLevel();
 	Ball *ball = currentLevel->getBall();
 	Physics *physics = ball->getPhysics();
+
+	puttSFX(physics->getSpeed(), sound);
 
     float prevY = physics->getDirection().y;
     physics->setDirection(glm::vec3(launchVector.x, prevY, launchVector.z));
@@ -388,7 +388,7 @@ void tick(int in)
     //cout << endl << cupDist << endl; // debug
     if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= BALL_OFFSET){
 		//Play SFX for falling in hole
-		sound->getEngine()->play2D("sfx/cup.wav");
+		sound->getEngine()->play2D("sfx/retro_cup.wav");
         //----------------CHANGE TO NEXT HOLE----------------//
         nextHole();
     }
@@ -396,22 +396,19 @@ void tick(int in)
     // Physics calculations   
     if(ballMoving)
 	{
-		//Play rolling sound if it's not already playing
-		//if(!sound->getEngine()->isCurrentlyPlaying("sfx/roll1.wav"))
-		//{
-		//	sound->getEngine()->play2D("sfx/roll1.wav");
-		//}
-		//Check distance to all adjacent borders
+		//Play rolling sound
+		//rollSFX(physics->getSpeed(), sound);
+
 		for (int i = 0; i < borderShapes.size(); i++)
 		{
 
 			Shape *currentShape = borderShapes[i];
 			float distance = currentShape->distanceToPlane(ballPosition);
 			vec3 borderNormal = currentShape->normals()[0];
-			vec3 incoming = physics->getDirection();
+			vec3 incoming = physics->getVelocity();
 
 			//Make sure wall is in front of the ball
-			if (abs(acos(dot(borderNormal, incoming))) > PI/2)
+			if (acos(dot(borderNormal, incoming)) > PI/2 + 0.0001)
 			{
 				//printf("Angle: %f\n", abs(acos(dot(borderNormal, incoming))));
 				//cout << "Distance: " << distance << "\n";
@@ -426,9 +423,10 @@ void tick(int in)
 						borderShapes[i]->changeColor(vec4(1.0));
 						borderShapes[i]->reload();
 					}
-					//cout << acos(dot(borderNormal, incoming)) << "\n";
+					cout << acos(dot(borderNormal, incoming)) * 180/PI << "\n";
 					//Play bounce SFX
-					sound->getEngine()->play2D("sfx/bounce.wav");
+					bounceSFX(physics->getSpeed(), sound);
+
 					physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
 				}
 				//else cout << "Ignoring wall\n";
