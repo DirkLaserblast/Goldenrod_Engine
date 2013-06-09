@@ -360,6 +360,51 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
+void detectCollisions(vector<Shape*> borderShapes, Physics * physics)
+{
+	vec3 ballPosition = physics->getPosition();
+
+	for (int i = 0; i < borderShapes.size(); i++)
+	{
+
+		Shape *currentShape = borderShapes[i];
+		float distance = currentShape->distanceToPlane(ballPosition);
+		vec3 borderNormal = currentShape->normals()[0];
+		vec3 incoming = normalize(physics->getVelocity());
+		float planeDelta = currentShape->distanceToPlane(vec3(0.0)); //Distance from origin to plane
+
+		//Get distance to border plane along ball direction vector
+		float t = -(dot(borderNormal, physics->getPosition()) + planeDelta) / dot(borderNormal, normalize(physics->getVelocity()));
+		float distanceToPlane = t * length(normalize(physics->getVelocity()));
+
+		//Make sure wall is in front of the ball
+		if (dot(borderNormal, incoming) < 0)
+		{
+			vec3 predPos = physics->getNextPosition();
+			float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
+				
+			if (distanceToPlane <= predictedDistance) //Collision detected
+			{
+				//printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
+				if (DEBUG_WALL_PAINT)
+				{
+					borderShapes[i]->changeColor(vec4(1.0));
+					borderShapes[i]->reload();
+				}
+				//cout << (atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) * 180/PI << "\n";
+				//Play bounce SFX
+				bounceSFX(physics->getSpeed(), sound);
+
+				physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+			}
+			//else cout << "Ignoring wall\n";
+		}
+
+	}
+
+		//End wall collision checking
+}
+
 // Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
@@ -398,45 +443,7 @@ void tick(int in)
     if(ballMoving)
 	{
 
-		for (int i = 0; i < borderShapes.size(); i++)
-		{
-
-			Shape *currentShape = borderShapes[i];
-			float distance = currentShape->distanceToPlane(ballPosition);
-			vec3 borderNormal = currentShape->normals()[0];
-			vec3 incoming = normalize(physics->getVelocity());
-			float planeDelta = currentShape->distanceToPlane(vec3(0.0)); //Distance from origin to plane
-
-			//Get distance to border plane along ball direction vector
-			float t = -(dot(borderNormal, physics->getPosition()) + planeDelta) / dot(borderNormal, normalize(physics->getVelocity()));
-			float distanceToPlane = t * length(normalize(physics->getVelocity()));
-
-			//Make sure wall is in front of the ball
-			if (dot(borderNormal, incoming) < 0)
-			{
-				vec3 predPos = physics->getNextPosition();
-				float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
-				
-				if (distanceToPlane <= predictedDistance) //Collision detected
-				{
-					//printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
-					if (DEBUG_WALL_PAINT)
-					{
-						borderShapes[i]->changeColor(vec4(1.0));
-						borderShapes[i]->reload();
-					}
-					//cout << (atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) * 180/PI << "\n";
-					//Play bounce SFX
-					bounceSFX(physics->getSpeed(), sound);
-
-					physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
-				}
-				//else cout << "Ignoring wall\n";
-			}
-
-		}
-
-		//End wall collision checking
+		detectCollisions(borderShapes, physics);
 
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
