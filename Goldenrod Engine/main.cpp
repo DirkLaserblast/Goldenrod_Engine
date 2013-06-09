@@ -371,7 +371,8 @@ void tick(int in)
 
 	Tile* currentTile = currentLevel->getTile(ball->getCurrentTileID());
     vector<int> borderIDs = currentTile->getNeighborIDs();
-    vector<Shape*> borderShapes = currentTile->getBorders()->getShapes();
+    vector<Shape*> borderShapes = currentTile->getBorders()->getInwardShapes();
+
     vec3 ballPosition = physics->getPosition();
 
 	// Debug -- Highlight current tile
@@ -405,10 +406,10 @@ void tick(int in)
 			Shape *currentShape = borderShapes[i];
 			float distance = currentShape->distanceToPlane(ballPosition);
 			vec3 borderNormal = currentShape->normals()[0];
-			vec3 incoming = physics->getVelocity();
+			vec3 incoming = normalize(physics->getVelocity());
 
 			//Make sure wall is in front of the ball
-			if (acos(dot(borderNormal, incoming)) > PI/2 + 0.0001)
+			if (abs(atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) > PI/2 + 0.0001)
 			{
 				//printf("Angle: %f\n", abs(acos(dot(borderNormal, incoming))));
 				//cout << "Distance: " << distance << "\n";
@@ -423,7 +424,7 @@ void tick(int in)
 						borderShapes[i]->changeColor(vec4(1.0));
 						borderShapes[i]->reload();
 					}
-					cout << acos(dot(borderNormal, incoming)) * 180/PI << "\n";
+					cout << (atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) * 180/PI << "\n";
 					//Play bounce SFX
 					bounceSFX(physics->getSpeed(), sound);
 
@@ -444,6 +445,9 @@ void tick(int in)
         // If not in tile
         if(inTile == false)
 		{
+			//Play sound
+			sound->getEngine()->play2D("sfx/retro_roll.wav");
+
 			// Debug -- Stop highlighting current tile
 			if (DEBUG_TILE_PAINT)
 			{

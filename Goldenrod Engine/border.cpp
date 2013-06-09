@@ -27,6 +27,20 @@ int Border::getID(){ return this->tileID; };
 
 vector<Shape*> Border::getShapes(){ return this->shapes; };
 
+vector<Shape*> Border::getInwardShapes()
+{
+	vector<Shape*> inwardShapes;
+
+	int i = 1;
+	while (i < this->shapes.size())
+	{
+		inwardShapes.push_back(shapes[i]);
+		i += 2;
+	}
+
+	return inwardShapes;
+}
+
 void Border::setID(int newID){ this->tileID = newID; };
 
 // Private Methods

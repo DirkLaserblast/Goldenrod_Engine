@@ -20,7 +20,7 @@ ISoundEngine* SoundEngine::getEngine()
 
 int speedTier(float speed)
 {
-	if (speed > 0.8) return 0;
+	if (speed > 0.7) return 0;
 	else if (speed > 0.6) return 1;
 	else if (speed > 0.4) return 2;
 	else return 3;

@@ -33,6 +33,7 @@ public:
 	// Access methods
 	int getID();
 	vector<Shape*> getShapes(); // Returns pointer to shapes vector
+	vector<Shape*> getInwardShapes(); //Returns only shapes for inward-facing borders
 
     void setID(int newID);
 
