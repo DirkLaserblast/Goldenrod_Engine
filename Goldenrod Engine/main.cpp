@@ -48,7 +48,7 @@ FileIOController* fileIO = new FileIOController();
 LevelController* levelController = new LevelController();
 
 Timer* gameTime = new Timer();
-int tickSpeed = 50; //Speed of timer function in milliseconds -- this really should be in the timer class...
+int tickSpeed = 20; //Speed of timer function in milliseconds
 int MAX_SPEED = 100;
 
 Shader *shader = NULL;
@@ -100,13 +100,17 @@ GLUI_Spinner *angleSpinner;
 GLUI_Spinner *powerSpinner;
 GLUI_Button *fireButton;
 GLUI_Button *soundButton;
+GLUI_Button* newPlayerButton;
+GLUI_Listbox* currentPlayer;
 GLUI_StaticText *userName;
 GLUI_StaticText *currentHole;
 GLUI_StaticText *totalNumHoles;
 GLUI_StaticText *numStrokes;
 GLUI_StaticText *par;
 GLUI_StaticText *highScoresList[5];
-string name; // given via command line
+
+int nameIndex;
+vector<string> names;
 
 // Sound
 SoundEngine *sound;
@@ -122,8 +126,15 @@ bool ballMoving = false;
 int currentHoleScore = 0;
 int totalScore = 0;
 int highScores[NUM_HIGH_SCORES] = {0};
+string highScoreNames[NUM_HIGH_SCORES];
 
 //------------------------Game Functions------------------------//
+
+void dummyFunction(int i){
+
+	cout << endl << "GLUI is shit!!!" << endl;
+
+};
 
 void updateTotalScore(){
 
@@ -133,22 +144,95 @@ void updateTotalScore(){
 
 };
 
-void saveAndResetScore(){
+//void saveAndResetScore(){
+//
+//	int oldScore, newScore = totalScore;
+//
+//	// Add score to high scores if needed
+//	for(int i = 0; i < NUM_HIGH_SCORES; i++){
+//		oldScore = highScores[i];
+//		if(oldScore > newScore || oldScore == 0){
+//			highScores[i] = newScore;
+//			newScore = oldScore;
+//		}
+//	}
+//
+//	 // Reset scores
+//	totalScore = 0;
+//	currentHoleScore = 0;
+//
+//};
 
-	int oldScore, newScore = totalScore;
+void updateHighScoresList(){
 
-	// Add score to high scores if needed
+	// Tmp variables
+	int currentTmpScore = totalScore;
+	int compareTmpScore = 0;
+	string currentTmpName = names[nameIndex];
+	string compareTmpName = " ";
+
+	// Update values
+    for(int i = 0; i < NUM_HIGH_SCORES; i++){
+        if(highScores[i] == 0){
+			highScores[i] = currentTmpScore;
+			highScoreNames[i] = currentTmpName;
+			break;
+		}
+		else{
+			compareTmpScore = highScores[i];
+			compareTmpName = highScoreNames[i];
+			if(compareTmpScore > currentTmpScore){
+				highScores[i] = currentTmpScore;
+				currentTmpScore = compareTmpScore;
+
+				highScoreNames[i] = currentTmpName;
+				currentTmpName = compareTmpName;
+			}
+		}
+    }
+
+	// Reset scores
+	totalScore = 0;
+	currentHoleScore = 0;
+
+	// Update GLUI
 	for(int i = 0; i < NUM_HIGH_SCORES; i++){
-		oldScore = highScores[i];
-		if(oldScore > newScore || oldScore == 0){
-			highScores[i] = newScore;
-			newScore = oldScore;
+		if(highScores[i] != 0){
+			highScoresList[i]->set_text((highScoreNames[i] + ": " + to_string((long double)highScores[i])).c_str());
 		}
 	}
 
-	 // Reset scores
-	totalScore = 0;
+};
+
+void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar)
+{
+
+    userName->set_text(("Player: " + names.at(nameIndex)).c_str());
+	currentHole->set_text(("Hole: " + to_string((long double)hole)).c_str());
+	totalNumHoles->set_text(("Total Holes: " + to_string((long double)totalHoles)).c_str());
+	numStrokes->set_text(("Stroke: " + to_string((long double)currentStroke)).c_str());
+	par->set_text(("Par: " + to_string((long double)levelPar)).c_str());
+	
+}
+
+void reset(){
+
+	levelController->loadLevel(fileIO, 0);
 	currentHoleScore = 0;
+	totalScore = 0;
+
+};
+
+void addNewPlayer(int i){
+
+	// Get new player name via command line
+	string name;
+
+	cout << endl << "Enter name for new player: ";
+	cin >> name;
+
+	names.push_back(name);
+	nameIndex = names.size() - 1;
 
 };
 
@@ -185,7 +269,7 @@ void launchBall(int i)
         physics->setDirection(newDirection);
     }
 
-    physics->setSpeed(launchPower/100.0f);
+    physics->setSpeed(launchPower/1000.1f);
 
 	// Increment current hole score and update glui
 	currentHoleScore++;
@@ -213,27 +297,6 @@ void ballStopped(){
 
 };
 
-void updateHUD(int hole, int totalHoles, int currentStroke, int levelPar)
-{
-
-    userName->set_text(("Player: " + name).c_str());
-	currentHole->set_text(("Hole: " + to_string((long double)hole)).c_str());
-	totalNumHoles->set_text(("Total Holes: " + to_string((long double)totalHoles)).c_str());
-	numStrokes->set_text(("Stroke: " + to_string((long double)currentStroke)).c_str());
-	par->set_text(("Par: " + to_string((long double)levelPar)).c_str());
-	
-}
-
-void updateHighScoresList(int highScores[NUM_HIGH_SCORES]){
-
-    for(int i = 0; i < NUM_HIGH_SCORES; i++){
-        if(highScores[i] != 0){ // if not blank score
-            highScoresList[i]->set_text((name + ": " + to_string((long double)highScores[i])).c_str());
-        }
-    }
-
-};
-
 // Move to the next hole
 void nextHole(){
 
@@ -242,8 +305,8 @@ void nextHole(){
         // Load first level if on final level
         levelController->loadLevel(fileIO, 0);
 		// Update highscores
-		saveAndResetScore();
-        updateHighScoresList(highScores);
+		//saveAndResetScore();
+        updateHighScoresList();
 
         cout << endl << "High Scores:" << endl; // debug
         for(int i = 0; i < NUM_HIGH_SCORES; i++){
@@ -386,14 +449,16 @@ void tick(int in)
     glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
     float cupPlaneDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
     //cout << endl << cupDist << endl; // debug
-    if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= BALL_OFFSET){
+    if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= 1.1*BALL_OFFSET){ // allow for slight error
 		//Play SFX for falling in hole
 		sound->getEngine()->play2D("sfx/cup.wav");
         //----------------CHANGE TO NEXT HOLE----------------//
         nextHole();
     }
 
-    // Physics calculations   
+    // Physics and collision calculations
+	vec3 newDirection = physics->getDirection(); // used for tile transitions
+	float deltaY = 0; // used for tile transitions
     if(ballMoving)
 	{
 		//Play rolling sound if it's not already playing
@@ -401,7 +466,8 @@ void tick(int in)
 		//{
 		//	sound->getEngine()->play2D("sfx/roll1.wav");
 		//}
-		//Check distance to all adjacent borders
+
+		//Check for wall collision with all adjacent borders
 		for (int i = 0; i < borderShapes.size(); i++)
 		{
 
@@ -426,23 +492,27 @@ void tick(int in)
 						borderShapes[i]->changeColor(vec4(1.0));
 						borderShapes[i]->reload();
 					}
+
 					//cout << acos(dot(borderNormal, incoming)) << "\n";
 					//Play bounce SFX
 					sound->getEngine()->play2D("sfx/bounce.wav");
-					physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+
+					// Update direction and physics
+					newDirection = normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming);
+					physics->setDirection(newDirection);
+
+					break;
 				}
 				//else cout << "Ignoring wall\n";
 			}
 
 		}
 
-		//End wall collision checking
-
         // Update ball's current tile and direction if moved to/from slanted tile
         // Get top of assumed current tile
         Shape* tileTop = currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0);
         // Calculate if point will be within its current tile after it is moved
-        bool inTile = tileTop->checkIfInside(physics->getNextPosition());
+        bool inTile = tileTop->checkIfInside(physics->getNextPosition(), TILE_DEFAULT_DEPTH);
         // If not in tile
         if(inTile == false)
 		{
@@ -457,15 +527,29 @@ void tick(int in)
             for(int i =0; i < currentLevel->getTiles().size(); i++)
 			{
                 // Check tile
-                inTile = currentLevel->getTiles()[i]->getShapes().at(0)->checkIfInside(physics->getNextPosition());
+                inTile = currentLevel->getTiles()[i]->getShapes().at(0)->checkIfInside(physics->getNextPosition(), TILE_DEFAULT_DEPTH);
                 if(inTile){
                     ball->setCurrentTileID(currentLevel->getTiles()[i]->getID());
                     currentTile = currentLevel->getTile(ball->getCurrentTileID()); // update handle to current tile
 
-                    // Update direction
+                    // Calculate new direction and deltaY
+					vec3 nextPosition = physics->getNextPosition();
+					float diffY = abs(nextPosition.y - currentTile->getShapes()[0]->yValueAtPoint(nextPosition.x, nextPosition.z));
+
                     // If new tile is flat make sure no y-component
                     if(currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
-                        physics->setDirection(glm::vec3(physics->getDirection().x, 0.0, physics->getDirection().z));
+                        newDirection = glm::vec3(physics->getDirection().x, 0.0, physics->getDirection().z);
+
+						// Calculate deltaY
+						if(physics->getDirection().y > 0){ // prev tile was sloped up
+							deltaY = -(diffY);
+						}
+						else if(physics->getDirection().y < 0){ // prev tile was sloped down
+							deltaY = diffY;
+						}
+						else{ // prev tile was flat
+							deltaY = 0;
+						}
                     }
                     // If new tile is not flat add y-component
                     else{
@@ -474,33 +558,28 @@ void tick(int in)
                         // Get current tile normal
                         glm::vec3 tileNormal = currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0];
                         glm::vec3 xVector = glm::cross(oldDirection, upVector);
-                        glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
-                        physics->setDirection(newDirection);
-                    }
+                        newDirection = glm::normalize(glm::cross(tileNormal, xVector));
 
+						// Calculate deltaY -- doesn't account for transition from sloped tile to different sloped tile
+						if(physics->getDirection().y > 0){ // prev tile was sloped up
+							deltaY = 0;
+						}
+						else if(physics->getDirection().y < 0){ // prev tile was sloped down
+							deltaY = 0;
+						}
+						else{ // prev tile was flat
+							if(newDirection.y > 0){ // new tile sloped up
+								deltaY = diffY;
+							}
+							else{ // new tile sloped down
+								deltaY = -(diffY);
+							}
+						}
+                    }
                     break;
                 }
             }			
         } 
-		//// Modify direction based on gravity and update direction again
-		//if(currentLevel->getTile(currentLevel->ballCurrentTileID)->publicShapes->getShapes().at(0)->normals()[0] != glm::vec3(0.0,1.0,0.0)){
-		//	// Calculate R direction
-		//	glm::vec3 oldDirection = currentLevel->ballDirection;
-  //          glm::vec3 upVector = glm::vec3(0.0,1.0,0.0);
-  //          // Get current tile normal
-  //          glm::vec3 tileNormal = currentLevel->getTile(currentLevel->ballCurrentTileID)->publicShapes->getShapes()[0]->normals()[0];
-  //          glm::vec3 xVector = glm::cross(upVector, tileNormal);
-  //          glm::vec3 rDirection = glm::normalize(glm::cross(xVector, tileNormal));
-
-		//	currentLevel->ballDirection = glm::vec3(oldDirection + rDirection);
-
-		//	// Update direction
-		//	oldDirection = currentLevel->ballDirection;
-		//	xVector = glm::cross(oldDirection, upVector);
-		//	glm::vec3 newDirection = glm::normalize(glm::cross(tileNormal, xVector));
-
-		//	currentLevel->ballDirection = newDirection;
-		//}
 
 		// Update ball speed
 		double ballSpeed = physics->getSpeed();
@@ -508,7 +587,7 @@ void tick(int in)
 			// Do nothing
 		}
 		else if(ballSpeed > 0.005){
-			physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION*(ballSpeed*100));
+			physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION);
 			ballSpeed = physics->getSpeed();
 		}
 		else{
@@ -525,9 +604,18 @@ void tick(int in)
 		// Update ballPosition
 		physics->updatePosition();
 
-		// Update shapes for drawing
+		// Update ball y position and shape if changed tile
+		if(deltaY != 0){
+			physics->setPositionY(physics->getPosition().y + deltaY);
+			ball->getShapes().at(0)->translate(vec3(0.0,deltaY,0.0));
+		}
+
+		// Update shape using velocity
 		Shape* ballShape = ball->getShapes().at(0);
 		ballShape->translate(physics->getVelocity());
+
+		// Update ball direction
+		physics->setDirection(newDirection);
 
         // Snap ball to correct y value if on flat tile -- hacky
         if(currentTile->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
@@ -802,7 +890,10 @@ void setupGLUT(char* programName)
 
 	fireButton = gluiWindowLeft->add_button("Go!", 0, launchBall);
 
-	GLUI_Panel *holePanel = gluiWindowLeft->add_panel("Status");
+	newPlayerButton = gluiWindowLeft->add_button("New Player" , 1, addNewPlayer);
+	//currentProfile = gluiWindowLeft->add_listbox(
+
+	GLUI_Panel *holePanel = gluiWindowLeft->add_panel("Profile");
 	userName = gluiWindowLeft->add_statictext_to_panel(holePanel, "Player: ");
 	currentHole = gluiWindowLeft->add_statictext_to_panel(holePanel, "Hole: ");
 	totalNumHoles = gluiWindowLeft->add_statictext_to_panel(holePanel, "Total Holes: ");
@@ -937,21 +1028,22 @@ int main(int argc, char **argv)
     if(argc > 1){
         fileIO->processFile(argv[1]);
         // Make sure that file was correctly read and parsed
-        if(fileIO->getNumHoles() > 0){
-            levelController->loadCurrentLevel(fileIO);
+        if(fileIO->getNumHoles() <= 0){
+            cout << "Error reading file. Using default instead." << endl;
+			fileIO->processFile(DEFAULT_COURSE);
         }
     }
     else{
         cout << "No input file was provided." << endl;
         // Create default level since no file was specified
         fileIO->processFile(DEFAULT_COURSE);
-        levelController->loadLevel(fileIO, 7);
     }
 
-	//Get name from user
-	cout << "Player name: ";
-	cin >> name;
-	cout << "\n";
+	// Load level
+	levelController->loadFirstLevel(fileIO);
+
+	// Add Player
+	addNewPlayer(0);
 
     // Move arrow to ball's starting position
     arrow->translate(levelController->getCurrentLevel()->getBall()->getPhysics()->getPosition());
@@ -962,7 +1054,7 @@ int main(int argc, char **argv)
     shapes = levelController->getCurrentLevel()->getLevelShapes();
     reloadAllShapes(&verts, &color, &norms, shapes);
 
-	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);   
+	initializeGraphics(argc, argv, "MiniGolf", 1280, 720);  
 
     glutMainLoop();
 

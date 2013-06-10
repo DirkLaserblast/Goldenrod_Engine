@@ -36,14 +36,17 @@ public:
     //Number of vertices in the shape
     int numVertices();
     float distanceToPlane(vec3 point); //Find the distance from a point to a shape, for collision detection with the ball
-    bool checkIfInside(vec3 point); // Find out if point is inside of tile borders
+    bool checkIfInside(vec3 point, float offset); // Find out if point is inside of tile borders
 
     //Stores the shape's starting position in the main vertex array and normal array
     int startIndex;
     int colorStartIndex;
     vector<float> * vertsPointer, * colorsPointer, * normsPointer;
 
-    vec3 getCenter(); // debug
+	float yValueAtPoint(float x, float z);
+	float getMinY();
+	float getMaxY();
+    vec3 getCenter();
 
 private:
     vector<float> convert(vector<vec3> in);
@@ -52,7 +55,11 @@ private:
     vector<vec4> shapeColors;
     vector<vec3> shapeNormals;
 
+	float minY, maxY;
     vec3 center; // debug
+
+	float calculateMinY(vector<vec3> verts);
+	float calculateMaxY(vector<vec3> verts);
 };
 
 //Erase and populate the rendering arrays

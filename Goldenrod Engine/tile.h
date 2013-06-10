@@ -58,6 +58,7 @@ private:
 
     // Private methods
     void addTileShapes(vector<vec3> verts, vec4 color = TILE_DEFAULT_COLOR, float depth = TILE_DEFAULT_DEPTH);
+	vec3 calculateCenter(vector<vec3> verts);
 };
 
 #endif

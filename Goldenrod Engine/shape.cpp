@@ -33,6 +33,9 @@ Shape::Shape(vector<vec3> vertices, vec4 color)
     z = z / this->shapeVertices.size();
     this->center = vec3(x,y,z);
 
+	// Calculate min and max y value
+	this->minY = calculateMinY(vertices);
+	this->maxY = calculateMaxY(vertices);
 
 }
 
@@ -152,29 +155,7 @@ float Shape::distanceToPlane(vec3 point)
     return abs(dot(originVector, normalize(planeNormal)));
 }
 
-bool Shape::checkIfInside(vec3 point){
-
-    //float xMin=FLT_MAX, zMin=FLT_MAX, xMax=0, zMax=0;
-    //// Determine max and min for rough check (ie. bounding box)
-    //for(int i = 0; i < this->shapeVertices.size(); i++){
-    //    if(this->shapeVertices.at(i).x > xMax){
-    //        xMax = this->shapeVertices.at(i).x;
-    //    }
-    //    if(this->shapeVertices.at(i).x < xMin){
-    //        xMin = this->shapeVertices.at(i).x;
-    //    }
-    //    if(this->shapeVertices.at(i).z > zMax){
-    //        zMax = this->shapeVertices.at(i).z;
-    //    }
-    //    if(this->shapeVertices.at(i).z < zMin){
-    //        zMin = this->shapeVertices.at(i).z;
-    //    }
-    //}
-
-    //// Check if outside bounding box
-    //if(point.x > xMax || point.x > zMax || point.x < xMin || point.z < zMin){
-    //    return false;
-    //}
+bool Shape::checkIfInside(vec3 point, float offset){
 
     // Setup input for pnpoly
     int i,j;
@@ -193,6 +174,10 @@ bool Shape::checkIfInside(vec3 point){
             (point.x < (xCoords[j]-xCoords[i]) * (point.z-zCoords[i]) / (zCoords[j]-zCoords[i]) + xCoords[i]) )
             c = !c;
     }
+
+	if(c == true && (point.y > this->maxY + offset || point.y < this->minY - offset)){
+		c = !c;
+	}
 
     return c;
 
@@ -227,4 +212,51 @@ void reloadAllShapes(vector<float> * vertsVector, vector<float> * colorsVector, 
 
 }
 
+float Shape::yValueAtPoint(float x, float z){
+
+	vec3 normal = this->shapeNormals[0];
+	vec3 knownPoint = this->shapeVertices[0];
+
+	float sum = ((normal.x*knownPoint.x)-(normal.x*x)) + ((normal.z*knownPoint.z)-(normal.z*z)) + (normal.y*knownPoint.y);
+
+	return (sum/normal.y);
+
+};
+
+float Shape::getMinY(){ return this->minY; };
+
+float Shape::getMaxY(){ return this->maxY; };
+
 vec3 Shape::getCenter(){ return this->center; };
+
+float Shape::calculateMinY(vector<vec3> verts){
+
+	float minY;
+    for(int i = 0; i < verts.size(); i++){
+		if(i == 0){
+			minY = verts.at(i).y;
+		}
+		else if(minY > verts.at(i).y){
+			minY = verts.at(i).y;
+		}
+    }
+    
+	return minY;
+
+};
+
+float Shape::calculateMaxY(vector<vec3> verts){
+
+	float maxY;
+    for(int i = 0; i < verts.size(); i++){
+		if(i == 0){
+			maxY = verts.at(i).y;
+		}
+		else if(maxY < verts.at(i).y){
+			maxY = verts.at(i).y;
+		}
+    }
+    
+	return maxY;
+
+};

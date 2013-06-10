@@ -39,6 +39,9 @@ public:
 
 	void setSpeed(double newSpeed);
 	void setPosition(vec3 newPosition);
+	void setPositionX(float newX);
+	void setPositionY(float newY);
+	void setPositionZ(float newZ);
 	void setDirection(vec3 newDirection);
 
 	// Update method

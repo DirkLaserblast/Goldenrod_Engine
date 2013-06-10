@@ -7,7 +7,7 @@ Tile::Tile(ProcessedInputLine* inLine){
     this->friction = TILE_DEFAULT_FRICTION;
     this->neighborIDs = inLine->getNeighborIDs();
     this->addTileShapes(inLine->getVerts());
-	this->physics = new Physics(inLine->getVerts()[0]);
+	this->physics = new Physics(calculateCenter(inLine->getVerts()));
 
     if(TILE_USE_BORDER){
         this->borders = new Border(inLine);
@@ -130,5 +130,21 @@ void Tile::addTileShapes(vector<vec3> verts, vec4 color, float depth){
     else{
         this->shapes.push_back(new Shape(top, color));
     }
+
+};
+
+vec3 Tile::calculateCenter(vector<vec3> verts){
+
+	float x = 0,y = 0,z = 0;
+    for(int i = 0; i < verts.size(); i++){
+        x += verts.at(i).x;
+        y += verts.at(i).y;
+        z += verts.at(i).z;
+    }
+    x = x / verts.size();
+    y = y / verts.size();
+    z = z / verts.size();
+
+    return vec3(x,y,z);
 
 };

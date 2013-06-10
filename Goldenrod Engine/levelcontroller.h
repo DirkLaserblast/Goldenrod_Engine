@@ -16,6 +16,8 @@ public:
     void loadCurrentLevel(FileIOController* fileIO);
 	void loadNextLevel(FileIOController* fileIO);
 	void loadPrevLevel(FileIOController* fileIO);
+	void loadFirstLevel(FileIOController* fileIO);
+	void loadLastLevel(FileIOController* fileIO);
 	void loadLevel(FileIOController* fileIO, int levelIndex);
 
 	// Access methods

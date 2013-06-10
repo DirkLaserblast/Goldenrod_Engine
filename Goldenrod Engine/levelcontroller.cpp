@@ -57,6 +57,26 @@ void LevelController::loadPrevLevel(FileIOController* fileIO){
 
 };
 
+void LevelController::loadFirstLevel(FileIOController* fileIO){
+	
+	cerr << endl << "Loading first level." << endl;
+
+	delete this->currentLevel;
+	fileIO->goToHole(0);
+	this->currentLevel = new Level(fileIO->getCurrentHole(), fileIO->getCurrentHoleID());
+
+};
+
+void LevelController::loadLastLevel(FileIOController* fileIO){
+	
+	cerr << endl << "Loading last level." << endl;
+
+	delete this->currentLevel;
+	fileIO->goToHole(fileIO->getNumHoles() - 1);
+	this->currentLevel = new Level(fileIO->getCurrentHole(), fileIO->getCurrentHoleID());
+
+};
+
 void LevelController::loadLevel(FileIOController* fileIO, int levelIndex){
 
     cerr << endl << "Loading level at index " << levelIndex << "." << endl;

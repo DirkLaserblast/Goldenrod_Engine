@@ -56,6 +56,12 @@ void Physics::setSpeed(double newSpeed){ this->speed = newSpeed; };
 
 void Physics::setPosition(vec3 newPosition){ this->position = newPosition; };
 
+void Physics::setPositionX(float newX){ this->position.x = newX; };
+
+void Physics::setPositionY(float newY){ this->position.y = newY; };
+
+void Physics::setPositionZ(float newZ){ this->position.z = newZ; };
+
 void Physics::setDirection(vec3 newDirection){ this->direction = normalize(newDirection); };
 
 // Update method

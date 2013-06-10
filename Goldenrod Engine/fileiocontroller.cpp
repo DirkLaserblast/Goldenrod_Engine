@@ -63,7 +63,7 @@ void FileIOController::processFile(string fileName){
             str.setString(line); // attach string to tokenizer
 
             // Determine keyword
-            keyword = str.nextEcho();
+            keyword = str.next(); // change to nextEcho to print input line tags
 
             // If this is a new course
             if(keyword == "course"){
