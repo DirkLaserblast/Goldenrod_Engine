@@ -49,7 +49,7 @@ LevelController* levelController = new LevelController();
 
 Timer* gameTime = new Timer();
 int tickSpeed = 20; //Speed of timer function in milliseconds
-int MAX_SPEED = 100;
+int MAX_SPEED = 10;
 
 Shader *shader = NULL;
 
@@ -269,7 +269,7 @@ void launchBall(int i)
         physics->setDirection(newDirection);
     }
 
-    physics->setSpeed(launchPower/1000.1f);
+    physics->setSpeed(launchPower/100.1f);
 
 	// Increment current hole score and update glui
 	currentHoleScore++;
@@ -425,7 +425,7 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 
 bool detectCollisions(Tile* currentTile, Physics * physics)
 {
-	vector<Shape*> borderShapes = currentTile->getBorders()->getShapes();
+	vector<Shape*> borderShapes = currentTile->getBorders()->getInwardShapes();
 	vec3 ballPosition = physics->getPosition();
 
 	for (int i = 0; i < borderShapes.size(); i++)
