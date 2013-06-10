@@ -64,6 +64,8 @@ void Physics::setPositionZ(float newZ){ this->position.z = newZ; };
 
 void Physics::setDirection(vec3 newDirection){ this->direction = normalize(newDirection); };
 
+void Physics::flipYDirection(){ this->direction.y = -(this->direction.y); };
+
 // Update method
 void Physics::updatePosition(){
 

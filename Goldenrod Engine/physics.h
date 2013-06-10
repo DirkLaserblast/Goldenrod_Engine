@@ -43,6 +43,7 @@ public:
 	void setPositionY(float newY);
 	void setPositionZ(float newZ);
 	void setDirection(vec3 newDirection);
+	void flipYDirection();
 
 	// Update method
 	void updatePosition();

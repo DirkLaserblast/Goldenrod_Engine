@@ -423,8 +423,9 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
-bool detectCollisions(vector<Shape*> borderShapes, Physics * physics)
+bool detectCollisions(Tile* currentTile, Physics * physics)
 {
+	vector<Shape*> borderShapes = currentTile->getBorders()->getShapes();
 	vec3 ballPosition = physics->getPosition();
 
 	for (int i = 0; i < borderShapes.size(); i++)
@@ -457,6 +458,11 @@ bool detectCollisions(vector<Shape*> borderShapes, Physics * physics)
 				bounceSFX(physics->getSpeed(), sound);
 
 				physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+
+				// Flip y if hit border at y max or min of tile (prevents floating/sinking)
+				if(currentTile->getShapes()[0]->getMinY() > predPos.y || currentTile->getShapes()[0]->getMaxY() < predPos.y){
+					physics->flipYDirection();
+				}
 
 				return true;
 			}
@@ -509,7 +515,7 @@ void tick(int in)
     if(ballMoving)
 	{
 		// Check for collision
-		if(detectCollisions(borderShapes, physics)){
+		if(detectCollisions(currentTile, physics)){
 			newDirection = physics->getDirection();
 		}
 
@@ -623,8 +629,8 @@ void tick(int in)
 		// Update ball direction
 		physics->setDirection(newDirection);
 
-        // Snap ball to correct y value if on flat tile -- hacky
-        if(currentTile->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
+        // Snap ball to correct y value -- hacky
+        if(currentTile->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){ // flat tile
             if(physics->getPosition().y != (currentTile->getPhysics()->getPosition().y + BALL_OFFSET)){
                 // Snap ball shape
                 ball->getShapes()[0]->translate(vec3(0.0, -(physics->getPosition().y), 0.0));
@@ -633,6 +639,16 @@ void tick(int in)
                 physics->setPosition(vec3(physics->getPosition().x, (currentTile->getPhysics()->getPosition().y + BALL_OFFSET), physics->getPosition().z));
             }
         }
+		else{// sloped tile
+			float correctY = currentTile->getShapes()[0]->yValueAtPoint(physics->getPosition().x, physics->getPosition().z);
+			if(physics->getPosition().y != correctY){
+				// Snap ball shape
+                ball->getShapes()[0]->translate(vec3(0.0, -(physics->getPosition().y), 0.0));
+                ball->getShapes()[0]->translate(vec3(0.0, correctY, 0.0));
+                // Update ball physics
+				physics->setPositionY(correctY);
+			}
+		}
 
         // Reload shape
         ballShape->reload();
