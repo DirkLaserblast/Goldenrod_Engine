@@ -35,7 +35,7 @@
 
 #define PI 3.14159L
 #define NUM_HIGH_SCORES 5 // must be five or less because of GLUI
-#define GRAVITY_DIVISOR 20.0f
+#define GRAVITY_DIVISOR 10.0f
 
 //------------------------Debug Flags---------------------------//
 
@@ -597,23 +597,46 @@ void tick(int in)
 			newDirection.z += (currentTile->getSlope()/GRAVITY_DIVISOR) * currentTile->getRollDirection().z;
 		}
 
-		// Update ball speed
-		double ballSpeed = physics->getSpeed();
-		if(ballSpeed == 0.0){
-			// Do nothing
-		}
-		else if(ballSpeed > 0.005){
-			physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION);
-			ballSpeed = physics->getSpeed();
-		}
-		else{
-			physics->setSpeed(0.0);
-		}
+		//// Update ball speed
+		//double ballSpeed = physics->getSpeed();
+		//if(ballSpeed == 0.0){
+		//	// Do nothing
+		//}
+		//else if(ballSpeed > 0.005){
+		//	physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION);
+		//	ballSpeed = physics->getSpeed();
+		//}
+		//else{
+		//	physics->setSpeed(0.0);
+		//}
 
-		// Check if ball stopped
-		if(ballSpeed == 0){
-			ballStopped();
-		}
+        // Update ball speed
+        double ballSpeed = physics->getSpeed();
+        if(currentTile->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){ // flat tile
+            if(ballSpeed > 0.0025){
+                physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION);
+		        ballSpeed = physics->getSpeed();
+            }
+            else{
+                physics->setSpeed(0.0);
+                ballStopped();
+            }
+        }
+        else if(newDirection.y > 0){ // going up hill
+            cout << endl << "UP";
+            cout << "Direction y-value: " << newDirection.y << endl;
+            if(ballSpeed > 0.0025){
+                physics->setSpeed(ballSpeed - (TILE_DEFAULT_FRICTION + (currentTile->getSlope()*TILE_DEFAULT_FRICTION)));
+		        ballSpeed = physics->getSpeed();
+            }
+        }
+        else{ // going down hill
+            cout << endl << "DOWN";
+            cout << "Direction y-value: " << newDirection.y << endl;
+            if(ballSpeed <= (100.0/100.1)){
+                physics->setSpeed(ballSpeed + TILE_DEFAULT_FRICTION);
+            }
+        }
 
 		// Update ballPosition
 		physics->updatePosition();
