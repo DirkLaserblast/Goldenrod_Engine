@@ -241,14 +241,14 @@ void launchBall(int i)
 {
     ballMoving = true;
 
-	sound->getEngine()->play2D("sfx/putt.ogg");
-
     launchAngleRadians = (float) launchAngle * (PI/180);
     launchVector = normalize(vec3(sin(launchAngleRadians), 0.0, cos(launchAngleRadians)));
 
 	Level *currentLevel = levelController->getCurrentLevel();
 	Ball *ball = currentLevel->getBall();
 	Physics *physics = ball->getPhysics();
+
+	puttSFX(physics->getSpeed(), sound);
 
     float prevY = physics->getDirection().y;
     physics->setDirection(glm::vec3(launchVector.x, prevY, launchVector.z));
@@ -423,6 +423,54 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
+bool detectCollisions(vector<Shape*> borderShapes, Physics * physics)
+{
+	vec3 ballPosition = physics->getPosition();
+
+	for (int i = 0; i < borderShapes.size(); i++)
+	{
+
+		Shape *currentShape = borderShapes[i];
+		float distance = currentShape->distanceToPlane(ballPosition);
+		vec3 borderNormal = currentShape->normals()[0];
+		vec3 incoming = normalize(physics->getVelocity());
+		float planeDelta = currentShape->distanceToPlane(vec3(0.0, borderNormal.y, 0.0)); //Distance from origin to plane along normal
+
+		//Get distance to border plane along ball direction vector
+		float t = -(dot(borderNormal, physics->getPosition()) + planeDelta) / dot(borderNormal, physics->getDirection());
+		float distanceToPlane = t * length(physics->getDirection());
+
+		//Make sure wall is in front of the ball
+		if (dot(borderNormal, incoming) < 0)
+		{
+			vec3 predPos = physics->getNextPosition();
+			float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
+			printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
+			if (distance <= predictedDistance) //Collision detected
+			{
+				//printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
+				if (DEBUG_WALL_PAINT)
+				{
+					borderShapes[i]->changeColor(vec4(1.0));
+					borderShapes[i]->reload();
+				}
+				//cout << (atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) * 180/PI << "\n";
+				//Play bounce SFX
+				bounceSFX(physics->getSpeed(), sound);
+
+				physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+
+				return true;
+			}
+			//else cout << "Ignoring wall\n";
+		}
+
+	}
+
+		//End wall collision checking
+	return false;
+}
+
 // Run by GLUT every [tickspeed] miliseconds
 void tick(int in)
 {
@@ -434,7 +482,8 @@ void tick(int in)
 
 	Tile* currentTile = currentLevel->getTile(ball->getCurrentTileID());
     vector<int> borderIDs = currentTile->getNeighborIDs();
-    vector<Shape*> borderShapes = currentTile->getBorders()->getShapes();
+    vector<Shape*> borderShapes = currentTile->getBorders()->getInwardShapes();
+
     vec3 ballPosition = physics->getPosition();
 
 	// Debug -- Highlight current tile
@@ -451,7 +500,7 @@ void tick(int in)
     //cout << endl << cupDist << endl; // debug
     if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= 1.1*BALL_OFFSET){ // allow for slight error
 		//Play SFX for falling in hole
-		sound->getEngine()->play2D("sfx/cup.wav");
+		sound->getEngine()->play2D("sfx/retro_cup.wav");
         //----------------CHANGE TO NEXT HOLE----------------//
         nextHole();
     }
@@ -461,51 +510,9 @@ void tick(int in)
 	float deltaY = 0; // used for tile transitions
     if(ballMoving)
 	{
-		//Play rolling sound if it's not already playing
-		//if(!sound->getEngine()->isCurrentlyPlaying("sfx/roll1.wav"))
-		//{
-		//	sound->getEngine()->play2D("sfx/roll1.wav");
-		//}
-
-		//Check for wall collision with all adjacent borders
-		for (int i = 0; i < borderShapes.size(); i++)
-		{
-
-			Shape *currentShape = borderShapes[i];
-			float distance = currentShape->distanceToPlane(ballPosition);
-			vec3 borderNormal = currentShape->normals()[0];
-			vec3 incoming = physics->getDirection();
-
-			//Make sure wall is in front of the ball
-			if (abs(acos(dot(borderNormal, incoming))) > PI/2)
-			{
-				//printf("Angle: %f\n", abs(acos(dot(borderNormal, incoming))));
-				//cout << "Distance: " << distance << "\n";
-				//See if distance you are about to move would move through the wall
-				vec3 predPos = physics->getNextPosition();
-				float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
-				//printf("Predicted distance = %f\n", predictedDistance);
-				if (distance <= physics->getSpeed()) //Collision detected, deflect
-				{
-					if (DEBUG_WALL_PAINT)
-					{
-						borderShapes[i]->changeColor(vec4(1.0));
-						borderShapes[i]->reload();
-					}
-
-					//cout << acos(dot(borderNormal, incoming)) << "\n";
-					//Play bounce SFX
-					sound->getEngine()->play2D("sfx/bounce.wav");
-
-					// Update direction and physics
-					newDirection = normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming);
-					physics->setDirection(newDirection);
-
-					break;
-				}
-				//else cout << "Ignoring wall\n";
-			}
-
+		// Check for collision
+		if(detectCollisions(borderShapes, physics)){
+			newDirection = physics->getDirection();
 		}
 
         // Update ball's current tile and direction if moved to/from slanted tile
@@ -516,6 +523,9 @@ void tick(int in)
         // If not in tile
         if(inTile == false)
 		{
+			//Play sound
+			sound->getEngine()->play2D("sfx/retro_roll.wav");
+
 			// Debug -- Stop highlighting current tile
 			if (DEBUG_TILE_PAINT)
 			{
@@ -832,7 +842,7 @@ void mouseMove(int x, int y)
 
 void soundTest (int i)
 {
-	sound->getEngine()->play2D("sfx/41-goldenrod-city.ogg", true);
+	sound->getEngine()->play2D("sfx/music1.wav", true);
 	soundButton->disable();
 }
 
@@ -910,7 +920,7 @@ void setupGLUT(char* programName)
 	highScoresList[3] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
 	highScoresList[4] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
 	
-	soundButton = gluiWindowLeft->add_button("Sound Test!", 0, soundTest);
+	soundButton = gluiWindowLeft->add_button("Toggle Music", 0, soundTest);
 	
 	GLUI_Master.auto_set_viewport();
 

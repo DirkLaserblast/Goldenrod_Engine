@@ -45,7 +45,10 @@ vector<Shape*> Tile::getShapes(){ return this->shapes; };
 
 Physics* Tile::getPhysics(){ return this->physics; };
 
-Border* Tile::getBorders(){ return this->borders; };
+Border* Tile::getBorders()
+{
+	return this->borders;
+};
 
 void Tile::setID(int newID){ 
 
