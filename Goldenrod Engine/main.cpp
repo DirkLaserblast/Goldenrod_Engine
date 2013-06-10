@@ -360,7 +360,7 @@ void updateCamera(vec3 ballPosition, vec3 ballDirection, bool smoothMotion)
 	}
 }
 
-void detectCollisions(vector<Shape*> borderShapes, Physics * physics)
+bool detectCollisions(vector<Shape*> borderShapes, Physics * physics)
 {
 	vec3 ballPosition = physics->getPosition();
 
@@ -371,19 +371,19 @@ void detectCollisions(vector<Shape*> borderShapes, Physics * physics)
 		float distance = currentShape->distanceToPlane(ballPosition);
 		vec3 borderNormal = currentShape->normals()[0];
 		vec3 incoming = normalize(physics->getVelocity());
-		float planeDelta = currentShape->distanceToPlane(vec3(0.0)); //Distance from origin to plane
+		float planeDelta = currentShape->distanceToPlane(vec3(0.0, borderNormal.y, 0.0)); //Distance from origin to plane along normal
 
 		//Get distance to border plane along ball direction vector
-		float t = -(dot(borderNormal, physics->getPosition()) + planeDelta) / dot(borderNormal, normalize(physics->getVelocity()));
-		float distanceToPlane = t * length(normalize(physics->getVelocity()));
+		float t = -(dot(borderNormal, physics->getPosition()) + planeDelta) / dot(borderNormal, physics->getDirection());
+		float distanceToPlane = t * length(physics->getDirection());
 
 		//Make sure wall is in front of the ball
 		if (dot(borderNormal, incoming) < 0)
 		{
 			vec3 predPos = physics->getNextPosition();
 			float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
-				
-			if (distanceToPlane <= predictedDistance) //Collision detected
+			printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
+			if (distance <= predictedDistance) //Collision detected
 			{
 				//printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
 				if (DEBUG_WALL_PAINT)
@@ -396,6 +396,8 @@ void detectCollisions(vector<Shape*> borderShapes, Physics * physics)
 				bounceSFX(physics->getSpeed(), sound);
 
 				physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+
+				return true;
 			}
 			//else cout << "Ignoring wall\n";
 		}
@@ -403,6 +405,7 @@ void detectCollisions(vector<Shape*> borderShapes, Physics * physics)
 	}
 
 		//End wall collision checking
+	return false;
 }
 
 // Run by GLUT every [tickspeed] miliseconds
@@ -754,7 +757,7 @@ void mouseMove(int x, int y)
 
 void soundTest (int i)
 {
-	sound->getEngine()->play2D("sfx/41-goldenrod-city.ogg", true);
+	sound->getEngine()->play2D("sfx/music1.wav", true);
 	soundButton->disable();
 }
 
@@ -829,7 +832,7 @@ void setupGLUT(char* programName)
 	highScoresList[3] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
 	highScoresList[4] = gluiWindowLeft->add_statictext_to_panel(scoresPanel, "");
 	
-	soundButton = gluiWindowLeft->add_button("Sound Test!", 0, soundTest);
+	soundButton = gluiWindowLeft->add_button("Toggle Music", 0, soundTest);
 	
 	GLUI_Master.auto_set_viewport();
 
