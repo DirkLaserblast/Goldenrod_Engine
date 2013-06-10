@@ -613,7 +613,7 @@ void tick(int in)
         // Update ball speed
         double ballSpeed = physics->getSpeed();
         if(currentTile->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){ // flat tile
-            if(ballSpeed > 0.0025){
+            if(ballSpeed > 0.01){
                 physics->setSpeed(ballSpeed - TILE_DEFAULT_FRICTION);
 		        ballSpeed = physics->getSpeed();
             }
@@ -625,8 +625,8 @@ void tick(int in)
         else if(newDirection.y > 0){ // going up hill
             cout << endl << "UP";
             cout << "Direction y-value: " << newDirection.y << endl;
-            if(ballSpeed > 0.0025){
-                physics->setSpeed(ballSpeed - (TILE_DEFAULT_FRICTION + (currentTile->getSlope()*TILE_DEFAULT_FRICTION)));
+            if(ballSpeed > 0.01){
+                physics->setSpeed(ballSpeed - (TILE_DEFAULT_FRICTION + (2.0*currentTile->getSlope()*TILE_DEFAULT_FRICTION)));
 		        ballSpeed = physics->getSpeed();
             }
         }
@@ -635,6 +635,9 @@ void tick(int in)
             cout << "Direction y-value: " << newDirection.y << endl;
             if(ballSpeed <= (100.0/100.1)){
                 physics->setSpeed(ballSpeed + TILE_DEFAULT_FRICTION);
+            }
+            else{ // clmap speed
+                ballSpeed = (100.0/100.1);
             }
         }
 
