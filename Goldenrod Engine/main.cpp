@@ -549,8 +549,9 @@ void tick(int in)
                 // Check tile
                 inTile = currentLevel->getTiles()[i]->getShapes().at(0)->checkIfInside(physics->getNextPosition(), TILE_DEFAULT_DEPTH);
                 if(inTile){
-                    ball->setCurrentTileID(currentLevel->getTiles()[i]->getID());
+                    Tile* prevTile = currentTile; // Store previous tile
                     currentTile = currentLevel->getTile(ball->getCurrentTileID()); // update handle to current tile
+					ball->setCurrentTileID(currentLevel->getTiles()[i]->getID());
 
                     // Calculate new direction and deltaY
 					vec3 nextPosition = physics->getNextPosition();
@@ -574,28 +575,33 @@ void tick(int in)
                     // If new tile is not flat add y-component
                     else{
                         glm::vec3 oldDirection = physics->getDirection();
-                        glm::vec3 upVector = glm::vec3(0.0,1.0,0.0);
+						glm::vec3 upVector = prevTile->getShapes()[0]->normals()[0];
                         // Get current tile normal
                         glm::vec3 tileNormal = currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0];
                         glm::vec3 xVector = glm::cross(oldDirection, upVector);
                         newDirection = glm::normalize(glm::cross(tileNormal, xVector));
 
-						// Calculate deltaY -- doesn't account for transition from sloped tile to different sloped tile
-						if(physics->getDirection().y > 0){ // prev tile was sloped up
+						// Calculate deltaY
+						if(physics->getDirection().y > 0){ // was moving up prev tile
 							deltaY = 0;
 						}
-						else if(physics->getDirection().y < 0){ // prev tile was sloped down
+						else if(physics->getDirection().y < 0){ // was moving down prev tile
 							deltaY = 0;
 						}
 						else{ // prev tile was flat
-							if(newDirection.y > 0){ // new tile sloped up
+							if(newDirection.y > 0){ // moving up new tile
 								deltaY = diffY;
 							}
-							else{ // new tile sloped down
+							else{ // moving down new tile
 								deltaY = -(diffY);
 							}
 						}
                     }
+
+					cout << endl << "Changed tile." << endl; // debug
+					cout << "Old direction: " << physics->getDirection().x << "," << physics->getDirection().y << "," << physics->getDirection().z << endl;
+					cout << "New direction: " << newDirection.x << "," << newDirection.y << "," << newDirection.z << endl << endl;
+
                     break;
                 }
             }			
