@@ -757,8 +757,11 @@ void mouseMove(int x, int y)
 
 void soundTest (int i)
 {
-	sound->getEngine()->play2D("sfx/music1.wav", true);
-	soundButton->disable();
+	if (!sound->getEngine()->isCurrentlyPlaying("sfx/music1.wav"))
+	{
+		sound->getEngine()->play2D("sfx/music1.wav", true);
+	}
+	else sound->getEngine()->removeSoundSource("sfx/music1.wav");
 }
 
 // Do some GLUT initialization, also set up GLUI
