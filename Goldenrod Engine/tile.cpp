@@ -9,6 +9,20 @@ Tile::Tile(ProcessedInputLine* inLine){
     this->addTileShapes(inLine->getVerts());
 	this->physics = new Physics(calculateCenter(inLine->getVerts()));
 
+	// Caluculate slope
+	this->slope = abs(this->shapes[0]->getMaxY() - this->shapes[0]->getMinY());
+
+	// Calculate roll direction
+	if(this->slope != 0.0){
+		vec3 upVec = vec3(0.0,1.0,0.0);
+		vec3 norm = this->shapes[0]->normals()[0];
+		vec3 xVec = cross(upVec, norm);
+		this->rollDirection = normalize(cross(xVec, norm));
+	}
+	else{
+		this->rollDirection = vec3(0.0,0.0,0.0);
+	}
+
     if(TILE_USE_BORDER){
         this->borders = new Border(inLine);
     }
@@ -49,6 +63,10 @@ Border* Tile::getBorders()
 {
 	return this->borders;
 };
+
+vec3 Tile::getRollDirection(){ return this->rollDirection; };
+
+float Tile::getSlope(){ return this->slope; };
 
 void Tile::setID(int newID){ 
 

@@ -43,6 +43,8 @@ public:
 	vector<Shape*> getShapes(); // Returns pointer to shapes vector
 	Physics* getPhysics(); // hack used to correct y position for ball on flat tiles
 	Border* getBorders();
+	vec3 getRollDirection();
+	float getSlope();
 
 	void setID(int newID);
 	void setFriction(double newFriction = TILE_DEFAULT_FRICTION);
@@ -55,6 +57,8 @@ private:
 	vector<Shape*> shapes;
 	Physics* physics;
 	Border* borders;
+	vec3 rollDirection;
+	float slope;
 
     // Private methods
     void addTileShapes(vector<vec3> verts, vec4 color = TILE_DEFAULT_COLOR, float depth = TILE_DEFAULT_DEPTH);

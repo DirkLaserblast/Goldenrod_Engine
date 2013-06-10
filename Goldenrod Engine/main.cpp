@@ -35,6 +35,7 @@
 
 #define PI 3.14159L
 #define NUM_HIGH_SCORES 5 // must be five or less because of GLUI
+#define GRAVITY_DIVISOR 20.0f
 
 //------------------------Debug Flags---------------------------//
 
@@ -143,25 +144,6 @@ void updateTotalScore(){
 	currentHoleScore = 0;
 
 };
-
-//void saveAndResetScore(){
-//
-//	int oldScore, newScore = totalScore;
-//
-//	// Add score to high scores if needed
-//	for(int i = 0; i < NUM_HIGH_SCORES; i++){
-//		oldScore = highScores[i];
-//		if(oldScore > newScore || oldScore == 0){
-//			highScores[i] = newScore;
-//			newScore = oldScore;
-//		}
-//	}
-//
-//	 // Reset scores
-//	totalScore = 0;
-//	currentHoleScore = 0;
-//
-//};
 
 void updateHighScoresList(){
 
@@ -550,15 +532,15 @@ void tick(int in)
                 inTile = currentLevel->getTiles()[i]->getShapes().at(0)->checkIfInside(physics->getNextPosition(), TILE_DEFAULT_DEPTH);
                 if(inTile){
                     Tile* prevTile = currentTile; // Store previous tile
-                    currentTile = currentLevel->getTile(ball->getCurrentTileID()); // update handle to current tile
 					ball->setCurrentTileID(currentLevel->getTiles()[i]->getID());
+                    currentTile = currentLevel->getTile(ball->getCurrentTileID()); // update handle to current tile
 
                     // Calculate new direction and deltaY
 					vec3 nextPosition = physics->getNextPosition();
 					float diffY = abs(nextPosition.y - currentTile->getShapes()[0]->yValueAtPoint(nextPosition.x, nextPosition.z));
 
                     // If new tile is flat make sure no y-component
-                    if(currentLevel->getTile(ball->getCurrentTileID())->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
+                    if(currentTile->getShapes().at(0)->normals()[0] == glm::vec3(0.0,1.0,0.0)){
                         newDirection = glm::vec3(physics->getDirection().x, 0.0, physics->getDirection().z);
 
 						// Calculate deltaY
@@ -598,14 +580,22 @@ void tick(int in)
 						}
                     }
 
-					cout << endl << "Changed tile." << endl; // debug
-					cout << "Old direction: " << physics->getDirection().x << "," << physics->getDirection().y << "," << physics->getDirection().z << endl;
-					cout << "New direction: " << newDirection.x << "," << newDirection.y << "," << newDirection.z << endl << endl;
+					//cout << endl << "Changed tile." << endl; // debug
+					//cout << "Old direction: " << physics->getDirection().x << "," << physics->getDirection().y << "," << physics->getDirection().z << endl;
+					//cout << "New direction: " << newDirection.x << "," << newDirection.y << "," << newDirection.z << endl;
+					//cout << "New roll direction: " << currentTile->getRollDirection().x << "," << currentTile->getRollDirection().y << "," << currentTile->getRollDirection().z << endl << endl;
 
                     break;
                 }
-            }			
+            }
         } 
+
+		// Modify direction based on gravity
+		if(currentTile->getShapes().at(0)->normals()[0] != glm::vec3(0.0,1.0,0.0)){
+			newDirection.x += (currentTile->getSlope()/GRAVITY_DIVISOR) * currentTile->getRollDirection().x;
+			newDirection.y += (currentTile->getSlope()/GRAVITY_DIVISOR) * currentTile->getRollDirection().y;
+			newDirection.z += (currentTile->getSlope()/GRAVITY_DIVISOR) * currentTile->getRollDirection().z;
+		}
 
 		// Update ball speed
 		double ballSpeed = physics->getSpeed();
