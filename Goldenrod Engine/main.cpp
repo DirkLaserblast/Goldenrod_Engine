@@ -457,7 +457,13 @@ bool detectCollisions(Tile* currentTile, Physics * physics)
 				//Play bounce SFX
 				bounceSFX(physics->getSpeed(), sound);
 
-				physics->setDirection(normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming));
+				vec3 newDirection = normalize(2.0f * (borderNormal * -incoming) * borderNormal + incoming);
+
+				cout << "Bounce: " << dot(newDirection, borderNormal) << "\n";
+				if (dot(newDirection, borderNormal) > 0) physics->setDirection(newDirection);
+				else physics->setDirection(borderNormal * incoming);
+
+				//physics->setDirection(newDirection);
 
 				// Flip y if hit border at y max or min of tile (prevents floating/sinking)
 				if(currentTile->getShapes()[0]->getMinY() > predPos.y || currentTile->getShapes()[0]->getMaxY() < predPos.y){
