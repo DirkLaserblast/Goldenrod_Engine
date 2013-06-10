@@ -445,16 +445,14 @@ bool detectCollisions(vector<Shape*> borderShapes, Physics * physics)
 		{
 			vec3 predPos = physics->getNextPosition();
 			float predictedDistance = sqrt(((ballPosition.x - predPos.x)*(ballPosition.x - predPos.x)) + ((ballPosition.y - predPos.y)*(ballPosition.y - predPos.y)) + ((ballPosition.z - predPos.z)*(ballPosition.z - predPos.z)));
-			printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
 			if (distance <= predictedDistance) //Collision detected
 			{
-				//printf("Distance to plane: %f\nPredicted distance: %f\n", distanceToPlane, predictedDistance);
 				if (DEBUG_WALL_PAINT)
 				{
 					borderShapes[i]->changeColor(vec4(1.0));
 					borderShapes[i]->reload();
 				}
-				//cout << (atan2(borderNormal.x, borderNormal.z) - atan2(incoming.x, incoming.z)) * 180/PI << "\n";
+
 				//Play bounce SFX
 				bounceSFX(physics->getSpeed(), sound);
 
@@ -462,7 +460,7 @@ bool detectCollisions(vector<Shape*> borderShapes, Physics * physics)
 
 				return true;
 			}
-			//else cout << "Ignoring wall\n";
+
 		}
 
 	}
@@ -497,7 +495,7 @@ void tick(int in)
     glm::vec3 ballPos = physics->getPosition();
     glm::vec3 cupPos = currentLevel->getCup()->getPhysics()->getPosition();
     float cupPlaneDist = sqrt(((ballPos.x - cupPos.x)*(ballPos.x - cupPos.x)) + ((ballPos.z - cupPos.z)*(ballPos.z - cupPos.z)));
-    //cout << endl << cupDist << endl; // debug
+
     if(cupPlaneDist < (CUP_RADIUS - (0.8 * BALL_RADIUS)) && abs(cupPos.y - ballPos.y) <= 1.1*BALL_OFFSET){ // allow for slight error
 		//Play SFX for falling in hole
 		sound->getEngine()->play2D("sfx/retro_cup.wav");
@@ -603,8 +601,6 @@ void tick(int in)
 		else{
 			physics->setSpeed(0.0);
 		}
-		//cout << endl << "ball speed:" << currentLevel->ballSpeed << endl; // debug
-		//cout << endl << "ball tile ID: " << currentLevel->ballCurrentTileID << endl; // debug
 
 		// Check if ball stopped
 		if(ballSpeed == 0){
