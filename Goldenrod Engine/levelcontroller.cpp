@@ -17,7 +17,7 @@ LevelController::~LevelController(){
 void LevelController::loadCurrentLevel(FileIOController* fileIO){
 
     // Load/reload current level
-    cerr << endl << "Loading/reloading current level." << endl;
+    //cerr << endl << "Loading/reloading current level." << endl;
     delete this->currentLevel;
     this->currentLevel = new Level(fileIO->getCurrentHole(), fileIO->getCurrentHoleID());
 
@@ -25,7 +25,7 @@ void LevelController::loadCurrentLevel(FileIOController* fileIO){
 
 void LevelController::loadNextLevel(FileIOController* fileIO){
 
-    cerr << endl << "Loading next level." << endl;
+    //cerr << endl << "Loading next level." << endl;
 	// Check if on end
     if(fileIO->nextHole()){
         // Delete the current level
@@ -42,7 +42,7 @@ void LevelController::loadNextLevel(FileIOController* fileIO){
 
 void LevelController::loadPrevLevel(FileIOController* fileIO){
 
-    cerr << endl << "Loading previous level." << endl;
+    //cerr << endl << "Loading previous level." << endl;
     // Check if on end
     if(fileIO->prevHole()){
         // Delete the current level
@@ -59,7 +59,7 @@ void LevelController::loadPrevLevel(FileIOController* fileIO){
 
 void LevelController::loadFirstLevel(FileIOController* fileIO){
 	
-	cerr << endl << "Loading first level." << endl;
+	//cerr << endl << "Loading first level." << endl;
 
 	delete this->currentLevel;
 	fileIO->goToHole(0);
@@ -69,7 +69,7 @@ void LevelController::loadFirstLevel(FileIOController* fileIO){
 
 void LevelController::loadLastLevel(FileIOController* fileIO){
 	
-	cerr << endl << "Loading last level." << endl;
+	//cerr << endl << "Loading last level." << endl;
 
 	delete this->currentLevel;
 	fileIO->goToHole(fileIO->getNumHoles() - 1);
@@ -79,7 +79,7 @@ void LevelController::loadLastLevel(FileIOController* fileIO){
 
 void LevelController::loadLevel(FileIOController* fileIO, int levelIndex){
 
-    cerr << endl << "Loading level at index " << levelIndex << "." << endl;
+    //cerr << endl << "Loading level at index " << levelIndex << "." << endl;
     // Check for bad index
     if(fileIO->goToHole(levelIndex)){
         // Delete the current level

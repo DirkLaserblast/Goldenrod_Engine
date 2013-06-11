@@ -2,22 +2,14 @@
 # Taran Lu tjlu@ucsc.edu 
 # GOLDENROD ENGINE
 
-Description:    OpenGL application that reads in a a text file describing
-                a tile layout. Renders tiles and allows for simple transformation
-                of the minigolf "hole."                
+Description:    OpenGL minigolf game. Application reads in a a text file describing
+                a tile layout and renders tiles of each level. Player controls game with GULI
+		user interface, and progress through 18 holes. The game has sound effects
+		handled through irrKlang.   
             
-Controls:       Object transformations:               
-                'x' = tranform along x-axis (r-click+drag = move, l-click+drag = rotate)
-                'y' = tranform along y-axis (r-click+drag = move, l-click+drag = rotate)
-                'z' = tranform along z-axis (r-click+drag = move, l-click+drag = rotate)
+Controls:       All controls are labelled on GUI
+		Note: the "New Player" button gives a prompt for name entry on the command line
                 
-                Camera Controls (WIP):
-                Use the GUI to rotate and zoom the camera (it stays oriented
-                toward the level).
-                NOTE: the GUI appears behind the main glut window
-                NOTE: using the GUI prevents the regular object transformation
-                      controls from working; to use them again, hit tab until
-                      none of the GUI controls are highlighted
             
 Comments:       Some code was taken/modified from the example
                 program used in CS160.                                        
@@ -27,3 +19,6 @@ Comments:       Some code was taken/modified from the example
                 Should be free of external dependencies.
                 
                 The .exe is located in: Goldenrod_Engine/Debug.
+
+Download:	dropbox: https://dl.dropboxusercontent.com/u/25655016/Goldenrod_Engine.zip
+		github: https://github.com/DirkLaserblast/Goldenrod_Engine

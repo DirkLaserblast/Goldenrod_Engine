@@ -62,6 +62,18 @@
     <Filter Include="Source\Sound">
       <UniqueIdentifier>{54bcb48c-5b1d-48bd-bc95-4bc9ced2912c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Game Controllers">
+      <UniqueIdentifier>{66b80273-0b5d-419a-861f-d25e112dd15d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game Controllers">
+      <UniqueIdentifier>{b9cc6d8a-e690-48ac-acae-36c290cf71eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Physics and Collision">
+      <UniqueIdentifier>{c76a37fd-d9f4-43d0-857d-aac4b246783f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Physics and Collision">
+      <UniqueIdentifier>{b3ef8268-2580-4da6-9b45-e2eecb79c30f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="shader.cpp">
@@ -115,6 +127,15 @@
     <ClCompile Include="sound.cpp">
       <Filter>Source\Sound</Filter>
     </ClCompile>
+    <ClCompile Include="physicscontroller.cpp">
+      <Filter>Source\Physics and Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="scorecontroller.cpp">
+      <Filter>Source\Game Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="collisioncontroller.cpp">
+      <Filter>Source\Physics and Collision</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -164,6 +185,15 @@
     </ClInclude>
     <ClInclude Include="sound.h">
       <Filter>Header\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="physicscontroller.h">
+      <Filter>Header\Physics and Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="scorecontroller.h">
+      <Filter>Header\Game Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="collisioncontroller.h">
+      <Filter>Header\Physics and Collision</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
